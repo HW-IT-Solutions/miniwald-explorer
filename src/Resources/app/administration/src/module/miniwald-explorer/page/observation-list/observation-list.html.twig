@@ -1,0 +1,299 @@
+{% block miniwald_observation_list %}
+<sw-page class="miniwald-observation-list miniwald-explorer-list">
+    {% block miniwald_observation_list_search_bar %}
+    <template #search-bar>
+        <sw-search-bar
+            initial-search-type="miniwald_explorer_observation"
+            :initial-search="term"
+            @search="onSearch"
+        >
+                </sw-search-bar>
+    </template>
+    {% endblock %}
+
+    {% block miniwald_observation_list_smart_bar_header %}
+    <template #smart-bar-header>
+        <h2>
+            {{ $tc('miniwald-explorer.observation.list.title') }}
+        </h2>
+    </template>
+    {% endblock %}
+
+    {% block miniwald_observation_list_smart_bar_actions %}
+    <template #smart-bar-actions>
+        <sw-button
+            variant="ghost"
+            size="small"
+            @click="onToggleFilters"
+        >
+            <sw-icon
+                name="regular-filter"
+                small
+            ></sw-icon>
+            {{ $tc('miniwald-explorer.observation.list.buttonFilter') }}
+            <sw-label
+                v-if="activeFilterCount > 0"
+                variant="info"
+                size="small"
+                appearance="pill"
+                class="miniwald-observation-list__filter-count"
+            >
+                        {{ activeFilterCount }}
+                    </sw-label>
+        </sw-button>
+        <sw-button-group>
+            <sw-button
+                variant="ghost"
+                size="small"
+                @click="onCreateObservation('animals')"
+            >
+                🐾
+                {{ $tc('miniwald-explorer.observation.list.buttonCreateAnimals') }}
+            </sw-button>
+            <sw-button
+                variant="ghost"
+                size="small"
+                @click="onCreateObservation('plants')"
+            >
+                🌱
+                {{ $tc('miniwald-explorer.observation.list.buttonCreatePlants') }}
+            </sw-button>
+            <sw-button
+                variant="ghost"
+                size="small"
+                @click="onCreateObservation('ground')"
+            >
+                🌍
+                {{ $tc('miniwald-explorer.observation.list.buttonCreateGround') }}
+            </sw-button>
+        </sw-button-group>
+    </template>
+    {% endblock %}
+
+    <template #content>
+        {% block miniwald_observation_list_content %}
+        <div class="miniwald-observation-list__content">
+            {% block miniwald_observation_list_filters %}
+            <sw-card
+                v-if="showFilters"
+                class="miniwald-observation-list__filter-panel"
+                :title="$tc('miniwald-explorer.observation.list.filterTitle')"
+            >
+                <template #toolbar>
+                    <sw-button
+                        size="x-small"
+                        variant="ghost"
+                        @click="onResetFilters"
+                    >
+                        {{ $tc('miniwald-explorer.observation.list.filterReset') }}
+                    </sw-button>
+                </template>
+                <sw-container
+                    columns="1fr 1fr 1fr"
+                    gap="0 15px"
+                >
+                    {% block miniwald_observation_list_filter_date_from %}
+                    <sw-datepicker
+                        v-model:value="filterDateFrom"
+                        :label="$tc('miniwald-explorer.observation.list.filterDateFrom')"
+                        dateType="date"
+                        @update:value="onFilterChange"
+                    >
+                                    </sw-datepicker>
+                    {% endblock %}
+
+                    {% block miniwald_observation_list_filter_date_to %}
+                    <sw-datepicker
+                        v-model:value="filterDateTo"
+                        :label="$tc('miniwald-explorer.observation.list.filterDateTo')"
+                        dateType="date"
+                        @update:value="onFilterChange"
+                    >
+                                    </sw-datepicker>
+                    {% endblock %}
+
+                    {% block miniwald_observation_list_filter_type %}
+                    <sw-single-select
+                        v-model:value="filterType"
+                        :label="$tc('miniwald-explorer.observation.list.filterType')"
+                        :placeholder="$tc('miniwald-explorer.observation.list.filterAllTypes')"
+                        :options="typeFilterOptions"
+                        show-clearable-button
+                        @update:value="onFilterChange"
+                    >
+                                    </sw-single-select>
+                    {% endblock %}
+                </sw-container>
+                <sw-container
+                    columns="1fr 1fr 1fr"
+                    gap="0 15px"
+                >
+                    {% block miniwald_observation_list_filter_observer %}
+                    <sw-entity-single-select
+                        v-model:value="filterCustomerId"
+                        entity="customer"
+                        :label="$tc('miniwald-explorer.observation.list.filterObserver')"
+                        :placeholder="$tc('miniwald-explorer.observation.list.filterAllObservers')"
+                        label-property="firstName"
+                        show-clearable-button
+                        @update:value="onFilterChange"
+                    >
+                                    </sw-entity-single-select>
+                    {% endblock %}
+
+                    {% block miniwald_observation_list_filter_location %}
+                    <sw-entity-single-select
+                        v-model:value="filterMiniwaldId"
+                        entity="miniwald_explorer_miniwald"
+                        :label="$tc('miniwald-explorer.observation.list.filterLocation')"
+                        :placeholder="$tc('miniwald-explorer.observation.list.filterAllLocations')"
+                        label-property="name"
+                        show-clearable-button
+                        @update:value="onFilterChange"
+                    >
+                                    </sw-entity-single-select>
+                    {% endblock %}
+
+                    {% block miniwald_observation_list_filter_status %}
+                    <sw-single-select
+                        v-model:value="filterStatus"
+                        :label="$tc('miniwald-explorer.observation.list.filterStatus')"
+                        :placeholder="$tc('miniwald-explorer.observation.list.filterAllStatuses')"
+                        :options="statusFilterOptions"
+                        show-clearable-button
+                        @update:value="onFilterChange"
+                    >
+                                    </sw-single-select>
+                    {% endblock %}
+                </sw-container>
+            </sw-card>
+            {% endblock %}
+
+            {% block miniwald_observation_list_grid %}
+            <sw-entity-listing
+                v-if="items"
+                :items="items"
+                :repository="entityRepository"
+                :show-selection="true"
+                :columns="columns"
+                :allow-inline-edit="false"
+                :allow-delete="true"
+                :is-loading="isLoading || isBulkLoading"
+                detail-route="miniwald.explorer.observation.detail"
+                @selection-change="onSelectionChange"
+                @delete-item-finish="onDeleteItemFinish"
+                @items-delete-finish="onBulkDeleteFinish"
+            >
+                {% block miniwald_observation_list_grid_columns %}
+                {% block miniwald_observation_list_grid_columns_observed_at %}
+                <template #column-observedAt="{ item }">
+                    <router-link
+                        :to="{ name: 'miniwald.explorer.observation.detail', params: { id: item.id } }"
+                    >
+                        {{ item.observedAt ? new Date(item.observedAt).toLocaleString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Berlin' }) : '–' }}
+                    </router-link>
+                </template>
+                {% endblock %}
+
+                {% block miniwald_observation_list_grid_columns_type %}
+                <template #column-type="{ item }">
+                    <sw-label
+                        :variant="getObservationType(item) === 'animals' ? 'info' : (getObservationType(item) === 'plants' ? 'success' : 'warning')"
+                        size="default"
+                        appearance="pill"
+                    >
+                        {{ getObservationTypeLabel(item) }}
+                    </sw-label>
+                </template>
+                {% endblock %}
+
+                {% block miniwald_observation_list_grid_columns_observer %}
+                <template #column-customer.lastName="{ item }">
+                    <a
+                        v-if="item.customer"
+                        class="miniwald-observation-list__observer-link"
+                        @click.prevent="onFilterByCustomer(item.customerId)"
+                    >
+                                            {{ getCustomerName(item) }}
+                                        </a>
+                    <template v-else>
+                        {{ $tc('miniwald-explorer.observation.list.unknownObserver') }}
+                    </template>
+                </template>
+                {% endblock %}
+
+                {% block miniwald_observation_list_grid_columns_location %}
+                <template #column-miniwald.name="{ item }">
+                    <template v-if="item.miniwald">
+                                            {{ item.miniwald.name }}
+                                        </template>
+
+                    <template v-else>
+                        –
+                    </template>
+                </template>
+                {% endblock %}
+
+                {% block miniwald_observation_list_grid_columns_status %}
+                <template #column-status="{ item }">
+                    <sw-label
+                        :variant="getStatusVariant(item.status)"
+                        size="default"
+                        appearance="pill"
+                    >
+                        {{ getStatusLabel(item.status) }}
+                    </sw-label>
+                </template>
+                {% endblock %}
+                {% endblock %}
+
+                {% block miniwald_observation_list_grid_delete_confirm_text %}
+                <template #delete-confirm-text>
+                    {{ $tc('miniwald-explorer.observation.list.textDeleteConfirm') }}
+                </template>
+                {% endblock %}
+
+                {% block miniwald_observation_list_grid_bulk_delete_confirm_text %}
+                <template #bulk-modal-delete-confirm-text="{ selectionCount }">
+                    {{ $tc('miniwald-explorer.observation.list.textBulkDeleteConfirm', selectionCount, { count: selectionCount }) }}
+                </template>
+                {% endblock %}
+
+                {% block miniwald_observation_list_grid_bulk_actions %}
+                <template #bulk-additional>
+                    <a
+                        class="link link-warning"
+                        @click="onBulkVerify"
+                    >
+                        {{ $tc('miniwald-explorer.observation.list.bulkVerify') }}
+                    </a>
+                    <a
+                        class="link link-danger"
+                        @click="onBulkReject"
+                    >
+                        {{ $tc('miniwald-explorer.observation.list.bulkReject') }}
+                    </a>
+                    <a
+                        class="link link-default"
+                        @click="onBulkSetDraft"
+                    >
+                        {{ $tc('miniwald-explorer.observation.list.bulkSetDraft') }}
+                    </a>
+                </template>
+                {% endblock %}
+            </sw-entity-listing>
+            {% endblock %}
+
+            {% block miniwald_observation_list_empty_state %}
+            <sw-empty-state
+                v-if="!isLoading && !total"
+                :absolute="false"
+                :title="$tc('miniwald-explorer.observation.list.messageEmpty')"
+            >
+                        </sw-empty-state>
+            {% endblock %}
+        </div>
+        {% endblock %}
+    </template>
+</sw-page>
+{% endblock %}

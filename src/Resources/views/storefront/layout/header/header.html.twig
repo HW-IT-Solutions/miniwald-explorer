@@ -1,0 +1,156 @@
+{% sw_extends '@Storefront/storefront/layout/header/header.html.twig' %}
+
+{# MiniwaldExplorer: Custom citizen science header - hide all e-commerce controls #}
+{% block layout_header_top_bar %}{% endblock %}
+{% block layout_header_search %}{% endblock %}
+{% block layout_header_actions_cart %}{% endblock %}
+{% block layout_header_actions_wishlist %}{% endblock %}
+{% block layout_header_actions_search %}{% endblock %}
+{% block layout_header %}
+    {% set _currentPath = (app.request.attributes.get('sw-original-request-uri') ?? app.request.requestUri)|split('?')|first %}
+
+    <div class="miniwald-header" id="miniwald-nav" data-miniwald-nav="true">
+
+        {# ── Header bar (always visible) ── #}
+        <div class="miniwald-header__bar">
+
+            {# Left: logo / back / cancel #}
+            <a class="miniwald-header__brand" href="{{ path('frontend.miniwald.overview') }}">
+                <img class="miniwald-header__logo" src="{{ asset('bundles/miniwaldexplorer/assets/Logo_Miniwald-Explorer.svg') }}" alt="">
+            </a>
+
+            {# Center/Right: inline nav links (desktop, overflow:hidden) — only on non-special pages #}
+            <nav class="miniwald-header__nav" aria-label="Hauptnavigation">
+                <a class="miniwald-header__nav-link miniwald-header__nav-link-observation{% if _currentPath starts with path('frontend.miniwald.observation') %} miniwald-header__nav-link--active{% endif %}"
+                   href="{{ path('frontend.miniwald.observation') }}">
+                    {{ 'miniwaldExplorer.navigation.observe'|trans }}
+                </a>
+                <a class="miniwald-header__nav-link miniwald-header__nav-link-collection{% if _currentPath starts with path('frontend.miniwald.collection') %} miniwald-header__nav-link--active{% endif %}"
+                   href="{{ path('frontend.miniwald.collection') }}">
+                    {{ 'miniwaldExplorer.navigation.collection'|trans }}
+                </a>
+                <a class="miniwald-header__nav-link miniwald-header__nav-link-overview{% if _currentPath starts with path('miniwald.ueber-das-projekt') %} miniwald-header__nav-link--active{% endif %}"
+                   href="{{ path('miniwald.ueber-das-projekt') }}">
+                    {{ 'miniwaldExplorer.navigation.overview'|trans }}
+                </a>
+                <a class="miniwald-header__nav-link miniwald-header__nav-link-participate{% if _currentPath starts with path('miniwald.mitmachen') %} miniwald-header__nav-link--active{% endif %}"
+                   href="{{ path('miniwald.mitmachen') }}">
+                    {{ 'miniwaldExplorer.navigation.participate'|trans }}
+                </a>
+                <div class="miniwald-header__auth">
+                    <div class="miniwald-header__divider" aria-hidden="true"></div>
+                    {% if context.customer %}
+                        <a class="miniwald-header__nav-link miniwald-header__nav-link--profile{% if _currentPath starts with path('frontend.miniwald.profile') %} miniwald-header__nav-link--active{% endif %}"
+                           href="{{ path('frontend.miniwald.profile') }}">
+                            {{ context.customer.firstName }}
+                            {{ source('@MiniwaldExplorer/storefront/icons/user.svg', ignore_missing=true)|raw }}
+                        </a>
+                    {% else %}
+                        <a class="btn btn-blue miniwald-header__anmelden"
+                           href="{{ path('frontend.account.login.page') }}?returnUrl={{ app.request.requestUri|url_encode }}">
+                            {{ 'miniwaldExplorer.navigation.login'|trans }}
+                        </a>
+                    {% endif %}
+                </div>
+            </nav>
+
+            <button class="btn btn-white-blue miniwald-header__toggle"
+                    data-nav-toggle
+                    aria-expanded="false"
+                    aria-label="{{ 'general.menuLink'|trans|striptags }}">
+                <span class="miniwald-header__toggle-icon miniwald-header__toggle-icon--open">
+                    <span class="miniwald-header__toggle-label">{{ 'miniwaldExplorer.navigation.menu'|trans }}</span>
+                    {{ source('@MiniwaldExplorer/storefront/icons/stack.svg', ignore_missing=true)|raw }}
+                </span>
+                <span class="miniwald-header__toggle-icon miniwald-header__toggle-icon--close">
+                    <span class="miniwald-header__toggle-label">{{ 'miniwaldExplorer.navigation.menu'|trans }}</span>
+                    {{ source('@MiniwaldExplorer/storefront/icons/close.svg', ignore_missing=true)|raw }}
+                </span>
+            </button>
+        </div>
+
+        {# ── Full-screen nav overlay ── #}
+        <div class="miniwald-nav-overlay" data-nav-overlay>
+            <div class="miniwald-nav-overlay__sections">
+                <a class="miniwald-nav-overlay__link{% if _currentPath starts with path('frontend.miniwald.observation') %} miniwald-header__nav-link--active{% endif %}" href="{{ path('frontend.miniwald.observation') }}">
+                    {{ 'miniwaldExplorer.navigation.observe'|trans }}
+                </a>
+
+                <a class="miniwald-nav-overlay__link{% if _currentPath starts with path('frontend.miniwald.collection') %} miniwald-header__nav-link--active{% endif %}" href="{{ path('frontend.miniwald.collection') }}">
+                    {{ 'miniwaldExplorer.navigation.collection'|trans }}
+                </a>
+
+                <a class="miniwald-nav-overlay__link-sub" href="{{ path('frontend.miniwald.collection.observations') }}">
+                    {{ 'miniwaldExplorer.navigation.collectionObservations'|trans }}
+                </a>
+                <a class="miniwald-nav-overlay__link-sub" href="{{ path('frontend.miniwald.collection.mini-forests') }}">
+                    {{ 'miniwaldExplorer.navigation.collectionMiniForests'|trans }}
+                </a>
+                <a class="miniwald-nav-overlay__link-sub" href="{{ path('frontend.miniwald.collection.species-overview') }}">
+                    {{ 'miniwaldExplorer.navigation.collectionSpecies'|trans }}
+                </a>
+
+                <a class="miniwald-nav-overlay__link{% if _currentPath starts with path('miniwald.ueber-das-projekt') %} miniwald-header__nav-link--active{% endif %}" href="{{ path('miniwald.ueber-das-projekt') }}">
+                    {{ 'miniwaldExplorer.navigation.overview'|trans }}
+                </a>
+
+                {# Section 2: Primary actions #}
+                <a class="miniwald-nav-overlay__link{% if _currentPath starts with path('miniwald.mitmachen') %} miniwald-header__nav-link--active{% endif %}" href="{{ path('miniwald.mitmachen') }}">
+                    {{ 'miniwaldExplorer.navigation.participate'|trans }}
+                </a>
+
+                <hr class="miniwald-nav-overlay__divider">
+
+                {# Section 3: Legal #}
+                <a class="miniwald-nav-overlay__link miniwald-nav-overlay__link--secondary" href="{{ path('miniwald.faq') }}">
+                    {{ 'miniwaldExplorer.navigation.faq'|trans }}
+                </a>
+                <a class="miniwald-nav-overlay__link miniwald-nav-overlay__link--secondary" href="{{ path('miniwald.kontakt') }}">
+                    {{ 'miniwaldExplorer.navigation.contact'|trans }}
+                </a>
+                <a class="miniwald-nav-overlay__link miniwald-nav-overlay__link--secondary" href="{{ path('miniwald.datenschutz') }}">
+                    {{ 'miniwaldExplorer.navigation.privacy'|trans }}
+                </a>
+                <a class="miniwald-nav-overlay__link miniwald-nav-overlay__link--secondary" href="{{ path('miniwald.impressum') }}">
+                    {{ 'miniwaldExplorer.navigation.imprint'|trans }}
+                </a>
+                <a class="miniwald-nav-overlay__link miniwald-nav-overlay__link--secondary" href="{{ path('miniwald.barrierefreiheit') }}">
+                    {{ 'miniwaldExplorer.navigation.accessibility'|trans }}
+                </a>
+
+            </div>
+
+            {# ── Auth footer ── #}
+            <div class="miniwald-nav-overlay__footer">
+                <hr class="miniwald-nav-overlay__divider">
+
+                {% if context.customer %}
+                    <a class="miniwald-nav-overlay__user" href="{{ path('frontend.miniwald.profile') }}">
+                        {{ context.customer.firstName }}
+                        {{ source('@MiniwaldExplorer/storefront/icons/user.svg', ignore_missing=true)|raw }}
+                    </a>
+                    <a class="btn btn-orange miniwald-nav-overlay__auth-btn"
+                       href="{{ path('frontend.account.logout.page') }}?returnUrl={{ app.request.requestUri|url_encode }}">
+                        {{ 'miniwaldExplorer.navigation.logout'|trans }}
+                    </a>
+                {% else %}
+                    <a class="btn btn-blue miniwald-nav-overlay__auth-btn"
+                       href="{{ path('frontend.account.login.page') }}?returnUrl={{ app.request.requestUri|url_encode }}">
+                        {{ 'miniwaldExplorer.navigation.login'|trans }}
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="miniwald-back-menu" id="miniwald">
+            <a class="btn btn-white-blue miniwald-header__cancel" href="{{ path('frontend.miniwald.overview') }}" data-obs-cancel>
+                <span class="icon">{{ source('@MiniwaldExplorer/storefront/icons/arrow.svg', ignore_missing=true)|raw }}</span>
+                <span class="text">{{ 'miniwaldExplorer.observation.backButtonName'|trans }}</span>
+            </a>
+            <a class="btn btn-white-blue miniwald-header__help" data-obs-help hidden>
+                <span class="instruction">{{ 'miniwaldExplorer.navigation.instructionButtonTitle'|trans }}</span>
+                <span class="icon">{{ source('@MiniwaldExplorer/storefront/icons/help.svg', ignore_missing=true)|raw }}</span>
+            </a>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,56 @@
+{# ── Ground instruction modal ── #}
+<div class="miniwald-observation-modal miniwald-observation-modal--instruction" data-ground-instruction-modal hidden>
+    <div class="miniwald-instruction-modal__content">
+        <div class="miniwald-instruction-modal__body">
+            <h1 class="miniwald-observation-title">{{ 'miniwaldExplorer.observation.groundInstructionTitle'|trans }}</h1>
+            <p class="miniwald-observation-text">
+                {{ 'miniwaldExplorer.observation.step2Text1Intro'|trans({
+                    '%boldStart%': '<strong>',
+                    '%boldEnd%': '</strong>',
+                    '%participateStart%': '<a class="link" href="/mitmachen">',
+                    '%participateEnd%': '</a>',
+                    '%mailStart%': '<a class="mail" ',
+                    '%mailEnd%': '</a>'
+                })|raw }}
+            </p>
+            <h2 class="miniwald-observation-sub-title">{{ 'miniwaldExplorer.observation.groundInstructionEquipmentTitle'|trans }}</h2>
+            <ul class="miniwald-observation-text">
+                <li>{{ 'miniwaldExplorer.observation.groundInstructionEquipment1'|trans }}</li>
+                <li>{{ 'miniwaldExplorer.observation.groundInstructionEquipment2'|trans }}</li>
+                <li>{{ 'miniwaldExplorer.observation.groundInstructionEquipment3'|trans }}</li>
+            </ul>
+            <h2 class="miniwald-observation-sub-title">{{ 'miniwaldExplorer.observation.step2InstructionTitle'|trans }}</h2>
+            <ul class="miniwald-observation-text">
+                <li>
+                    <p class="miniwald-observation-text">{{ 'miniwaldExplorer.observation.groundInstructionStep1'|trans }}</p>
+                    <ul>
+                        <li>{{ 'miniwaldExplorer.observation.groundInstructionStep2Loc1'|trans }}</li>
+                        <li>{{ 'miniwaldExplorer.observation.groundInstructionStep2Loc2'|trans }}</li>
+                        <li>{{ 'miniwaldExplorer.observation.groundInstructionStep2Loc3'|trans }}</li>
+                    </ul>
+                </li>
+                <li>
+                    <p class="miniwald-observation-text">{{ 'miniwaldExplorer.observation.groundInstructionStep2'|trans }}</p>
+                    <ul>
+                        <li>{{ 'miniwaldExplorer.observation.groundInstructionStep2Loc4'|trans }}</li>
+                        <li>{{ 'miniwaldExplorer.observation.groundInstructionStep2Loc5'|trans }}</li>
+                    </ul>
+                </li>
+            </ul>
+            <div class="miniwald-observation-instruction-tip-box">
+                <h2 class="miniwald-observation-sub-title">{{ 'miniwaldExplorer.observation.groundInstructionTipTitle'|trans }}</h2>
+                <p class="miniwald-observation-text">{{ 'miniwaldExplorer.observation.groundInstructionTipText'|trans }}</p>
+            </div>
+            {% if isLoggedIn %}
+            <div class="hide-instructions__container">
+                <input type="checkbox" id="hide-instructions__checkbox-ground" class="hide-instructions__checkbox">
+                <label class="hide-instructions__label" for="hide-instructions__checkbox-ground">{{ 'miniwaldExplorer.observation.step2HideInfoCheck'|trans }}</label>
+            </div>
+            {% endif %}
+            <h2 class="miniwald-observation-sub-title">{{ 'miniwaldExplorer.observation.step2Ready'|trans }}</h2>
+        </div>
+        <button class="btn btn-white miniwald-instruction-modal__close" type="button" data-close-ground-instruction-modal>
+            {{ 'miniwaldExplorer.observation.groundInstructionClose'|trans }}
+        </button>
+    </div>
+</div>

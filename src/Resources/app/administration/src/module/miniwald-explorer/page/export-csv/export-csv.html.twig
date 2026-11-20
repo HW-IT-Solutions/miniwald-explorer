@@ -1,0 +1,133 @@
+{% block miniwald_export_csv %}
+<sw-page class="miniwald-export-csv">
+    {% block miniwald_export_csv_smart_bar_header %}
+    <template #smart-bar-header>
+        <h2>
+            {{ $tc('miniwald-explorer.export.csv.title') }}
+        </h2>
+    </template>
+    {% endblock %}
+
+    {% block miniwald_export_csv_smart_bar_actions %}
+    <template #smart-bar-actions>
+        <sw-button
+            variant="primary"
+            :isLoading="isExporting"
+            :disabled="isExporting"
+            @click="onExport"
+        >
+            <sw-icon
+                name="regular-circle-download"
+                small
+            ></sw-icon>
+            {{ $tc('miniwald-explorer.export.csv.buttonExport') }}
+        </sw-button>
+    </template>
+    {% endblock %}
+
+    {% block miniwald_export_csv_content %}
+    <template #content>
+        <sw-card-view>
+            {% block miniwald_export_csv_description %}
+            <sw-card
+                :title="$tc('miniwald-explorer.export.csv.cardTitleDescription')"
+            >
+                <p>
+                    {{ $tc('miniwald-explorer.export.csv.description') }}
+                </p>
+                <p class="miniwald-export-csv__info">
+                    <sw-icon
+                        name="regular-info-circle"
+                        small
+                    ></sw-icon>                    {{ $tc('miniwald-explorer.export.csv.photoTokenInfo') }}
+                </p>
+            </sw-card>
+            {% endblock %}
+
+            {% block miniwald_export_csv_filters %}
+            <sw-card
+                :title="$tc('miniwald-explorer.export.filterTitle')"
+                :subtitle="activeFilterCount > 0 ? $tc('miniwald-explorer.export.activeFilters', { count: activeFilterCount }) : ''"
+            >
+                <div class="miniwald-export__filters">
+                    {% block miniwald_export_csv_filter_date %}
+                    <div class="miniwald-export__filter-row">
+                        <sw-datepicker
+                            :label="$tc('miniwald-explorer.export.filterDateFrom')"
+                            v-model="filterDateFrom"
+                            dateType="date"
+                            size="medium"
+                        ></sw-datepicker>
+                        <sw-datepicker
+                            :label="$tc('miniwald-explorer.export.filterDateTo')"
+                            v-model="filterDateTo"
+                            dateType="date"
+                            size="medium"
+                        ></sw-datepicker>
+                    </div>
+                    {% endblock %}
+
+                    {% block miniwald_export_csv_filter_type %}
+                    <div class="miniwald-export__filter-row">
+                        <sw-single-select
+                            :label="$tc('miniwald-explorer.export.filterType')"
+                            :options="typeOptions"
+                            v-model:value="filterType"
+                            :placeholder="$tc('miniwald-explorer.export.allTypes')"
+                            size="medium"
+                        ></sw-single-select>
+                    </div>
+                    {% endblock %}
+
+                    {% block miniwald_export_csv_filter_entities %}
+                    <div class="miniwald-export__filter-row">
+                        <sw-entity-single-select
+                            :label="$tc('miniwald-explorer.export.filterObserver')"
+                            entity="customer"
+                            v-model:value="filterCustomerId"
+                            :placeholder="$tc('miniwald-explorer.export.allObservers')"
+                            labelProperty="firstName"
+                            :criteria="customerCriteria"
+                            size="medium"
+                        ></sw-entity-single-select>
+                        <sw-entity-single-select
+                            :label="$tc('miniwald-explorer.export.filterLocation')"
+                            entity="miniwald_explorer_miniwald"
+                            v-model:value="filterMiniwaldId"
+                            :placeholder="$tc('miniwald-explorer.export.allLocations')"
+                            labelProperty="name"
+                            :criteria="miniwaldCriteria"
+                            size="medium"
+                        ></sw-entity-single-select>
+                    </div>
+                    {% endblock %}
+
+                    {% block miniwald_export_csv_filter_actions %}
+                    <div class="miniwald-export__filter-actions">
+                        <sw-button
+                            variant="ghost"
+                            size="small"
+                            :disabled="activeFilterCount === 0"
+                            @click="onResetFilters"
+                        >
+                            {{ $tc('miniwald-explorer.export.resetFilters') }}
+                        </sw-button>
+                    </div>
+                    {% endblock %}
+                </div>
+            </sw-card>
+            {% endblock %}
+
+            {% block miniwald_export_csv_format %}
+            <sw-card :title="$tc('miniwald-explorer.export.csv.cardTitleFormat')">
+                <p>
+                    {{ $tc('miniwald-explorer.export.csv.formatDescription') }}
+                </p>
+                <pre class="miniwald-export-csv__format-preview">observation_id;type;date;time;observer_name;miniwald;latitude;longitude;weather;wind;general_remarks;species_category;species_name;scientific_name;subspecies_name;subspecies_scientific_name;custom_species_name;count;item_remarks;photo_urls;plant_name;plant_scientific_name;height_cm;trunk_circumference_cm;crown_diameter_cm;plant_remarks;air_temperature;ground_temperature;humidity;moisture;ph_value;ground_remarks</pre>
+            </sw-card>
+            {% endblock %}
+        </sw-card-view>
+    </template>
+    {% endblock %}
+</sw-page>
+{% endblock %}

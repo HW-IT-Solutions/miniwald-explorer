@@ -1,0 +1,203 @@
+{% sw_extends '@Storefront/storefront/base.html.twig' %}
+
+{% block base_main_inner %}
+    <div class="miniwald-profile-page">
+
+        <div hidden data-page-back-href="{{ path('frontend.miniwald.collection.observations') }}" data-page-back-text="{{ 'miniwaldExplorer.profile.pageTitle'|trans }}"></div>
+        <div class="miniwald-profile-header">
+            <h1 class="miniwald-profile-header__title">{{ 'miniwaldExplorer.profile.pageTitle'|trans }}</h1>
+        </div>
+
+        <div class="miniwald-profile-content">
+
+            {# Flash messages #}
+            {% for message in app.flashes('success') %}
+                <div class="miniwald-profile-alert miniwald-profile-alert--success">
+                    {{ message }}
+                </div>
+            {% endfor %}
+            {% for message in app.flashes('danger') %}
+                <div class="miniwald-profile-alert miniwald-profile-alert--danger">
+                    {{ message }}
+                </div>
+            {% endfor %}
+
+            {# ── User Data ── #}
+            <section class="miniwald-profile-section">
+                <h2 class="miniwald-profile-section__title">
+                    {{ 'miniwaldExplorer.profile.userDataTitle'|trans }}
+                </h2>
+                <form class="miniwald-auth-form"
+                      action="{{ path('frontend.miniwald.profile.data') }}"
+                      method="post">
+
+                    <div class="miniwald-auth-form__group">
+                        <label class="miniwald-auth-form__label" for="profileName">
+                            {{ 'miniwaldExplorer.profile.name'|trans }}
+                        </label>
+                        <input class="miniwald-auth-form__input form-control"
+                               type="text"
+                               id="profileName"
+                               name="name"
+                               value="{{ customer.firstName|e }}"
+                               autocomplete="given-name"
+                               required>
+                    </div>
+
+                    <div class="miniwald-auth-form__group">
+                        <span class="miniwald-auth-form__label">{{ 'miniwaldExplorer.profile.email'|trans }}</span>
+                        <span class="miniwald-profile-readonly">{{ customer.email }}</span>
+                    </div>
+
+                    <button type="submit" class="miniwald-auth-form__submit btn">
+                        {{ 'miniwaldExplorer.profile.userDataSubmit'|trans }}
+                    </button>
+                </form>
+            </section>
+
+            {# ── Change Password ── #}
+            <section class="miniwald-profile-section">
+                <h2 class="miniwald-profile-section__title">
+                    {{ 'miniwaldExplorer.profile.changePasswordTitle'|trans }}
+                </h2>
+                <form class="miniwald-auth-form"
+                      action="{{ path('frontend.miniwald.profile.password') }}"
+                      method="post">
+
+                    <div class="miniwald-auth-form__group">
+                        <label class="miniwald-auth-form__label" for="currentPassword">
+                            {{ 'miniwaldExplorer.profile.currentPassword'|trans }}
+                        </label>
+                        <div class="miniwald-auth-form__password-wrapper">
+                            <input class="miniwald-auth-form__input form-control"
+                                   type="password"
+                                   id="currentPassword"
+                                   name="currentPassword"
+                                   autocomplete="current-password"
+                                   required>
+                            <button type="button"
+                                    class="miniwald-auth-form__password-toggle"
+                                    data-password-toggle
+                                    data-password-toggle-target="#currentPassword"
+                                    data-password-toggle-show-label="{{ 'miniwaldExplorer.account.showPassword'|trans|sw_sanitize }}"
+                                    data-password-toggle-hide-label="{{ 'miniwaldExplorer.account.hidePassword'|trans|sw_sanitize }}"
+                                    aria-label="{{ 'miniwaldExplorer.account.showPassword'|trans|sw_sanitize }}"
+                                    aria-pressed="false">
+                                {{ source('@MiniwaldExplorer/storefront/icons/eye-closed.svg', ignore_missing=true)|raw }}
+                                {{ source('@MiniwaldExplorer/storefront/icons/eye-open.svg', ignore_missing=true)|raw }}
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="miniwald-auth-form__group">
+                        <label class="miniwald-auth-form__label" for="newPassword">
+                            {{ 'miniwaldExplorer.profile.newPassword'|trans }}
+                        </label>
+                        <div class="miniwald-auth-form__password-wrapper">
+                            <input class="miniwald-auth-form__input form-control"
+                                   type="password"
+                                   id="newPassword"
+                                   name="newPassword"
+                                   autocomplete="new-password"
+                                   minlength="8"
+                                   required>
+                            <button type="button"
+                                    class="miniwald-auth-form__password-toggle"
+                                    data-password-toggle
+                                    data-password-toggle-target="#newPassword"
+                                    data-password-toggle-show-label="{{ 'miniwaldExplorer.account.showPassword'|trans|sw_sanitize }}"
+                                    data-password-toggle-hide-label="{{ 'miniwaldExplorer.account.hidePassword'|trans|sw_sanitize }}"
+                                    aria-label="{{ 'miniwaldExplorer.account.showPassword'|trans|sw_sanitize }}"
+                                    aria-pressed="false">
+                                {{ source('@MiniwaldExplorer/storefront/icons/eye-closed.svg', ignore_missing=true)|raw }}
+                                {{ source('@MiniwaldExplorer/storefront/icons/eye-open.svg', ignore_missing=true)|raw }}
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="miniwald-auth-form__group">
+                        <label class="miniwald-auth-form__label" for="newPasswordConfirm">
+                            {{ 'miniwaldExplorer.profile.newPasswordConfirm'|trans }}
+                        </label>
+                        <div class="miniwald-auth-form__password-wrapper">
+                            <input class="miniwald-auth-form__input form-control"
+                                   type="password"
+                                   id="newPasswordConfirm"
+                                   name="newPasswordConfirm"
+                                   autocomplete="new-password"
+                                   minlength="8"
+                                   required>
+                            <button type="button"
+                                    class="miniwald-auth-form__password-toggle"
+                                    data-password-toggle
+                                    data-password-toggle-target="#newPasswordConfirm"
+                                    data-password-toggle-show-label="{{ 'miniwaldExplorer.account.showPassword'|trans|sw_sanitize }}"
+                                    data-password-toggle-hide-label="{{ 'miniwaldExplorer.account.hidePassword'|trans|sw_sanitize }}"
+                                    aria-label="{{ 'miniwaldExplorer.account.showPassword'|trans|sw_sanitize }}"
+                                    aria-pressed="false">
+                                {{ source('@MiniwaldExplorer/storefront/icons/eye-closed.svg', ignore_missing=true)|raw }}
+                                {{ source('@MiniwaldExplorer/storefront/icons/eye-open.svg', ignore_missing=true)|raw }}
+                            </button>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="miniwald-auth-form__submit btn">
+                        {{ 'miniwaldExplorer.profile.changePasswordSubmit'|trans }}
+                    </button>
+                </form>
+            </section>
+
+            {# ── Delete Account ── #}
+            <section class="miniwald-profile-section miniwald-profile-section--danger">
+                <h2 class="miniwald-profile-section__title miniwald-profile-section__title--danger">
+                    {{ 'miniwaldExplorer.profile.deleteAccountTitle'|trans }}
+                </h2>
+                <p class="miniwald-profile-section__text">
+                    {{ 'miniwaldExplorer.profile.deleteAccountText'|trans }}
+                </p>
+
+                <details class="miniwald-profile-delete-details">
+                    <summary class="miniwald-profile-delete-details__summary btn btn-orange">
+                        {{ 'miniwaldExplorer.profile.deleteAccountConfirm'|trans }}
+                    </summary>
+                    <div class="miniwald-profile-delete-details__content">
+                        <form class="miniwald-auth-form"
+                              action="{{ path('frontend.miniwald.profile.delete') }}"
+                              method="post">
+
+                            <div class="miniwald-auth-form__group">
+                                <label class="miniwald-auth-form__label" for="confirmPassword">
+                                    {{ 'miniwaldExplorer.profile.deleteAccountPassword'|trans }}
+                                </label>
+                                <div class="miniwald-auth-form__password-wrapper">
+                                    <input class="miniwald-auth-form__input form-control"
+                                           type="password"
+                                           id="confirmPassword"
+                                           name="confirmPassword"
+                                           autocomplete="current-password"
+                                           required>
+                                    <button type="button"
+                                            class="miniwald-auth-form__password-toggle"
+                                            data-password-toggle
+                                            data-password-toggle-target="#confirmPassword"
+                                            data-password-toggle-show-label="{{ 'miniwaldExplorer.account.showPassword'|trans|sw_sanitize }}"
+                                            data-password-toggle-hide-label="{{ 'miniwaldExplorer.account.hidePassword'|trans|sw_sanitize }}"
+                                            aria-label="{{ 'miniwaldExplorer.account.showPassword'|trans|sw_sanitize }}"
+                                            aria-pressed="false">
+                                        {{ source('@MiniwaldExplorer/storefront/icons/eye-closed.svg', ignore_missing=true)|raw }}
+                                        {{ source('@MiniwaldExplorer/storefront/icons/eye-open.svg', ignore_missing=true)|raw }}
+                                    </button>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn btn-orange miniwald-profile-delete-btn">
+                                {{ 'miniwaldExplorer.profile.deleteAccountConfirm'|trans }}
+                            </button>
+                        </form>
+                    </div>
+                </details>
+            </section>
+
+        </div>
+    </div>
+{% endblock %}

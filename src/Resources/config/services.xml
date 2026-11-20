@@ -1,0 +1,241 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <!-- Miniwald Translation Entity -->
+        <service id="InReNa\Content\Miniwald\MiniwaldTranslationDefinition">
+            <tag name="shopware.entity.definition" entity="miniwald_explorer_miniwald_translation"/>
+        </service>
+
+        <!-- SpeciesCategory Entity -->
+        <service id="InReNa\Content\SpeciesCategory\SpeciesCategoryDefinition">
+            <tag name="shopware.entity.definition" entity="miniwald_explorer_species_category"/>
+        </service>
+        <service id="InReNa\Content\SpeciesCategory\SpeciesCategoryTranslationDefinition">
+            <tag name="shopware.entity.definition" entity="miniwald_explorer_species_category_translation"/>
+        </service>
+
+        <!-- Species Entity -->
+        <service id="InReNa\Content\Species\SpeciesDefinition">
+            <tag name="shopware.entity.definition" entity="miniwald_explorer_species"/>
+        </service>
+        <service id="InReNa\Content\Species\SpeciesTranslationDefinition">
+            <tag name="shopware.entity.definition" entity="miniwald_explorer_species_translation"/>
+        </service>
+
+        <!-- Subspecies Entity -->
+        <service id="InReNa\Content\Subspecies\SubspeciesDefinition">
+            <tag name="shopware.entity.definition" entity="miniwald_explorer_subspecies"/>
+        </service>
+        <service id="InReNa\Content\Subspecies\SubspeciesTranslationDefinition">
+            <tag name="shopware.entity.definition" entity="miniwald_explorer_subspecies_translation"/>
+        </service>
+
+        <!-- Miniwald Entity -->
+        <service id="InReNa\Content\Miniwald\MiniwaldDefinition">
+            <tag name="shopware.entity.definition" entity="miniwald_explorer_miniwald"/>
+        </service>
+
+        <!-- Plant Entity -->
+        <service id="InReNa\Content\Plant\PlantDefinition">
+            <tag name="shopware.entity.definition" entity="miniwald_explorer_plant"/>
+        </service>
+        <service id="InReNa\Content\Plant\PlantTranslationDefinition">
+            <tag name="shopware.entity.definition" entity="miniwald_explorer_plant_translation"/>
+        </service>
+
+        <!-- Observation Entity -->
+        <service id="InReNa\Content\Observation\ObservationDefinition">
+            <tag name="shopware.entity.definition" entity="miniwald_explorer_observation"/>
+        </service>
+
+        <!-- ObservationItem Entity -->
+        <service id="InReNa\Content\ObservationItem\ObservationItemDefinition">
+            <tag name="shopware.entity.definition" entity="miniwald_explorer_observation_item"/>
+        </service>
+
+        <!-- GroundMeasurement Entity -->
+        <service id="InReNa\Content\GroundMeasurement\GroundMeasurementDefinition">
+            <tag name="shopware.entity.definition" entity="miniwald_explorer_ground_measurement"/>
+        </service>
+
+        <!-- PlantMeasurement Entity -->
+        <service id="InReNa\Content\PlantMeasurement\PlantMeasurementDefinition">
+            <tag name="shopware.entity.definition" entity="miniwald_explorer_plant_measurement"/>
+        </service>
+
+        <!-- Photo Entity -->
+        <service id="InReNa\Content\Photo\PhotoDefinition">
+            <tag name="shopware.entity.definition" entity="miniwald_explorer_photo"/>
+        </service>
+
+        <!-- ObservationSheet Entity -->
+        <service id="InReNa\Content\ObservationSheet\ObservationSheetDefinition">
+            <tag name="shopware.entity.definition" entity="miniwald_explorer_observation_sheet"/>
+        </service>
+
+        <!-- Subscribers -->
+        <service id="InReNa\Subscriber\StorefrontSubscriber">
+            <argument type="service" id="router"/>
+            <argument type="service" id="translator"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
+        <service id="InReNa\Subscriber\RegistrationSubscriber">
+            <argument type="service" id="salutation.repository"/>
+            <argument type="service" id="country.repository"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
+        <service id="InReNa\Subscriber\RegistrationValidationSubscriber">
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
+        <service id="InReNa\Subscriber\ObservationPhotoSubscriber">
+            <argument type="service" id="InReNa\Service\ImageCompressionService"/>
+            <argument type="service" id="InReNa\Service\MediaFolderService"/>
+            <argument type="service" id="logger"/>
+            <argument type="service" id="media.repository"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
+        <!-- Media Folder Services -->
+        <service id="InReNa\Service\MediaFolderService">
+            <argument type="service" id="media_folder.repository"/>
+        </service>
+
+        <service id="InReNa\Service\ImageCompressionService">
+            <argument type="service" id="media.repository"/>
+            <argument>%kernel.project_dir%</argument>
+            <argument type="service" id="logger"/>
+        </service>
+
+        <!-- Export Services -->
+        <service id="InReNa\Service\PhotoAuthTokenService">
+            <argument>%kernel.secret%</argument>
+        </service>
+
+        <service id="InReNa\Service\ObservationExportService">
+            <argument type="service" id="miniwald_explorer_observation.repository"/>
+        </service>
+
+        <service id="InReNa\Service\CsvExportService">
+            <argument type="service" id="InReNa\Service\ObservationExportService"/>
+            <argument type="service" id="InReNa\Service\PhotoAuthTokenService"/>
+        </service>
+
+        <service id="InReNa\Service\JsonExportService">
+            <argument type="service" id="InReNa\Service\ObservationExportService"/>
+            <argument type="service" id="InReNa\Service\PhotoAuthTokenService"/>
+        </service>
+
+        <!-- Export Controllers -->
+        <service id="InReNa\Controller\Api\ExportController" public="true">
+            <argument type="service" id="InReNa\Service\CsvExportService"/>
+            <argument type="service" id="InReNa\Service\JsonExportService"/>
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+        </service>
+
+        <service id="InReNa\Controller\Api\PhotoController" public="true">
+            <argument type="service" id="InReNa\Service\PhotoAuthTokenService"/>
+            <argument type="service" id="miniwald_explorer_photo.repository"/>
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+        </service>
+
+        <!-- PDF Download Controller (public storefront endpoint) -->
+        <service id="InReNa\Controller\Api\PdfController" public="true">
+            <argument type="service" id="miniwald_explorer_observation_sheet.repository"/>
+            <argument type="service" id="miniwald_explorer_species_category.repository"/>
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+        </service>
+
+        <!-- Miniwald Geo Service (Haversine distance calculation) -->
+        <service id="InReNa\Service\MiniwaldGeoService">
+            <argument type="service" id="miniwald_explorer_miniwald.repository"/>
+        </service>
+
+        <!-- Miniwald Geo Detection Controller (public storefront endpoint) -->
+        <service id="InReNa\Controller\Api\MiniwaldGeoController" public="true">
+            <argument type="service" id="InReNa\Service\MiniwaldGeoService"/>
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+        </service>
+
+        <!-- Download page: /download — lists uploaded observation sheet PDFs -->
+        <service id="InReNa\Controller\Storefront\DownloadController" public="true">
+            <argument type="service" id="miniwald_explorer_observation_sheet.repository"/>
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+        </service>
+
+        <!-- Content pages: Impressum, Datenschutz, FAQ, Kontakt (GET /impressum etc.), Overview -->
+        <service id="InReNa\Controller\Storefront\ContentController" public="true">
+            <argument type="service" id="Shopware\Storefront\Page\GenericPageLoader"/>
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+        </service>
+
+        <!-- Unified observation query service -->
+        <service id="InReNa\Service\Observation\ObservationQueryService">
+            <argument type="service" id="miniwald_explorer_observation.repository"/>
+        </service>
+
+        <!-- Collection pages: /collection, /collection/observations, /collection/mini-forests, /collection/species, /collection/plants -->
+        <service id="InReNa\Controller\Storefront\CollectionController" public="true">
+            <argument type="service" id="InReNa\Service\Observation\ObservationQueryService"/>
+            <argument type="service" id="miniwald_explorer_miniwald.repository"/>
+            <argument type="service" id="miniwald_explorer_species_category.repository"/>
+            <argument type="service" id="miniwald_explorer_species.repository"/>
+            <argument type="service" id="miniwald_explorer_plant.repository"/>
+            <argument type="service" id="miniwald_explorer_observation_item.repository"/>
+            <argument type="service" id="InReNa\Service\CsvExportService"/>
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+        </service>
+
+        <!-- Profile page (GET /profile) + change password (POST /profile/password) + delete account (POST /profile/delete) -->
+        <service id="InReNa\Controller\Storefront\ProfileController" public="true">
+            <argument type="service" id="customer.repository"/>
+            <argument type="service" id="miniwald_explorer_observation.repository"/>
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+        </service>
+
+        <!-- Observation page (GET /observation) + save endpoint (POST /observation/save) + photo upload (POST /observation/upload-photo) -->
+        <service id="InReNa\Controller\Storefront\ObservationController" public="true">
+            <argument type="service" id="miniwald_explorer_species_category.repository"/>
+            <argument type="service" id="miniwald_explorer_species.repository"/>
+            <argument type="service" id="miniwald_explorer_subspecies.repository"/>
+            <argument type="service" id="miniwald_explorer_miniwald.repository"/>
+            <argument type="service" id="miniwald_explorer_observation.repository"/>
+            <argument type="service" id="miniwald_explorer_observation_item.repository"/>
+            <argument type="service" id="miniwald_explorer_ground_measurement.repository"/>
+            <argument type="service" id="miniwald_explorer_plant.repository"/>
+            <argument type="service" id="miniwald_explorer_plant_measurement.repository"/>
+            <argument type="service" id="miniwald_explorer_photo.repository"/>
+            <argument type="service" id="Shopware\Core\Content\Media\File\FileSaver"/>
+            <argument type="service" id="InReNa\Service\MediaFolderService"/>
+            <argument type="service" id="media.repository"/>
+            <argument type="service" id="customer.repository"/>
+            <argument type="service" id="event_dispatcher"/>
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+        </service>
+    </services>
+</container>

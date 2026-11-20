@@ -1,0 +1,162 @@
+{% block miniwald_observation_ground_card %}
+<sw-card :title="$tc('miniwald-explorer.observation.detail.ground.cardTitle')">
+    {% block miniwald_observation_ground_add %}
+    <div
+        v-if="canAddMore"
+        class="miniwald-observation-ground-card__add-section"
+    >
+        <sw-button
+            v-for="locationType in availableLocationTypes"
+            :key="locationType.value"
+            variant="primary"
+            size="small"
+            class="miniwald-observation-ground-card__add-btn"
+            @click="onAddMeasurement(locationType.value)"
+        >
+            <sw-icon
+                name="regular-plus"
+                size="12"
+            ></sw-icon>
+            {{ locationType.label }}
+        </sw-button>
+    </div>
+    {% endblock %}
+
+    {% block miniwald_observation_ground_list %}
+    <template v-if="measurements.length === 0">
+        <p class="miniwald-observation-ground-card__empty-state">
+            {{ $tc('miniwald-explorer.observation.detail.ground.emptyState') }}
+        </p>
+    </template>
+
+    <template
+        v-for="(measurement, index) in measurements"
+        :key="measurement.id"
+    >
+        {% block miniwald_observation_ground_item %}
+        <sw-card-section divider="bottom">
+            <sw-container
+                columns="1fr auto"
+                gap="0 16px"
+                align="flex-start"
+            >
+                <div>
+                    {% block miniwald_observation_ground_location_type %}
+                    <p class="miniwald-observation-ground-card__location-label">
+                        <strong>{{ getLocationTypeLabel(measurement.locationType) }}</strong>
+                    </p>
+                    {% endblock %}
+                    <sw-container
+                        columns="1fr 1fr"
+                        gap="0 30px"
+                    >
+                        {% block miniwald_observation_ground_air_temperature %}
+                        <sw-number-field
+                            v-model:value="measurement.airTemperature"
+                            :label="$tc('miniwald-explorer.observation.detail.ground.labelAirTemperature')"
+                            :placeholder="$tc('miniwald-explorer.observation.detail.ground.placeholderAirTemperature')"
+                            numberType="float"
+                            :step="0.1"
+                            :digits="1"
+                        >
+                                        </sw-number-field>
+                        {% endblock %}
+
+                        {% block miniwald_observation_ground_ground_temperature %}
+                        <sw-number-field
+                            v-model:value="measurement.groundTemperature"
+                            :label="$tc('miniwald-explorer.observation.detail.ground.labelGroundTemperature')"
+                            :placeholder="$tc('miniwald-explorer.observation.detail.ground.placeholderGroundTemperature')"
+                            numberType="float"
+                            :step="0.1"
+                            :digits="1"
+                        >
+                                        </sw-number-field>
+                        {% endblock %}
+                    </sw-container>
+                    <sw-container
+                        columns="1fr 1fr"
+                        gap="0 30px"
+                    >
+                        {% block miniwald_observation_ground_humidity %}
+                        <sw-number-field
+                            v-model:value="measurement.humidity"
+                            :label="$tc('miniwald-explorer.observation.detail.ground.labelHumidity')"
+                            :placeholder="$tc('miniwald-explorer.observation.detail.ground.placeholderHumidity')"
+                            numberType="int"
+                            :min="0"
+                            :max="100"
+                        >
+                                        </sw-number-field>
+                        {% endblock %}
+
+                        {% block miniwald_observation_ground_moisture %}
+                        <sw-number-field
+                            v-model:value="measurement.moisture"
+                            :label="$tc('miniwald-explorer.observation.detail.ground.labelMoisture')"
+                            :placeholder="$tc('miniwald-explorer.observation.detail.ground.placeholderMoisture')"
+                            numberType="int"
+                            :min="0"
+                            :max="100"
+                        >
+                                        </sw-number-field>
+                        {% endblock %}
+                    </sw-container>
+                    <sw-container
+                        columns="1fr 1fr"
+                        gap="0 30px"
+                    >
+                        {% block miniwald_observation_ground_ph_value %}
+                        <sw-number-field
+                            v-model:value="measurement.phValue"
+                            :label="$tc('miniwald-explorer.observation.detail.ground.labelPhValue')"
+                            :placeholder="$tc('miniwald-explorer.observation.detail.ground.placeholderPhValue')"
+                            numberType="float"
+                            :step="0.1"
+                            :digits="1"
+                            :min="1"
+                            :max="14"
+                        >
+                                        </sw-number-field>
+                        {% endblock %}
+
+                        {% block miniwald_observation_ground_light_conditions %}
+                        <sw-single-select
+                            v-model:value="measurement.lightConditions"
+                            :label="$tc('miniwald-explorer.observation.detail.ground.labelLightConditions')"
+                            :placeholder="$tc('miniwald-explorer.observation.detail.ground.placeholderLightConditions')"
+                            :options="lightConditionsOptions"
+                        >
+                                        </sw-single-select>
+                        {% endblock %}
+                    </sw-container>
+                    {% block miniwald_observation_ground_remarks %}
+                    <mt-textarea
+                        :model-value="measurement.remarks"
+                        :label="$tc('miniwald-explorer.observation.detail.ground.labelRemarks')"
+                        :placeholder="$tc('miniwald-explorer.observation.detail.ground.placeholderRemarks')"
+                        @update:model-value="measurement.remarks = $event"
+                    >
+                                    </mt-textarea>
+                    {% endblock %}
+                </div>
+                {% block miniwald_observation_ground_remove %}
+                <sw-button
+                    variant="danger"
+                    size="small"
+                    :title="$tc('miniwald-explorer.observation.detail.ground.buttonRemoveItem')"
+                    @click="onRemoveMeasurement(measurement)"
+                >
+                    <sw-icon
+                        name="regular-times"
+                        small
+                    ></sw-icon>
+                </sw-button>
+                {% endblock %}
+            </sw-container>
+        </sw-card-section>
+        {% endblock %}
+    </template>
+    {% endblock %}
+</sw-card>
+{% endblock %}

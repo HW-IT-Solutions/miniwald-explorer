@@ -1,0 +1,122 @@
+{% block miniwald_observation_detail %}
+<sw-page class="miniwald-observation-detail">
+    {% block miniwald_observation_detail_header %}
+    <template #smart-bar-header>
+        <h2 v-if="observation && !isCreateMode">
+            {{ $tc('miniwald-explorer.observation.detail.textHeadline') }}
+            <sw-label
+                :variant="observationTypeVariant"
+                size="default"
+                appearance="pill"
+                class="miniwald-observation-detail__type-badge"
+            >
+                        {{ observationTypeLabel }}
+                    </sw-label>
+        </h2>
+        <h2 v-else>
+            {{ $tc('miniwald-explorer.observation.detail.textHeadlineNew') }}
+        </h2>
+    </template>
+    {% endblock %}
+
+    {% block miniwald_observation_detail_actions %}
+    <template #smart-bar-actions>
+        {% block miniwald_observation_detail_actions_abort %}
+        <sw-button
+            v-tooltip="tooltipCancel"
+            @click="onClickCancel"
+        >
+            {{ $tc('miniwald-explorer.observation.detail.buttonCancel') }}
+        </sw-button>
+        {% endblock %}
+
+        {% block miniwald_observation_detail_actions_delete %}
+        <sw-button
+            v-if="observation && observation.id && !isCreateMode"
+            variant="danger"
+            @click="onClickDelete"
+        >
+            {{ $tc('miniwald-explorer.observation.detail.buttonDelete') }}
+        </sw-button>
+        {% endblock %}
+
+        {% block miniwald_observation_detail_actions_save %}
+        <sw-button-process
+            v-tooltip="tooltipSave"
+            class="miniwald-observation-detail__save-action"
+            :is-loading="isLoading"
+            :process-success="processSuccess"
+            variant="primary"
+            @process-finish="saveFinish"
+            @click="onClickSave"
+        >
+            {{ $tc('miniwald-explorer.observation.detail.buttonSave') }}
+        </sw-button-process>
+        {% endblock %}
+    </template>
+    {% endblock %}
+
+    {% block miniwald_observation_detail_content %}
+    <template #content>
+        <sw-card-view v-if="observation">
+            {% block miniwald_observation_detail_metadata_card %}
+            <miniwald-observation-metadata-card :observation="observation">
+                        </miniwald-observation-metadata-card>
+            {% endblock %}
+
+            {% block miniwald_observation_detail_animal_card %}
+            <miniwald-observation-animal-card
+                v-if="observationType === 'animals'"
+                :observation="observation"
+            >
+                        </miniwald-observation-animal-card>
+            {% endblock %}
+
+            {% block miniwald_observation_detail_plant_card %}
+            <miniwald-observation-plant-card
+                v-if="observationType === 'plants'"
+                :observation="observation"
+            >
+                        </miniwald-observation-plant-card>
+            {% endblock %}
+
+            {% block miniwald_observation_detail_ground_card %}
+            <miniwald-observation-ground-card
+                v-if="observationType === 'ground'"
+                :observation="observation"
+            >
+                        </miniwald-observation-ground-card>
+            {% endblock %}
+        </sw-card-view>
+        <sw-loader v-else></sw-loader>
+        {% block miniwald_observation_detail_delete_modal %}
+        <sw-modal
+            v-if="showDeleteModal"
+            @modal-close="onCloseDeleteModal"
+            :title="$tc('global.default.warning')"
+            variant="small"
+        >
+            <p>
+                {{ $tc('miniwald-explorer.observation.detail.textDeleteConfirm') }}
+            </p>
+            <template #modal-footer>
+                <sw-button
+                    @click="onCloseDeleteModal"
+                    size="small"
+                >
+                    {{ $tc('global.default.cancel') }}
+                </sw-button>
+                <sw-button
+                    @click="onConfirmDelete"
+                    variant="danger"
+                    size="small"
+                >
+                    {{ $tc('global.default.delete') }}
+                </sw-button>
+            </template>
+        </sw-modal>
+        {% endblock %}
+    </template>
+    {% endblock %}
+</sw-page>
+{% endblock %}

@@ -1,0 +1,126 @@
+{#
+  Plant observation panel — shown inside step 3 for "plants" observation type.
+  Two sub-steps controlled by PlantHandler:
+    Sub-step 0: Observation form (miniwald, date, weather, wind) + "Weiter" button
+    Sub-step 1: Plant grid + "add custom plant" + save actions bar
+
+  Data attributes used by PlantHandler:
+    [data-plant-panel]           — root element, hidden by default
+    [data-plant-sub="0"]         — form sub-step
+    [data-plant-sub="1"]         — grid sub-step (hidden by default)
+    [data-plant-miniwald-select] — miniwald dropdown (triggers plant fetch + enables "Weiter")
+    [data-plant-date-input]      — date input
+    [data-plant-time-input]      — time input
+    [data-plant-weather-select]  — weather dropdown
+    [data-plant-wind-select]     — wind dropdown
+    [data-plant-next]            — "Weiter" button (disabled until miniwald selected)
+    [data-plant-grid]            — container where plant cards are injected
+    [data-add-custom-plant]      — button to append a blank custom card
+    [data-plant-save-btn]        — save button
+#}
+
+<div class="miniwald-observation-step__content miniwald-plant-panel" data-plant-panel hidden>
+
+    {# ══════════════════════════════════════════════════════════════════════
+       Sub-step 0: Observation form
+    ══════════════════════════════════════════════════════════════════════ #}
+    <div class="miniwald-plant__sub-step" data-plant-sub="0">
+
+        <h1 class="miniwald-observation-title">{{ 'miniwaldExplorer.observation.plantPanelTitle'|trans }}</h1>
+
+        <div class="miniwald-observation-form">
+
+            <label class="miniwald-observation-field">
+                <span>{{ 'miniwaldExplorer.observation.fieldLocation'|trans }}</span>
+                <select data-plant-miniwald-select>
+                    <option value="">{{ 'miniwaldExplorer.observation.fieldLocationPlaceholder'|trans }}</option>
+                    {% for mw in miniwaelder %}
+                        <option value="{{ mw.id }}"
+                                data-lat="{{ mw.latitude }}"
+                                data-lng="{{ mw.longitude }}">{{ mw.name }}</option>
+                    {% endfor %}
+                    <option value="other">{{ 'miniwaldExplorer.observation.fieldLocationOther'|trans }}</option>
+                </select>
+            </label>
+
+            <div class="miniwald-observation-field-row">
+                <label class="miniwald-observation-field">
+                    <span>{{ 'miniwaldExplorer.observation.fieldDate'|trans }}</span>
+                    <input type="date" data-plant-date-input>
+                </label>
+                <label class="miniwald-observation-field">
+                    <span>{{ 'miniwaldExplorer.observation.fieldTime'|trans }}</span>
+                    <input type="time" data-plant-time-input>
+                </label>
+            </div>
+
+            <div class="miniwald-observation-field-row">
+                <label class="miniwald-observation-field">
+                    <span>{{ 'miniwaldExplorer.observation.fieldWeather'|trans }}</span>
+                    <select data-plant-weather-select>
+                        <option value="sunny">{{ 'miniwaldExplorer.observation.weatherSunny'|trans }}</option>
+                        <option value="partly_cloudy">{{ 'miniwaldExplorer.observation.weatherPartlyCloudy'|trans }}</option>
+                        <option value="cloudy">{{ 'miniwaldExplorer.observation.weatherCloudy'|trans }}</option>
+                        <option value="rainy">{{ 'miniwaldExplorer.observation.weatherRainy'|trans }}</option>
+                    </select>
+                </label>
+                <label class="miniwald-observation-field">
+                    <span>{{ 'miniwaldExplorer.observation.fieldWind'|trans }}</span>
+                    <select data-plant-wind-select>
+                        <option value="calm">{{ 'miniwaldExplorer.observation.windCalm'|trans }}</option>
+                        <option value="light_wind">{{ 'miniwaldExplorer.observation.windLightWind'|trans }}</option>
+                        <option value="moderate_wind">{{ 'miniwaldExplorer.observation.windModerateWind'|trans }}</option>
+                        <option value="strong_wind">{{ 'miniwaldExplorer.observation.windStrongWind'|trans }}</option>
+                    </select>
+                </label>
+            </div>
+
+        </div>
+
+        {# Actions: back to step 1 + "Weiter" to plant grid #}
+        <div class="miniwald-observation-step__actions">
+            <button class="btn btn-white btn-back" type="button" data-prev-step>
+                {{ source('@MiniwaldExplorer/storefront/icons/arrow.svg', ignore_missing=true)|raw }}
+                {{ 'miniwaldExplorer.observation.back'|trans }}
+            </button>
+            <button class="btn btn-white btn-forward" type="button" data-plant-next disabled>
+                {{ 'miniwaldExplorer.observation.next'|trans }}
+                {{ source('@MiniwaldExplorer/storefront/icons/arrow.svg', ignore_missing=true)|raw }}
+            </button>
+        </div>
+
+    </div>{# end sub-step 0 #}
+
+    {# ══════════════════════════════════════════════════════════════════════
+       Sub-step 1: Plant grid + add custom + save
+    ══════════════════════════════════════════════════════════════════════ #}
+    <div class="miniwald-plant__sub-step" data-plant-sub="1" hidden>
+
+        <p class="miniwald-save-error" data-plant-save-error hidden></p>
+
+        <h1 class="miniwald-observation-title">{{ 'miniwaldExplorer.observation.plantGridTitle'|trans }}</h1>
+
+        {# Plant cards injected here by JS #}
+        <div class="miniwald-plant-grid" data-plant-grid></div>
+
+        {# Add custom plant #}
+        <button class="btn btn-green miniwald-plant-panel__add-custom" type="button" data-add-custom-plant>
+            {{ 'miniwaldExplorer.observation.plantAddCustom'|trans }}
+        </button>
+
+        {# Actions: back to form + save #}
+        <div class="miniwald-observation-step__actions">
+            <button class="btn btn-white btn-back" type="button" data-plant-prev>
+                {{ source('@MiniwaldExplorer/storefront/icons/arrow.svg', ignore_missing=true)|raw }}
+                {{ 'miniwaldExplorer.observation.back'|trans }}
+            </button>
+            <button class="btn btn-white btn-forward save" type="button" data-plant-save-btn>
+                <span class="btn-label">{{ 'miniwaldExplorer.observation.save'|trans }}</span>
+                <span class="btn-spinner" aria-hidden="true"></span>
+                {{ source('@MiniwaldExplorer/storefront/icons/finish.svg', ignore_missing=true)|raw }}
+            </button>
+        </div>
+
+    </div>{# end sub-step 1 #}
+
+</div>

@@ -1,0 +1,374 @@
+{% block miniwald_observation_animal_card %}
+<sw-card
+    :title="$tc('miniwald-explorer.observation.detail.animal.cardTitle') + ' (' + items.length + ')'"
+>
+    {% block miniwald_observation_animal_card_actions %}
+    <template #toolbar>
+        <sw-button
+            size="small"
+            variant="ghost"
+            @click="onAddItem"
+        >
+            {{ $tc('miniwald-explorer.observation.detail.animal.buttonAddItem') }}
+        </sw-button>
+    </template>
+    {% endblock %}
+
+    {% block miniwald_observation_animal_card_category %}
+    <div class="miniwald-observation-animal-card__category">
+        <sw-entity-single-select
+            v-model:value="observation.speciesCategoryId"
+            entity="miniwald_explorer_species_category"
+            :label="$tc('miniwald-explorer.observation.detail.animal.labelSpeciesCategory')"
+            :placeholder="$tc('miniwald-explorer.observation.detail.animal.placeholderSpeciesCategory')"
+            :help-text="$tc('miniwald-explorer.observation.detail.animal.helpTextSpeciesCategory')"
+            label-property="name"
+            :criteria="speciesCategoryCriteria"
+            required
+        >
+                </sw-entity-single-select>
+    </div>
+    {% endblock %}
+
+    {% block miniwald_observation_animal_card_list %}
+    <div
+        v-if="items.length > 0"
+        class="miniwald-observation-animal-card__items"
+    >
+        <div
+            v-for="item in items"
+            :key="item.id"
+            class="miniwald-observation-animal-card__item"
+            :class="{ 'is--duplicate': isDuplicate(item) }"
+        >
+            {% block miniwald_observation_animal_card_item_row %}
+            <div class="miniwald-observation-animal-card__item-row">
+                {% block miniwald_observation_animal_card_item_species %}
+                <div class="miniwald-observation-animal-card__field-species">
+                    <sw-entity-single-select
+                        v-model:value="item.speciesId"
+                        entity="miniwald_explorer_species"
+                        :label="$tc('miniwald-explorer.observation.detail.animal.labelSpecies')"
+                        :placeholder="$tc('miniwald-explorer.observation.detail.animal.placeholderSpecies')"
+                        label-property="name"
+                        :criteria="speciesCriteria"
+                        @update:value="(id, entity) => onSpeciesChange(item, id, entity)"
+                    >
+                                    </sw-entity-single-select>
+                </div>
+                {% endblock %}
+
+                {% block miniwald_observation_animal_card_item_subspecies %}
+                <div class="miniwald-observation-animal-card__field-subspecies">
+                    <sw-entity-single-select
+                        v-model:value="item.subspeciesId"
+                        entity="miniwald_explorer_subspecies"
+                        :label="$tc('miniwald-explorer.observation.detail.animal.labelSubspecies')"
+                        :placeholder="$tc('miniwald-explorer.observation.detail.animal.placeholderSubspecies')"
+                        label-property="name"
+                        :criteria="getSubspeciesCriteria(item.speciesId)"
+                        :disabled="!item.speciesId"
+                        @update:value="onSubspeciesChange(item, $event)"
+                    >
+                                    </sw-entity-single-select>
+                </div>
+                {% endblock %}
+
+                {% block miniwald_observation_animal_card_item_count %}
+                <div class="miniwald-observation-animal-card__field-count">
+                    <sw-number-field
+                        v-model:value="item.count"
+                        :label="$tc('miniwald-explorer.observation.detail.animal.labelCount')"
+                        numberType="int"
+                        :min="1"
+                    >
+                                    </sw-number-field>
+                </div>
+                {% endblock %}
+
+                {% block miniwald_observation_animal_card_item_remarks %}
+                <div class="miniwald-observation-animal-card__field-remarks">
+                    <sw-text-field
+                        v-model:value="item.remarks"
+                        :label="$tc('miniwald-explorer.observation.detail.animal.labelRemarks')"
+                        :placeholder="$tc('miniwald-explorer.observation.detail.animal.placeholderRemarks')"
+                    >
+                                    </sw-text-field>
+                </div>
+                {% endblock %}
+
+                {% block miniwald_observation_animal_card_item_actions %}
+                <div class="miniwald-observation-animal-card__field-actions">
+                    <sw-button
+                        size="small"
+                        variant="ghost"
+                        class="miniwald-observation-animal-card__btn-photos"
+                        @click="onOpenPhotoModal(item)"
+                    >
+                        <sw-icon
+                            name="regular-image"
+                            small
+                        ></sw-icon>
+                        {{ getItemPhotoCount(item) }}
+                    </sw-button>
+                    <sw-button
+                        size="small"
+                        variant="ghost-danger"
+                        class="miniwald-observation-animal-card__btn-delete"
+                        @click="onRemoveItem(item)"
+                    >
+                        <sw-icon
+                            name="regular-trash"
+                            small
+                        ></sw-icon>
+                    </sw-button>
+                </div>
+                {% endblock %}
+            </div>
+            {% endblock %}
+
+            {% block miniwald_observation_animal_card_item_second_row %}
+            <div
+                v-if="!item.speciesId"
+                class="miniwald-observation-animal-card__item-second-row"
+            >
+                {% block miniwald_observation_animal_card_item_custom_species %}
+                <sw-text-field
+                    v-model:value="item.customSpeciesName"
+                    :label="$tc('miniwald-explorer.observation.detail.animal.labelCustomSpecies')"
+                    :placeholder="$tc('miniwald-explorer.observation.detail.animal.placeholderCustomSpecies')"
+                >
+                                </sw-text-field>
+                {% endblock %}
+            </div>
+            {% endblock %}
+
+            {% block miniwald_observation_animal_card_item_duplicate_hint %}
+            <p
+                v-if="isDuplicate(item)"
+                class="miniwald-observation-animal-card__duplicate-hint"
+            >
+                {{ $tc('miniwald-explorer.observation.detail.animal.duplicateWarning') }}
+            </p>
+            {% endblock %}
+        </div>
+    </div>
+    {% endblock %}
+
+    {% block miniwald_observation_animal_card_empty %}
+    <sw-empty-state
+        v-else
+        :absolute="false"
+        :title="$tc('miniwald-explorer.observation.detail.animal.emptyState')"
+    >
+            </sw-empty-state>
+    {% endblock %}
+
+    {% block miniwald_observation_animal_card_photo_modal %}
+    <sw-modal
+        v-if="showPhotoModal"
+        @modal-close="onClosePhotoModal"
+        :title="$tc('miniwald-explorer.observation.detail.animal.photoModalTitle')"
+        variant="large"
+    >
+        {% block miniwald_observation_animal_card_photo_modal_grid %}
+        <div
+            v-if="photoModalPhotos.length > 0"
+            class="miniwald-observation-animal-card__photo-grid"
+        >
+            <div
+                v-for="(photo, index) in photoModalPhotos"
+                :key="photo.id"
+                class="miniwald-observation-animal-card__photo-item"
+                :class="{
+                                'is--dragging': draggedPhotoIndex === index,
+                                'is--drag-over': dragOverPhotoIndex === index && draggedPhotoIndex !== index
+                            }"
+                draggable="true"
+                @dragstart="onPhotoDragStart(index, $event)"
+                @dragover.prevent="onPhotoDragOver(index, $event)"
+                @dragenter.prevent
+                @drop="onPhotoDrop(index, $event)"
+                @dragend="onPhotoDragEnd"
+            >
+                {# Clickable image area #}
+                <div
+                    class="miniwald-observation-animal-card__photo-clickable"
+                    @click="onOpenLightbox(photo, index)"
+                >
+                    <sw-media-preview-v2
+                        v-if="photo.media"
+                        :source="photo.media"
+                        :show-controls="false"
+                        :use-thumbnails="true"
+                    >
+                                </sw-media-preview-v2>
+                    <div
+                        v-else
+                        class="miniwald-observation-animal-card__photo-placeholder"
+                    >
+                        <sw-icon
+                            name="regular-image"
+                            size="32"
+                        ></sw-icon>
+                    </div>
+                </div>
+                {# Delete badge in upper-right corner #}
+                <button
+                    class="miniwald-observation-animal-card__photo-delete-badge"
+                    @click.stop="onRequestRemovePhoto(photo)"
+                    :title="$tc('miniwald-explorer.observation.detail.animal.confirmDeletePhotoTitle')"
+                >
+                    <sw-icon
+                        name="regular-trash"
+                        color="#fff"
+                        size="18"
+                    ></sw-icon>
+                </button>
+                {# Filename below thumbnail #}
+                <span
+                    class="miniwald-observation-animal-card__photo-filename"
+                    :title="photo.media ? photo.media.fileName + '.' + photo.media.fileExtension : ''"
+                >
+                    {{ photo.media ? photo.media.fileName + '.' + photo.media.fileExtension : '' }}
+                </span>
+            </div>
+        </div>
+
+        <p
+            v-else
+            class="miniwald-observation-animal-card__photo-empty"
+        >
+            {{ $tc('miniwald-explorer.observation.detail.animal.noPhotos') }}
+        </p>
+        {% endblock %}
+
+        {% block miniwald_observation_animal_card_photo_modal_upload %}
+        <div class="miniwald-observation-animal-card__photo-upload">
+            <sw-upload-listener
+                :upload-tag="photoModalUploadTag"
+                auto-upload
+                @media-upload-finish="onMediaUploadFinish"
+            >
+                        </sw-upload-listener>
+            <sw-media-upload-v2
+                variant="compact"
+                :upload-tag="photoModalUploadTag"
+                :allow-multi-select="true"
+                :label="$tc('miniwald-explorer.observation.detail.animal.labelUploadPhoto')"
+                :target-folder-id="observationMediaFolderId"
+            >
+                        </sw-media-upload-v2>
+        </div>
+        {% endblock %}
+
+        {% block miniwald_observation_animal_card_photo_lightbox %}
+        <sw-modal
+            v-if="lightboxPhoto"
+            @modal-close="onCloseLightbox"
+            :title="lightboxPhoto.media ? lightboxPhoto.media.fileName + '.' + lightboxPhoto.media.fileExtension : $tc('miniwald-explorer.observation.detail.animal.photoModalTitle')"
+            variant="full"
+            class="miniwald-observation-animal-card__lightbox-modal"
+        >
+            <div
+                class="miniwald-observation-animal-card__lightbox"
+                @keydown="onLightboxKeydown"
+                tabindex="0"
+                ref="lightboxContainer"
+            >
+                {# Previous button #}
+                <button
+                    v-if="photoModalPhotos.length > 1"
+                    class="miniwald-observation-animal-card__lightbox-nav miniwald-observation-animal-card__lightbox-nav--prev"
+                    @click="onLightboxPrev"
+                >
+                    <sw-icon
+                        name="regular-chevron-left-s"
+                        size="30"
+                    ></sw-icon>
+                </button>
+                {# Full-size image #}
+                <img
+                    v-if="lightboxMediaUrl"
+                    :src="lightboxMediaUrl"
+                    class="miniwald-observation-animal-card__lightbox-image"
+                    :alt="lightboxPhoto.media ? lightboxPhoto.media.fileName : ''"
+                />
+                <div
+                    v-else
+                    class="miniwald-observation-animal-card__lightbox-placeholder"
+                >
+                    <sw-icon
+                        name="regular-image"
+                        size="64"
+                    ></sw-icon>
+                </div>
+                {# Next button #}
+                <button
+                    v-if="photoModalPhotos.length > 1"
+                    class="miniwald-observation-animal-card__lightbox-nav miniwald-observation-animal-card__lightbox-nav--next"
+                    @click="onLightboxNext"
+                >
+                    <sw-icon
+                        name="regular-chevron-right-s"
+                        size="30"
+                    ></sw-icon>
+                </button>
+            </div>
+            {# Counter #}
+            <div class="miniwald-observation-animal-card__lightbox-counter">
+                            {{ lightboxIndex + 1 }} / {{ photoModalPhotos.length }}
+                        </div>
+            <template #modal-footer>
+                <sw-button
+                    @click="onCloseLightbox"
+                    variant="primary"
+                    size="small"
+                >
+                    {{ $tc('global.default.close') }}
+                </sw-button>
+            </template>
+        </sw-modal>
+        {% endblock %}
+
+        {% block miniwald_observation_animal_card_photo_delete_confirm %}
+        <sw-modal
+            v-if="photoToDelete"
+            @modal-close="onCancelRemovePhoto"
+            :title="$tc('miniwald-explorer.observation.detail.animal.confirmDeletePhotoTitle')"
+            variant="small"
+        >
+            <p>
+                {{ $tc('miniwald-explorer.observation.detail.animal.confirmDeletePhotoText') }}
+            </p>
+            <template #modal-footer>
+                <sw-button
+                    size="small"
+                    @click="onCancelRemovePhoto"
+                >
+                    {{ $tc('global.default.cancel') }}
+                </sw-button>
+                <sw-button
+                    size="small"
+                    variant="danger"
+                    @click="onConfirmRemovePhoto"
+                >
+                    {{ $tc('global.default.delete') }}
+                </sw-button>
+            </template>
+        </sw-modal>
+        {% endblock %}
+
+        <template #modal-footer>
+            <sw-button
+                @click="onClosePhotoModal"
+                variant="primary"
+                size="small"
+            >
+                {{ $tc('global.default.close') }}
+            </sw-button>
+        </template>
+    </sw-modal>
+    {% endblock %}
+</sw-card>
+{% endblock %}

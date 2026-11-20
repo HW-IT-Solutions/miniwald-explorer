@@ -1,0 +1,66 @@
+{% sw_extends '@Storefront/storefront/base.html.twig' %}
+
+{% block base_body_classes %}{{ parent() }} collection-view{% endblock %}
+
+{% block base_content %}
+<div class="collection-page collection-detail collection-detail--plants">
+
+    {% if selectedMiniwald is null %}
+
+        <div hidden data-page-back-href="{{ path('frontend.miniwald.collection') }}" data-page-back-text="{{ 'miniwaldExplorer.collection.backLink'|trans }}"></div>
+
+        {# ── Step 1: no miniwald selected → show selection grid ── #}
+        <h1 class="collection-detail__title">{{ 'miniwaldExplorer.collection.plants'|trans }}</h1>
+        <p class="collection-detail__subtitle">{{ 'miniwaldExplorer.collection.selectMiniForest'|trans }}</p>
+
+        {% include '@MiniwaldExplorer/storefront/page/collection/_col-mini-forests.html.twig' with {
+            miniwaelder:    miniwaelder,
+            linkRoute:      'frontend.miniwald.collection.plants',
+            linkQueryParam: 'miniwald'
+        } only %}
+
+    {% else %}
+
+        {# ── Step 2: miniwald selected → show its plants ── #}
+        <div hidden data-page-back-href="{{ path('frontend.miniwald.collection.plants') }}" data-page-back-text="{{ 'miniwaldExplorer.collection.plants'|trans }}"></div>
+
+        <h1 class="collection-detail__title">
+            {{ 'miniwaldExplorer.collection.plantsOfMiniwald'|trans({ '%name%': selectedMiniwald.name }) }}
+        </h1>
+
+        <div class="collection-grid collection-grid--plants">
+            {% for plant in plants %}
+                <a href="{{ path('frontend.miniwald.collection.plant.detail', { id: plant.id }) }}"
+                   class="collection-grid__card">
+                    <div class="collection-grid__img-wrap">
+                        {% if plant.image %}
+                            {% sw_thumbnails 'miniwald-image-thumbnails' with {
+                                media: plant.image,
+                                attributes: {
+                                    alt: "",
+                                    title: plant.name,
+                                    class: 'collection-grid__img'
+                                },
+                                sizes: { default: '290px' }
+                            } %}
+                        {% else %}
+                            <img class="collection-grid__img"
+                                 src="{{ asset('bundles/miniwaldexplorer/assets/plant.png') }}"
+                                 width="290px"
+                                 alt="">
+                        {% endif %}
+                    </div>
+                    <span class="collection-grid__label">{{ plant.name }}</span>
+                    {% if plant.scientificName %}
+                        <span class="collection-grid__sublabel"><em>{{ plant.scientificName }}</em></span>
+                    {% endif %}
+                </a>
+            {% else %}
+                <p>{{ 'miniwaldExplorer.collection.noPlants'|trans }}</p>
+            {% endfor %}
+        </div>
+
+    {% endif %}
+
+</div>
+{% endblock %}

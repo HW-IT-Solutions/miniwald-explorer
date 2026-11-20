@@ -1,0 +1,41 @@
+{# Remove default addresses card - replace with observation counts #}
+{% block sw_customer_detail_base_default_addresses_card %}
+<mt-card
+    :title="$tc('miniwald-explorer.customer.labelObservationsCard')"
+    position-identifier="sw-customer-detail-base-observations"
+    class="sw-customer-detail-base__observations"
+    :is-loading="observationCountsLoading"
+>
+    <sw-container
+        columns="repeat(auto-fit, minmax(150px, 1fr))"
+        gap="0px 15px"
+    >
+        <sw-description-list>
+            <dt class="sw-customer-base-info__label">
+                {{ $tc('miniwald-explorer.customer.labelTotalObservations') }}
+            </dt>
+            <dd>{{ observationCounts.total }}</dd>
+        </sw-description-list>
+        <sw-description-list>
+            <dt class="sw-customer-base-info__label">
+                {{ $tc('miniwald-explorer.customer.labelAnimalObservations') }}
+            </dt>
+            <dd>
+                {{ observationCounts.animals }}
+            </dd>
+        </sw-description-list>
+        <sw-description-list>
+            <dt class="sw-customer-base-info__label">
+                {{ $tc('miniwald-explorer.customer.labelPlantObservations') }}
+            </dt>
+            <dd>{{ observationCounts.plants }}</dd>
+        </sw-description-list>
+        <sw-description-list>
+            <dt class="sw-customer-base-info__label">
+                {{ $tc('miniwald-explorer.customer.labelGroundObservations') }}
+            </dt>
+            <dd>{{ observationCounts.ground }}</dd>
+        </sw-description-list>
+    </sw-container>
+</mt-card>
+{% endblock %}

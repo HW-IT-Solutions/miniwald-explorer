@@ -1,0 +1,8 @@
+/composer.lock
+/src/Resources/app/administration/node_modules/
+/src/Resources/app/administration/src/.vite
+/src/Resources/public/administration/
+/vendor
+/src/Resources/app/storefront/dist
+/src/Resources/app/administration/.tmp
+.phpunit.result.cache

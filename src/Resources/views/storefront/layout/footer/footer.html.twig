@@ -1,0 +1,52 @@
+{% sw_extends '@Storefront/storefront/layout/footer/footer.html.twig' %}
+
+{% block layout_footer_inner_container %}
+    <footer class="miniwald-footer">
+        <div class="miniwald-footer__inner">
+
+            {# Left column: logo + description #}
+            <div class="miniwald-footer__left">
+
+                {# Logo — inlined SVG so fill colour is CSS-controllable #}
+                <div class="miniwald-footer__logo-wrap">
+                    {{ source('@MiniwaldExplorer/storefront/icons/logo_footer.svg', ignore_missing=true)|raw }}
+                </div>
+
+                {# Description #}
+                <p class="miniwald-footer__description">
+                    {{ 'miniwaldExplorer.footer.description'|trans }}
+                </p>
+
+            </div>
+
+            {# Right column: legal links + download #}
+            <div class="miniwald-footer__right">
+
+                {# Legal links #}
+                <nav class="miniwald-footer__links" aria-label="Footer Navigation">
+                    <a class="miniwald-footer__link" href="{{ path('miniwald.impressum') }}">
+                        {{ 'miniwaldExplorer.navigation.imprint'|trans }}
+                    </a>
+                    <a class="miniwald-footer__link" href="{{ path('miniwald.kontakt') }}">
+                        {{ 'miniwaldExplorer.navigation.contact'|trans }}
+                    </a>
+                    <a class="miniwald-footer__link" href="{{ path('miniwald.datenschutz') }}">
+                        {{ 'miniwaldExplorer.navigation.privacy'|trans }}
+                    </a>
+                    <a class="miniwald-footer__link" href="{{ path('miniwald.barrierefreiheit') }}">
+                        {{ 'miniwaldExplorer.navigation.accessibility'|trans }}
+                    </a>
+                </nav>
+
+            </div>
+
+        </div>
+
+        <div class="miniwald-footer__inner">
+            <img src="/bundles/miniwaldexplorer/assets/BMUKN_Fz_2025_WebSVG_de.svg"
+                 alt="Logo des Fördergeldgebers: Bundesminiteriums für Umwelt, Klimaschutz, Naturschutz und nukleare sicherheit"
+                 class="miniwald-footer__logo_bmukn-img">
+        </div>
+
+    </footer>
+{% endblock %}

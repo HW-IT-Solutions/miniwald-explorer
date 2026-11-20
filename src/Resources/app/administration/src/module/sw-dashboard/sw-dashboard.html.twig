@@ -1,0 +1,148 @@
+{# Replace the commerce statistics section with observation chart + stats table + recent observations #}
+{% block sw_dashboard_index_content %}
+<template #content>
+    <sw-card-view class="sw-dashboard-index__content">
+        {% block sw_dashboard_index_content_intro_content %}{% endblock %}
+
+        {% block sw_dashboard_index_content_info_grid %}
+        <div class="sw-dashboard-index__card-grid">
+            {% block sw_dashboard_index_content_info_grid_inner %}
+            {% block sw_dashboard_index_content_info__grid_inner_welcome_card %}
+            <mt-card
+                :title="$tc('miniwald-explorer.dashboard.statsTitle')"
+                position-identifier
+                class="miniwald-dashboard__stats-card"
+            >
+                <sw-skeleton
+                    v-if="dashboardIsLoading"
+                    variant="detail"
+                />
+                <table
+                    v-else
+                    class="miniwald-dashboard__stats-table"
+                >
+                    <tbody>
+                        <tr
+                            v-for="row in statsRows"
+                            :key="row.label"
+                        >
+                            <td class="miniwald-dashboard__stats-label">{{ row.label }}</td>
+                            <td class="miniwald-dashboard__stats-value">{{ row.value }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </mt-card>
+            {% endblock %}
+
+            {% block sw_dashboard_index_content_grid_info_inner_feedback_card %}
+            <mt-card
+                :title="$tc('miniwald-explorer.dashboard.todoTitle')"
+                position-identifier
+                class="miniwald-dashboard__stats-card"
+                v-if="pendingCount > 0"
+            >
+                <sw-skeleton
+                    v-if="dashboardIsLoading"
+                    variant="detail"
+                />
+                <template
+                    v-else
+                    class="miniwald-dashboard__stats-table"
+                >
+                    <div class="miniwald-dashboard__pending-inner">
+                        {{ pendingCount }}
+                        {{ $tc('miniwald-explorer.dashboard.pendingLabel') }}
+                    </div>
+                    <sw-button
+                        v-if="pendingCount > 0"
+                        variant="primary"
+                        size="small"
+                        @click="onGoToPendingObservations"
+                    >
+                        {{ $tc('miniwald-explorer.dashboard.pendingAction') }}
+                    </sw-button>
+                </template>
+            </mt-card>
+            {% endblock %}
+            {% endblock %}
+        </div>
+        {% endblock %}
+        {# Observations by type chart — replaces the order count chart #}
+        <sw-chart-card
+            :card-title="$tc('miniwald-explorer.dashboard.chartTitle')"
+            :card-subtitle="$tc('miniwald-explorer.dashboard.chartSubtitle')"
+            :series="observationChartSeries"
+            :options="observationChartOptions"
+            :colors="colors"
+            type="line"
+            sort
+            position-identifier
+            class="miniwald-dashboard__chart-card"
+            @sw-chart-card-range-update="onObservationRangeUpdate"
+        >
+            <template #range-option="{ range }">
+                {{ $tc(`sw-dashboard.monthStats.dateRanges.${range}`) }}
+            </template>
+        </sw-chart-card>
+        {# Recent observations table — replaces the turnover chart #}
+        <mt-card
+            :title="$tc('miniwald-explorer.dashboard.recentTitle')"
+            position-identifier
+            class="miniwald-dashboard__recent-card"
+        >
+            <sw-skeleton
+                v-if="dashboardIsLoading"
+                variant="detail"
+            />
+            <template v-else-if="recentObservations && recentObservations.length > 0">
+                <sw-data-grid
+                    :data-source="recentObservations"
+                    :columns="[
+                        { property: 'observedAt', label: $tc('miniwald-explorer.dashboard.recentColDate'), width: '130px' },
+                        { property: 'type', label: $tc('miniwald-explorer.dashboard.recentColType'), width: '110px', sortable: false },
+                        { property: 'observer', label: $tc('miniwald-explorer.dashboard.recentColObserver'), sortable: false },
+                        { property: 'miniwald.name', label: $tc('miniwald-explorer.dashboard.recentColLocation'), sortable: false },
+                        { property: 'status', label: $tc('miniwald-explorer.dashboard.recentColStatus'), width: '120px', align: 'center', sortable: false },
+                    ]"
+                    :show-selection="false"
+                    :show-actions="true"
+                    :allow-inline-edit="false"
+                    identifier="miniwald-dashboard-recent"
+                >
+                    <template #column-observedAt="{ item }">
+                        {{ formatDate(item.observedAt) }}
+                    </template>
+
+                    <template #column-type="{ item }">
+                        {{ getObservationTypeLabel(item) }}
+                    </template>
+
+                    <template #column-observer="{ item }">{{ getCustomerName(item) }}</template>
+
+                    <template #column-status="{ item }">
+                        <sw-label
+                            :variant="getStatusVariant(item.status)"
+                            appearance="pill"
+                            size="small"
+                        >
+                            {{ getStatusLabel(item.status) }}
+                        </sw-label>
+                    </template>
+
+                    <template #actions="{ item }">
+                        <sw-context-menu-item @click="onOpenObservation(item.id)">
+                            {{ $tc('miniwald-explorer.dashboard.recentActionOpen') }}
+                        </sw-context-menu-item>
+                    </template>
+                </sw-data-grid>
+            </template>
+
+            <template v-else>
+                <p class="miniwald-dashboard__empty">
+                    {{ $tc('miniwald-explorer.dashboard.recentEmpty') }}
+                </p>
+            </template>
+        </mt-card>
+    </sw-card-view>
+</template>
+{% endblock %}

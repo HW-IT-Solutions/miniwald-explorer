@@ -1,0 +1,56 @@
+{# ── Plants instruction modal ── #}
+<div class="miniwald-observation-modal miniwald-observation-modal--instruction" data-plants-instruction-modal hidden>
+    <div class="miniwald-instruction-modal__content">
+        <div class="miniwald-instruction-modal__body">
+            <h1 class="miniwald-observation-title">{{ 'miniwaldExplorer.observation.plantsInstructionTitle'|trans }}</h1>
+            <p class="miniwald-observation-text">
+                {{ 'miniwaldExplorer.observation.step2Text1Intro'|trans({
+                    '%boldStart%': '<strong>',
+                    '%boldEnd%': '</strong>',
+                    '%participateStart%': '<a class="link" href="/mitmachen">',
+                    '%participateEnd%': '</a>',
+                    '%mailStart%': '<a class="mail" ',
+                    '%mailEnd%': '</a>'
+                })|raw }}
+            </p>
+            <h2 class="miniwald-observation-sub-title">{{ 'miniwaldExplorer.observation.plantsInstructionEquipmentTitle'|trans }}</h2>
+            <ul class="miniwald-observation-text">
+                <li>{{ 'miniwaldExplorer.observation.plantsInstructionEquipment1'|trans }}</li>
+                <li>{{ 'miniwaldExplorer.observation.plantsInstructionEquipment2'|trans }}</li>
+            </ul>
+            <h2 class="miniwald-observation-sub-title">{{ 'miniwaldExplorer.observation.step2InstructionTitle'|trans }}</h2>
+            <ol class="miniwald-observation-text">
+                <li>
+                    {{ 'miniwaldExplorer.observation.plantsInstructionStep1Title'|trans }}
+                    <ul>
+                        <li>{{ 'miniwaldExplorer.observation.plantsInstructionStep1Point1'|trans }}</li>
+                        <li>{{ 'miniwaldExplorer.observation.plantsInstructionStep1Point2'|trans }}</li>
+                        <li>{{ 'miniwaldExplorer.observation.plantsInstructionStep1Point3'|trans }}</li>
+                        <li>{{ 'miniwaldExplorer.observation.plantsInstructionStep1Point4'|trans }}</li>
+                        <li>{{ 'miniwaldExplorer.observation.plantsInstructionStep1Point5'|trans }}</li>
+                    </ul>
+                </li>
+                <li>
+                    {{ 'miniwaldExplorer.observation.plantsInstructionStep2Title'|trans }}
+                    <ul>
+                        <li>{{ 'miniwaldExplorer.observation.plantsInstructionStep2Point1'|trans }}</li>
+                        <li>{{ 'miniwaldExplorer.observation.plantsInstructionStep2Point2'|trans }}</li>
+                    </ul>
+                </li>
+            </ol>
+            <div class="miniwald-observation-instruction-tip-box">
+                <h2 class="miniwald-observation-sub-title">{{ 'miniwaldExplorer.observation.plantsInstructionTipTitle'|trans }}</h2>
+                <p class="miniwald-observation-text">{{ 'miniwaldExplorer.observation.plantsInstructionTipText'|trans }}</p>
+            </div>
+            {% if isLoggedIn %}
+            <div class="hide-instructions__container">
+                <input type="checkbox" id="hide-instructions__checkbox-plants" class="hide-instructions__checkbox">
+                <label class="hide-instructions__label" for="hide-instructions__checkbox-plants">{{ 'miniwaldExplorer.observation.step2HideInfoCheck'|trans }}</label>
+            </div>
+            {% endif %}
+        </div>
+        <button class="btn btn-white miniwald-instruction-modal__close" type="button" data-close-plants-instruction-modal>
+            {{ 'miniwaldExplorer.observation.plantsInstructionClose'|trans }}
+        </button>
+    </div>
+</div>

@@ -1,0 +1,151 @@
+{# Partial: observation row list.
+   Variables:
+     observations    - ObservationView[] (flat, one row per animal item or plant measurement)
+     baseRoute       - optional route name for sort/pagination links (default: frontend.miniwald.collection.observations)
+     baseRouteParams - optional fixed route params merged with filter params (default: {})
+     allObsUrl       - optional URL for the "all observations" link (default: observations index)
+     showAllLink     - optional bool, default true
+     startButton     - optional bool, default false
+     page            - optional int, default 0
+     totalPages      - optional int, default 0
+#}
+{% set _route     = baseRoute       ?? 'frontend.miniwald.collection.observations' %}
+{% set _routeBase = baseRouteParams ?? {} %}
+<div class="collection-obs-list miniwald-card miniwald-card-grey">
+    {% if filters is defined or totalCount is defined %}
+        <div class="collection-observations-page__list-header">
+            <span class="collection-observations-page__count">
+                {% if totalCount is defined %}
+                    {{ 'miniwaldExplorer.collection.observationCount'|trans({ '%count%': totalCount }) }}
+                {% endif %}
+            </span>
+            {% if filters is defined %}
+                <span class="collection-observations-page__sort">
+                    {{ 'miniwaldExplorer.collection.sortBy'|trans }}
+                    <a href="{{ path(_route, _routeBase|merge(filters|merge({ order: filters.order == 'asc' ? 'desc' : 'asc' }))) }}"
+                       class="collection-observations-page__sort-link">
+                        {{ 'miniwaldExplorer.collection.sortDate'|trans }}
+                        <span class="collection-observations-page__sort-link-{% if filters.order == 'asc' %}asc{% else %}desc{% endif %}">{{ source('@MiniwaldExplorer/storefront/icons/arrow.svg', ignore_missing=true)|raw }}</span>
+                    </a>
+                </span>
+            {% endif %}
+        </div>
+    {% endif %}
+
+    {% for item in observations %}
+        {# Plant rows with a catalog plant link to the plant detail page.
+           Custom plant rows (no plantId) are not clickable.
+           Animal rows link to the observation item detail page. #}
+        {% if item.type == 'plant' and item.plantId %}
+            {% set _detailUrl = path('frontend.miniwald.collection.plant.detail', { id: item.plantId }) %}
+        {% elseif item.type == 'plant' %}
+            {% set _detailUrl = null %}
+        {% else %}
+            {% set _detailUrl = path('frontend.miniwald.collection.observation.detail', { id: item.id }) %}
+        {% endif %}
+        <a class="collection-obs-row"{% if _detailUrl %} href="{{ _detailUrl }}"{% endif %}>
+
+            <div class="collection-obs-row__icon">
+                {% if item.image %}
+                    {% sw_thumbnails 'species-image-thumbnails' with {
+                        media: item.image,
+                        attributes: {
+                            alt: item.name,
+                            title: item.name,
+                            class: 'collection-obs-row__img'
+                        },
+                        sizes: { default: '48px' }
+                    } %}
+                {% else %}
+                    <span class="collection-obs-row__icon-placeholder">
+                        {% if item.type == 'plant' %}
+                            {{ source('@MiniwaldExplorer/storefront/icons/plant.svg', ignore_missing=true)|raw }}
+                        {% elseif item.type == 'animal' %}
+                            {% if item.subType == 'bird' %}
+                                {{ source('@MiniwaldExplorer/storefront/icons/bird.svg', ignore_missing=true)|raw }}
+                            {% elseif item.subType == 'butterfly' %}
+                                {{ source('@MiniwaldExplorer/storefront/icons/butterfly.svg', ignore_missing=true)|raw }}
+                            {% elseif item.subType == 'insect' or item.subType == 'ground' %}
+                                {{ source('@MiniwaldExplorer/storefront/icons/insect.svg', ignore_missing=true)|raw }}
+                            {% else %}
+                                {{ source('@MiniwaldExplorer/storefront/icons/observe.svg', ignore_missing=true)|raw }}
+                            {% endif %}
+                        {% else %}
+                            {{ source('@MiniwaldExplorer/storefront/icons/observe.svg', ignore_missing=true)|raw }}
+                        {% endif %}
+                    </span>
+                {% endif %}
+            </div>
+
+            <div class="collection-obs-row__info">
+                <span class="collection-obs-row__name">{{ item.name }}</span>
+                <span class="collection-obs-row__location">{{ item.miniwaldName ?? 'miniwaldExplorer.observation.fieldLocationOther'|trans }}</span>
+            </div>
+
+            <div class="collection-obs-row__meta">
+                {% if item.type == 'plant' %}
+                    <span class="collection-obs-row__count">
+                        {{ source('@MiniwaldExplorer/storefront/icons/diameter.svg', ignore_missing=true)|raw }}
+                        {{ 'miniwaldExplorer.collection.trunkCircumference'|trans({'%value%': item.trunkCircumferenceCm}) }}
+                        {{ source('@MiniwaldExplorer/storefront/icons/height.svg', ignore_missing=true)|raw }}
+                        {{ 'miniwaldExplorer.collection.heightCm'|trans({'%value%': item.heightCm}) }}
+                    </span>
+                {% else %}
+                    {% if item.count %}
+                        <span class="collection-obs-row__count">{{ item.count }} {{ 'miniwaldExplorer.collection.simultaneously'|trans }}</span>
+                    {% else %}
+                        <span class="collection-obs-row__count">&nbsp;</span>
+                    {% endif %}
+                {% endif %}
+                {% if item.observedAt %}
+                    <span class="collection-obs-row__date">{{ item.observedAt|date('d.m.y, H:i') }}</span>
+                {% endif %}
+            </div>
+        </a>
+    {% else %}
+        <p class="collection-obs-list__empty">{{ 'miniwaldExplorer.collection.noObservations'|trans }}</p>
+    {% endfor %}
+
+    {# Pagination #}
+    {% if totalPages is defined and page is defined and totalPages > 1 %}
+        <nav class="collection-pagination">
+            <a {% if page <= 1 %}disabled{% else %}href="{{ path(_route, _routeBase|merge(filters|default({})|merge({ page: page - 1 }))) }}"{% endif %}
+               class="collection-pagination__btn collection-pagination__btn--prev">{{ source('@MiniwaldExplorer/storefront/icons/expand.svg', ignore_missing=true)|raw }}</a>
+
+            {# Verkuerzte Seitenliste: immer erste/letzte Seite plus ein Fenster um die
+               aktuelle Seite, dazwischen Auslassungspunkte -> 1 2 ... 19 20 #}
+            {% set _window = 1 %}
+            {% set _gap = false %}
+            {% for p in 1..totalPages %}
+                {% if p == 1 or p == totalPages or (p >= page - _window and p <= page + _window) %}
+                    <a href="{{ path(_route, _routeBase|merge(filters|default({})|merge({ page: p }))) }}"
+                       class="collection-pagination__btn{% if p == page %} collection-pagination__btn--active{% endif %}"
+                       {% if p == page %}aria-current="page"{% endif %}>
+                        {{ p }}
+                    </a>
+                    {% set _gap = false %}
+                {% elseif not _gap %}
+                    <span class="collection-pagination__ellipsis" aria-hidden="true">&hellip;</span>
+                    {% set _gap = true %}
+                {% endif %}
+            {% endfor %}
+
+            <a {% if page >= totalPages %}disabled{% else %}href="{{ path(_route, _routeBase|merge(filters|default({})|merge({ page: page + 1 }))) }}"{% endif %}
+               class="collection-pagination__btn collection-pagination__btn--next">{{ source('@MiniwaldExplorer/storefront/icons/expand.svg', ignore_missing=true)|raw }}</a>
+        </nav>
+    {% endif %}
+
+    {% if showAllLink is not defined or showAllLink %}
+        <a href="{{ allObsUrl ?? path('frontend.miniwald.collection.observations') }}"
+           class="collection-obs-list__all-link">
+            {{ 'miniwaldExplorer.collection.allObservationsLink'|trans }}
+            {{ source('@MiniwaldExplorer/storefront/icons/arrow.svg', ignore_missing=true)|raw }}
+        </a>
+    {% endif %}
+</div>
+{% if showStart is defined and showStart %}
+<a class="btn btn-green collection-obs-btn-start" href="{{ path('frontend.miniwald.observation') }}">
+    <div class="overview-button-header">{{ 'miniwaldExplorer.overview.observationButtonTitle'|trans }}</div>
+    <div class="overview-button-description">{{ 'miniwaldExplorer.overview.observationButtonDescription'|trans }}</div>
+</a>
+{% endif %}

@@ -1,0 +1,49 @@
+{% from '@MiniwaldExplorer/storefront/page/observation/_macros.html.twig' import speciesGrid %}
+
+{# ── Insects/Snails/Spiders instruction modal ── #}
+<div class="miniwald-observation-modal miniwald-observation-modal--instruction" data-instruction-modal-insects hidden>
+    <div class="miniwald-instruction-modal__content">
+        <div class="miniwald-instruction-modal__body">
+            <h1 class="miniwald-observation-title">{{ 'miniwaldExplorer.observation.insectsInstructionTitle'|trans }}</h1>
+            <p class="miniwald-observation-text">
+                {{ 'miniwaldExplorer.observation.step2Text1Intro'|trans({
+                    '%boldStart%': '<strong>',
+                    '%boldEnd%': '</strong>',
+                    '%participateStart%': '<a class="link" href="/mitmachen">',
+                    '%participateEnd%': '</a>',
+                    '%mailStart%': '<a class="mail" ',
+                    '%mailEnd%': '</a>'
+                })|raw }}
+            </p>
+            <h2 class="miniwald-observation-sub-title">{{ 'miniwaldExplorer.observation.step2InstructionTitle'|trans }}</h2>
+            <div class="miniwald-observation-text">
+                <ul>
+                    <li>{{ 'miniwaldExplorer.observation.insectsInstructionPoint1'|trans }}</li>
+                    <li>{{ 'miniwaldExplorer.observation.insectsInstructionPoint2'|trans }}</li>
+                    <li>{{ 'miniwaldExplorer.observation.insectsInstructionPoint3'|trans({
+                            '%exampleStart%': '<span class="example">',
+                            '%exampleEnd%': '</span>',
+                        })|raw }}</li>
+                </ul>
+            </div>
+            <div class="miniwald-observation-instruction-tip-box">
+                <h2 class="miniwald-observation-sub-title">{{ 'miniwaldExplorer.observation.step2TipTitle'|trans }}</h2>
+                <p class="miniwald-observation-text">{{ 'miniwaldExplorer.observation.insectsInstructionTipText'|trans }}</p>
+            </div>
+            <h2 class="miniwald-observation-sub-title">{{ 'miniwaldExplorer.observation.insectsInstructionSpeciesTitle'|trans }}</h2>
+            {{ speciesGrid(categories, speciesByCategory, {countersHidden: true}) }}
+            <p class="miniwald-observation-text">{{ 'miniwaldExplorer.observation.step2SpeciesText2InfoPopup'|trans({'%boldStart%': '<strong>','%boldEnd%': '</strong>'})|raw }}</p>
+            <p class="miniwald-observation-text">{{ 'miniwaldExplorer.observation.step2SpeciesText3More'|trans }}</p>
+            {% if isLoggedIn %}
+            <div class="hide-instructions__container">
+                <input type="checkbox" id="hide-instructions__checkbox-insects" class="hide-instructions__checkbox">
+                <label class="hide-instructions__label" for="hide-instructions__checkbox-insects">{{ 'miniwaldExplorer.observation.step2HideInfoCheck'|trans }}</label>
+            </div>
+            {% endif %}
+            <h2 class="miniwald-observation-sub-title">{{ 'miniwaldExplorer.observation.step2Ready'|trans }}</h2>
+        </div>
+        <button class="btn btn-white miniwald-instruction-modal__close" type="button" data-close-instruction-modal-insects>
+            {{ 'miniwaldExplorer.observation.instructionModalClose'|trans }}
+        </button>
+    </div>
+</div>

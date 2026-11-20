@@ -1,0 +1,140 @@
+.miniwald-profile-page {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    padding-bottom: 3rem;
+}
+
+.miniwald-profile-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1.25rem 1rem 0.5rem;
+
+    &__back {
+        display: flex;
+        align-items: center;
+        --color: var(--miniwald-black);
+        --text-decoration: none;
+        flex-shrink: 0;
+
+        svg {
+            rotate: 180deg;
+            width: 1.5rem;
+            height: 1.5rem;
+        }
+    }
+
+    &__title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin: 0 auto;
+        align-items: center;
+        gap: 0.5rem;
+
+        svg {
+            width: 1.5rem;
+            height: 1.5rem;
+        }
+    }
+}
+
+.miniwald-profile-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 1rem;
+    max-width: 560px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.miniwald-profile-alert {
+    padding: 0.75rem 1rem;
+    border-radius: var(--miniwald-radius);
+    font-size: 0.9rem;
+    font-weight: 500;
+
+    &--success {
+        background: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+
+    &--danger {
+        background: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+    }
+}
+
+.miniwald-profile-section {
+    background: var(--miniwald-grey);
+    border-radius: var(--miniwald-radius);
+    padding: 1.25rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    &__title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin: 0;
+
+        &--danger {
+            color: var(--miniwald-orange, #e05a00);
+        }
+    }
+
+    &__text {
+        font-size: 0.9rem;
+        margin: 0;
+        color: var(--miniwald-dark-grey, #555);
+    }
+
+    .miniwald-auth-form__submit {
+        margin-top: 1rem;
+    }
+
+    .miniwald-profile-readonly {
+        padding: 0.5rem 1rem;
+    }
+
+    &--danger {
+        border: 1px solid rgba(224, 90, 0, 0.2);
+    }
+}
+
+.miniwald-profile-delete-details {
+    &__summary {
+        cursor: pointer;
+        list-style: none;
+        align-items: center;
+        width: 100%;
+
+        &::-webkit-details-marker {
+            display: none;
+        }
+    }
+
+    &__content {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid rgba(224, 90, 0, 0.2);
+    }
+}
+
+.miniwald-profile-delete-btn {
+    margin-top: 0.5rem;
+    width: 100%;
+}
+
+@media (min-width: 900px) {
+    .miniwald-profile-header {
+        padding: 2rem 2rem 0.5rem;
+    }
+
+    .miniwald-profile-content {
+        padding: 1.5rem 2rem;
+    }
+}

@@ -1,0 +1,213 @@
+{% block miniwald_species_category_detail %}
+<sw-page class="miniwald-species-category-detail">
+    {% block miniwald_species_category_detail_header %}
+    <template #smart-bar-header>
+        <h2 v-if="entity">
+            {{ placeholder(entity, 'name', $tc('miniwald-explorer.speciesCategory.detail.textHeadline')) }}
+        </h2>
+        <h2 v-else>
+            {{ $tc('miniwald-explorer.speciesCategory.detail.textHeadline') }}
+        </h2>
+    </template>
+    {% endblock %}
+
+    {% block miniwald_species_category_detail_actions %}
+    <template #smart-bar-actions>
+        {% block miniwald_species_category_detail_actions_abort %}
+        <sw-button
+            v-tooltip="tooltipCancel"
+            @click="onClickCancel"
+        >
+            {{ $tc('miniwald-explorer.speciesCategory.detail.buttonCancel') }}
+        </sw-button>
+        {% endblock %}
+
+        {% block miniwald_species_category_detail_actions_save %}
+        <sw-button-process
+            v-tooltip="tooltipSave"
+            class="miniwald-species-category-detail__save-action"
+            :is-loading="isLoading"
+            :process-success="processSuccess"
+            :disabled="isSaveDisabled"
+            variant="primary"
+            @process-finish="saveFinish"
+            @click="onClickSave"
+        >
+            {{ $tc('miniwald-explorer.speciesCategory.detail.buttonSave') }}
+        </sw-button-process>
+        {% endblock %}
+    </template>
+    {% endblock %}
+
+    {% block miniwald_species_category_detail_content %}
+    <template #content>
+        <sw-card-view v-if="entity">
+            <sw-card
+                :title="$tc('miniwald-explorer.speciesCategory.detail.cardTitleGeneral')"
+                :is-loading="entityIsLoading"
+            >
+                <sw-container
+                    columns="repeat(auto-fit, minmax(250px, 1fr))"
+                    gap="0 30px"
+                >
+                    {% block miniwald_species_category_detail_content_field_name %}
+                    <sw-text-field
+                        v-model:value="entity.name"
+                        :label="$tc('miniwald-explorer.speciesCategory.detail.labelName')"
+                        :placeholder="placeholder(entity, 'name', $tc('miniwald-explorer.speciesCategory.detail.placeholderName'))"
+                        :error="entityNameError"
+                        required
+                    >
+                                </sw-text-field>
+                    {% endblock %}
+
+                    {% block miniwald_species_category_detail_content_field_position %}
+                    <sw-number-field
+                        v-model:value="entity.position"
+                        :label="$tc('miniwald-explorer.speciesCategory.detail.labelPosition')"
+                        :placeholder="$tc('miniwald-explorer.speciesCategory.detail.placeholderPosition')"
+                        numberType="int"
+                        :min="0"
+                    >
+                                </sw-number-field>
+                    {% endblock %}
+
+                    {% block miniwald_species_category_detail_content_field_active %}
+                    <sw-switch-field
+                        v-model:value="entity.active"
+                        :label="$tc('miniwald-explorer.speciesCategory.detail.labelActive')"
+                    >
+                                </sw-switch-field>
+                    {% endblock %}
+
+                    {% block miniwald_species_category_detail_content_field_technical_name %}
+                    <sw-text-field
+                        v-model:value="entity.technicalName"
+                        :label="$tc('miniwald-explorer.speciesCategory.detail.labelTechnicalName')"
+                        :placeholder="$tc('miniwald-explorer.speciesCategory.detail.placeholderTechnicalName')"
+                        :help-text="$tc('miniwald-explorer.speciesCategory.detail.helpTechnicalName')"
+                    >
+                                </sw-text-field>
+                    {% endblock %}
+                </sw-container>
+                {% block miniwald_species_category_detail_content_field_description %}
+                <mt-textarea
+                    :model-value="entity.description"
+                    :label="$tc('miniwald-explorer.speciesCategory.detail.labelDescription')"
+                    :placeholder="placeholder(entity, 'description', $tc('miniwald-explorer.speciesCategory.detail.placeholderDescription'))"
+                    @update:model-value="entity.description = $event"
+                >
+                            </mt-textarea>
+                {% endblock %}
+            </sw-card>
+            {% block miniwald_species_category_detail_content_media_card %}
+            <sw-card
+                :title="$tc('miniwald-explorer.speciesCategory.detail.cardTitleMedia')"
+                :is-loading="entityIsLoading"
+            >
+                {% block miniwald_species_category_detail_content_media_upload %}
+                <sw-upload-listener
+                    :upload-tag="entity.id"
+                    auto-upload
+                    @media-upload-finish="setMediaItem"
+                >
+                                </sw-upload-listener>
+
+                <sw-media-upload-v2
+                    variant="regular"
+                    :upload-tag="entity.id"
+                    :source="entity.imageId"
+                    :allow-multi-select="false"
+                    :label="$tc('miniwald-explorer.speciesCategory.detail.labelImage')"
+                    :target-folder-id="categoryMediaFolderId"
+                    @sw-media-upload-v2-media-upload-success="setMediaItem"
+                    @media-upload-add-file="onMediaUploadStart"
+                    @media-drop="onDropMedia"
+                    @media-upload-sidebar-open="showMediaModal = true"
+                    @media-upload-remove-image="onUnlinkLogo"
+                >
+                                </sw-media-upload-v2>
+
+                <sw-media-modal-v2
+                    v-if="showMediaModal"
+                    :allow-multi-select="false"
+                    @modal-close="showMediaModal = false"
+                    @media-modal-selection-change="onMediaSelectionChange"
+                >
+                                </sw-media-modal-v2>
+                {% endblock %}
+            </sw-card>
+            {% endblock %}
+
+            {% block miniwald_species_category_detail_content_species_card %}
+            <sw-card
+                v-if="entity.id && entity.species"
+                :title="$tc('miniwald-explorer.speciesCategory.detail.cardTitleSpecies') + ' (' + (entity.species.length || 0) + ')'"
+                :is-loading="entityIsLoading"
+            >
+                {% block miniwald_species_category_detail_content_species_list %}
+                <div
+                    v-if="entity.species && entity.species.length > 0"
+                    class="miniwald-species-category-detail__species-list"
+                >
+                    <sw-data-grid
+                        :data-source="entity.species"
+                        :columns="[
+                                            { property: 'name', label: $tc('miniwald-explorer.speciesCategory.detail.speciesColumnName') },
+                                            { property: 'scientificName', label: $tc('miniwald-explorer.speciesCategory.detail.speciesColumnScientificName') },
+                                            { property: 'active', label: $tc('miniwald-explorer.speciesCategory.detail.speciesColumnActive'), align: 'center' }
+                                        ]"
+                        :show-selection="false"
+                        :show-actions="true"
+                        :compact-mode="true"
+                    >
+                        <template #column-name="{ item }">
+                            <router-link
+                                :to="{ name: 'miniwald.explorer.species.detail', params: { id: item.id } }"
+                            >
+                                {{ item.translated ? item.translated.name : item.name }}
+                            </router-link>
+                        </template>
+
+                        <template #column-active="{ item }">
+                            <sw-icon
+                                v-if="item.active"
+                                name="regular-checkmark-xs"
+                                small
+                                :color="'#37d046'"
+                            >
+                                            </sw-icon>
+                            <sw-icon
+                                v-else
+                                name="regular-times-s"
+                                small
+                                :color="'#de294c'"
+                            >
+                                            </sw-icon>
+                        </template>
+
+                        <template #actions="{ item }">
+                            <sw-context-menu-item
+                                :router-link="{ name: 'miniwald.explorer.species.detail', params: { id: item.id } }"
+                            >
+                                {{ $tc('global.default.edit') }}
+                            </sw-context-menu-item>
+                        </template>
+                    </sw-data-grid>
+                </div>
+
+                <sw-empty-state
+                    v-else
+                    :absolute="false"
+                    :title="$tc('miniwald-explorer.speciesCategory.detail.speciesEmpty')"
+                >
+                                </sw-empty-state>
+                {% endblock %}
+            </sw-card>
+            {% endblock %}
+        </sw-card-view>
+        <sw-loader v-else></sw-loader>
+    </template>
+    {% endblock %}
+</sw-page>
+{% endblock %}

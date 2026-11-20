@@ -1,0 +1,102 @@
+{% sw_extends '@Storefront/storefront/base.html.twig' %}
+
+{% block base_body_classes %}{{ parent() }} collection-view{% endblock %}
+
+{% block base_content %}
+<div class="collection-page collection-obs-detail-page">
+
+    <div hidden data-page-back-href="{{ path('frontend.miniwald.collection.observations') }}" data-page-back-text="{{ 'miniwaldExplorer.collection.backLinkObservation'|trans }}"></div>
+
+    {% if observations is not empty %}
+        <h1 class="collection-obs-detail-page__title">
+            {{ plant.name }}
+        </h1>
+
+        <div class="collection-obs-detail-page__body">
+
+            {%- set weatherLabels = {
+                'sunny':         'miniwaldExplorer.observation.weatherSunny',
+                'partly_cloudy': 'miniwaldExplorer.observation.weatherPartlyCloudy',
+                'cloudy':        'miniwaldExplorer.observation.weatherCloudy',
+                'rainy':         'miniwaldExplorer.observation.weatherRainy'
+            } -%}
+            {%- set windLabels = {
+                'calm':          'miniwaldExplorer.observation.windCalm',
+                'light_wind':    'miniwaldExplorer.observation.windLightWind',
+                'moderate_wind': 'miniwaldExplorer.observation.windModerateWind',
+                'strong_wind':   'miniwaldExplorer.observation.windStrongWind'
+            } -%}
+
+            {# Details table #}
+            <div class="miniwald-card collection-obs-detail-page__details">
+                <h2 class="collection-obs-detail-page__section-title">
+                    {{ 'miniwaldExplorer.collection.observationDetails'|trans }}
+                </h2>
+                {%- set weatherLabels = {
+                    'sunny':         'miniwaldExplorer.observation.weatherSunny',
+                    'partly_cloudy': 'miniwaldExplorer.observation.weatherPartlyCloudy',
+                    'cloudy':        'miniwaldExplorer.observation.weatherCloudy',
+                    'rainy':         'miniwaldExplorer.observation.weatherRainy'
+                } -%}
+                {%- set windLabels = {
+                    'calm':          'miniwaldExplorer.observation.windCalm',
+                    'light_wind':    'miniwaldExplorer.observation.windLightWind',
+                    'moderate_wind': 'miniwaldExplorer.observation.windModerateWind',
+                    'strong_wind':   'miniwaldExplorer.observation.windStrongWind'
+                } -%}
+
+                {% if observations is not empty %}
+                    <table class="collection-obs-detail-table">
+                        <tbody>
+                        <tr>
+                            <td>{{ 'miniwaldExplorer.collection.plantMiniwald'|trans }}</td>
+                            <td>{{ 'miniwaldExplorer.collection.detailDate'|trans }}</td>
+                            <td>{{ 'miniwaldExplorer.collection.detailWeather'|trans }}</td>
+                            <td>{{ 'miniwaldExplorer.collection.detailWind'|trans }}</td>
+                            <td>{{ 'miniwaldExplorer.collection.detailHeight'|trans }}</td>
+                            <td>{{ 'miniwaldExplorer.collection.detailStemCircumference'|trans }}</td>
+                        </tr>
+                        {% for item in observations %}
+                            <tr>
+                                <td data-label="{{ 'miniwaldExplorer.collection.plantMiniwald'|trans }}">
+                                    {{ item.miniwaldName ?? 'miniwaldExplorer.observation.fieldLocationOther'|trans }}
+                                </td>
+                                <td data-label="{{ 'miniwaldExplorer.collection.detailDate'|trans }}">
+                                    {{ item.observedAt ? item.observedAt|date('d.m.Y, H:i') : '–' }}
+                                </td>
+                                <td data-label="{{ 'miniwaldExplorer.collection.detailWeather'|trans }}">
+                                    {{ item.weather and weatherLabels[item.weather] is defined ? weatherLabels[item.weather]|trans : (item.weather ?? '–') }}
+                                </td>
+                                <td data-label="{{ 'miniwaldExplorer.collection.detailWind'|trans }}">
+                                    {{ item.wind and windLabels[item.wind] is defined ? windLabels[item.wind]|trans : (item.wind ?? '–') }}
+                                </td>
+                                <td data-label="{{ 'miniwaldExplorer.collection.detailHeight'|trans }}">
+                                    {{ item.heightCm is not null ? 'miniwaldExplorer.collection.heightCm'|trans({'%value%': item.heightCm}) : '–' }}
+                                </td>
+                                <td data-label="{{ 'miniwaldExplorer.collection.detailStemCircumference'|trans }}">
+                                    {{ item.trunkCircumferenceCm is not null ? 'miniwaldExplorer.collection.trunkCircumference'|trans({'%value%': item.trunkCircumferenceCm}) : '–' }}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+            </div>
+        </div>
+
+        {# Remarks #}
+        {% if item.remarks %}
+            <div class="collection-obs-detail-page__remarks">
+                <h2 class="collection-obs-detail-page__section-title collection-obs-detail-page__section-title-remarks">
+                    {{ 'miniwaldExplorer.collection.detailRemarks'|trans }}
+                </h2>
+                <p class="collection-obs-detail-page__remarks-text">{{ item.remarks }}</p>
+            </div>
+        {% endif %}
+    {% else %}
+        <h1 class="collection-obs-detail-page__title">
+            nothing found
+        </h1>
+    {% endif %}
+</div>
+{% endblock %}

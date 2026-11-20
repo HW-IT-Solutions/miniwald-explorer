@@ -1,0 +1,171 @@
+{% sw_extends '@Storefront/storefront/base.html.twig' %}
+
+{% block base_body_classes %}{{ parent() }} collection-view{% endblock %}
+
+{% block base_content %}
+<div class="collection-page collection-obs-detail-page">
+
+    <div hidden data-page-back-href="{{ path('frontend.miniwald.collection.observations') }}" data-page-back-text="{{ 'miniwaldExplorer.collection.backLinkObservation'|trans }}"></div>
+
+    {% set species = item.species %}
+    {% set subspecies = item.subspecies %}
+    {% set obs = item.observation %}
+    {# When a subspecies was observed, it is displayed instead of the species #}
+    {% set displayName = subspecies ? subspecies.translated.name : (species ? species.name : (item.customSpeciesName ?? '–')) %}
+
+    <h1 class="collection-obs-detail-page__title">
+        {{ displayName }}
+    </h1>
+
+    <div class="collection-obs-detail-page__body">
+
+        {# Details table #}
+        <div class="miniwald-card collection-obs-detail-page__details">
+            <h2 class="collection-obs-detail-page__section-title">
+                {{ 'miniwaldExplorer.collection.observationDetails'|trans }}
+            </h2>
+            <table class="collection-obs-detail-table">
+                <tbody>
+                <tr>
+                    <td>{{ 'miniwaldExplorer.collection.detailSpecies'|trans }}:</td>
+                    <td>{{ 'miniwaldExplorer.collection.detailLocation'|trans }}</td>
+                    <td>{{ 'miniwaldExplorer.collection.detailDate'|trans }}</td>
+                    <td>{{ 'miniwaldExplorer.collection.detailWeather'|trans }}</td>
+                    <td>{{ 'miniwaldExplorer.collection.detailWind'|trans }}</td>
+                    <td>{{ 'miniwaldExplorer.collection.detailCount'|trans }}</td>
+                </tr>
+                <tr>
+                    <td data-label="{{ 'miniwaldExplorer.collection.detailSpecies'|trans }}">
+                        {% if species %}
+                            <a href="{{ path('frontend.miniwald.collection.species.detail', {
+                                categoryId: species.speciesCategoryId,
+                                speciesId: species.id
+                            }) }}" class="collection-obs-detail-table__link">
+                                {{ displayName }}
+                            </a>
+                        {% else %}
+                            {{ item.customSpeciesName ?? '–' }}
+                        {% endif %}
+                    </td>
+                    <td data-label="{{ 'miniwaldExplorer.collection.detailLocation'|trans }}">
+                        {% if obs and obs.miniwald %}
+                            <a href="{{ path('frontend.miniwald.collection.miniforest', { id: obs.miniwald.id }) }}"
+                               class="collection-obs-detail-table__link">
+                                {{ obs.miniwald.name }}
+                            </a>
+                        {% else %}
+                            {{ 'miniwaldExplorer.observation.fieldLocationOther'|trans }}
+                        {% endif %}
+                    </td>
+                    <td data-label="{{ 'miniwaldExplorer.collection.detailDate'|trans }}">
+                        {% if obs and obs.observedAt %}
+                            {{ obs.observedAt|date('d.m.Y, H:i') }}
+                        {% else %}
+                            –
+                        {% endif %}
+                    </td>
+                    <td data-label="{{ 'miniwaldExplorer.collection.detailWeather'|trans }}">
+                        {%- set weatherLabels = {
+                            'sunny':        'miniwaldExplorer.observation.weatherSunny',
+                            'partly_cloudy':'miniwaldExplorer.observation.weatherPartlyCloudy',
+                            'cloudy':       'miniwaldExplorer.observation.weatherCloudy',
+                            'rainy':        'miniwaldExplorer.observation.weatherRainy'
+                        } -%}
+                        {{ obs.weather and weatherLabels[obs.weather] is defined ? weatherLabels[obs.weather]|trans : (obs.weather ?? '–') }}
+                    </td>
+                    <td data-label="{{ 'miniwaldExplorer.collection.detailWind'|trans }}">
+                        {%- set windLabels = {
+                            'calm':          'miniwaldExplorer.observation.windCalm',
+                            'light_wind':    'miniwaldExplorer.observation.windLightWind',
+                            'moderate_wind': 'miniwaldExplorer.observation.windModerateWind',
+                            'strong_wind':   'miniwaldExplorer.observation.windStrongWind'
+                        } -%}
+                        {{ obs.wind and windLabels[obs.wind] is defined ? windLabels[obs.wind]|trans : (obs.wind ?? '–') }}
+                    </td>
+                    <td data-label="{{ 'miniwaldExplorer.collection.detailCount'|trans }}">{{ item.count }} {{ 'miniwaldExplorer.collection.simultaneously'|trans }}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        {# Photos #}
+        {% if item.photos and item.photos.count > 0 %}
+            <div class="miniwald-card collection-obs-detail-page__photos"
+                 data-lightbox="true"
+                 data-lightbox-count="{{ item.photos.count }}">
+                <h2 class="collection-obs-detail-page__section-title collection-obs-detail-page__section-title-photos">
+                    {{ 'miniwaldExplorer.collection.detailPhotos'|trans({ '%count%': item.photos.count }) }}
+                </h2>
+                <div class="collection-obs-detail-page__photo-grid">
+                    {% for photo in item.photos %}
+                        {% if photo.media %}
+                            <a class="collection-obs-detail-page__photo-btn"
+                                    data-lightbox-trigger
+                                    data-lightbox-src="{{ photo.media.url }}"
+                                    data-lightbox-index="{{ loop.index0 }}"
+                                    data-lightbox-alt="{{ 'miniwaldExplorer.collection.photoAlt'|trans }}">
+                                {% sw_thumbnails 'species-image-thumbnails' with {
+                                    media: photo.media,
+                                    attributes: {
+                                        alt: 'miniwaldExplorer.collection.photoAlt'|trans,
+                                        title: 'miniwaldExplorer.collection.photoAlt'|trans,
+                                        class: 'collection-obs-detail-page__photo-thumb',
+                                        loading: 'lazy'
+                                    },
+                                    sizes: { default: '296px' }
+                                } %}
+                            </a>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+
+                {# Lightbox overlay — rendered once, controlled by JS #}
+                <div class="miniwald-lightbox" data-lightbox-overlay hidden aria-modal="true" role="dialog">
+                    <div class="miniwald-lightbox__backdrop" data-lightbox-close></div>
+
+                    <div class="miniwald-lightbox__stage">
+                        <img class="miniwald-lightbox__image"
+                             data-lightbox-image
+                             src=""
+                             alt="" />
+
+                        <button class="miniwald-lightbox__btn miniwald-lightbox__btn--close"
+                                type="button"
+                                data-lightbox-close
+                                aria-label="{{ 'miniwaldExplorer.collection.lightboxClose'|trans }}">
+                            ✕
+                        </button>
+
+                        <button class="miniwald-lightbox__btn miniwald-lightbox__btn--prev"
+                                type="button"
+                                data-lightbox-prev
+                                aria-label="{{ 'miniwaldExplorer.collection.lightboxPrev'|trans }}">
+                            ‹
+                        </button>
+
+                        <button class="miniwald-lightbox__btn miniwald-lightbox__btn--next"
+                                type="button"
+                                data-lightbox-next
+                                aria-label="{{ 'miniwaldExplorer.collection.lightboxNext'|trans }}">
+                            ›
+                        </button>
+
+                        <div class="miniwald-lightbox__counter" data-lightbox-counter aria-live="polite"></div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
+        {# Remarks #}
+        {% if item.remarks %}
+            <div class="collection-obs-detail-page__remarks">
+                <h2 class="collection-obs-detail-page__section-title collection-obs-detail-page__section-title-remarks">
+                    {{ 'miniwaldExplorer.collection.detailRemarks'|trans }}
+                </h2>
+                <p class="collection-obs-detail-page__remarks-text">{{ item.remarks }}</p>
+            </div>
+        {% endif %}
+
+    </div>{# /.body #}
+</div>
+{% endblock %}

@@ -1,0 +1,198 @@
+{% block miniwald_miniwald_detail %}
+<sw-page class="miniwald-miniwald-detail">
+    {% block miniwald_miniwald_detail_header %}
+    <template #smart-bar-header>
+        <h2 v-if="entity">
+            {{ entity.name || $tc('miniwald-explorer.miniwald.detail.textHeadline') }}
+        </h2>
+        <h2 v-else>
+            {{ $tc('miniwald-explorer.miniwald.detail.textHeadline') }}
+        </h2>
+    </template>
+    {% endblock %}
+
+    {% block miniwald_miniwald_detail_actions %}
+    <template #smart-bar-actions>
+        {% block miniwald_miniwald_detail_actions_abort %}
+        <sw-button
+            v-tooltip="tooltipCancel"
+            @click="onClickCancel"
+        >
+            {{ $tc('miniwald-explorer.miniwald.detail.buttonCancel') }}
+        </sw-button>
+        {% endblock %}
+
+        {% block miniwald_miniwald_detail_actions_save %}
+        <sw-button-process
+            v-tooltip="tooltipSave"
+            class="miniwald-miniwald-detail__save-action"
+            :is-loading="isLoading"
+            :process-success="processSuccess"
+            variant="primary"
+            @process-finish="saveFinish"
+            @click="onClickSave"
+        >
+            {{ $tc('miniwald-explorer.miniwald.detail.buttonSave') }}
+        </sw-button-process>
+        {% endblock %}
+    </template>
+    {% endblock %}
+
+    {% block miniwald_miniwald_detail_content %}
+    <template #content>
+        <sw-card-view v-if="entity">
+            {% block miniwald_miniwald_detail_content_general_card %}
+            <sw-card
+                :title="$tc('miniwald-explorer.miniwald.detail.cardTitleGeneral')"
+                :is-loading="entityIsLoading"
+            >
+                <sw-container
+                    columns="repeat(auto-fit, minmax(250px, 1fr))"
+                    gap="0 30px"
+                >
+                    {% block miniwald_miniwald_detail_content_field_name %}
+                    <sw-text-field
+                        v-model:value="entity.name"
+                        :label="$tc('miniwald-explorer.miniwald.detail.labelName')"
+                        :placeholder="$tc('miniwald-explorer.miniwald.detail.placeholderName')"
+                        :error="entityNameError"
+                        required
+                    >
+                                    </sw-text-field>
+                    {% endblock %}
+
+                    {% block miniwald_miniwald_detail_content_field_photo_caption %}
+                    <sw-text-field
+                        v-model:value="entity.photoCaption"
+                        :label="$tc('miniwald-explorer.miniwald.detail.labelPhotoCaption')"
+                        :placeholder="$tc('miniwald-explorer.miniwald.detail.placeholderPhotoCaption')"
+                    >
+                                    </sw-text-field>
+                    {% endblock %}
+
+                    {% block miniwald_miniwald_detail_content_field_address %}
+                    <sw-text-field
+                        v-model:value="entity.address"
+                        :label="$tc('miniwald-explorer.miniwald.detail.labelAddress')"
+                        :placeholder="$tc('miniwald-explorer.miniwald.detail.placeholderAddress')"
+                    >
+                                    </sw-text-field>
+                    {% endblock %}
+                </sw-container>
+                {% block miniwald_miniwald_detail_content_field_description %}
+                <mt-textarea
+                    :model-value="entity.description"
+                    :label="$tc('miniwald-explorer.miniwald.detail.labelDescription')"
+                    :placeholder="placeholder(entity, 'description', $tc('miniwald-explorer.miniwald.detail.placeholderDescription'))"
+                    @update:model-value="entity.description = $event"
+                >
+                                </mt-textarea>
+                {% endblock %}
+            </sw-card>
+            {% endblock %}
+
+            {% block miniwald_miniwald_detail_content_media_card %}
+            <sw-card
+                :title="$tc('miniwald-explorer.miniwald.detail.cardTitleMedia')"
+                :is-loading="entityIsLoading"
+            >
+                {% block miniwald_miniwald_detail_content_media_upload %}
+                <sw-upload-listener
+                    :upload-tag="entity.id"
+                    auto-upload
+                    @media-upload-finish="setMediaItem"
+                >
+                                </sw-upload-listener>
+
+                <sw-media-upload-v2
+                    variant="regular"
+                    :upload-tag="entity.id"
+                    :source="entity.imageId"
+                    :allow-multi-select="false"
+                    :label="$tc('miniwald-explorer.miniwald.detail.labelImage')"
+                    :target-folder-id="miniForestsMediaFolderId"
+                    @sw-media-upload-v2-media-upload-success="setMediaItem"
+                    @media-upload-add-file="onMediaUploadStart"
+                    @media-drop="onDropMedia"
+                    @media-upload-sidebar-open="showMediaModal = true"
+                    @media-upload-remove-image="onUnlinkLogo"
+                >
+                                </sw-media-upload-v2>
+
+                <sw-media-modal-v2
+                    v-if="showMediaModal"
+                    :allow-multi-select="false"
+                    @modal-close="showMediaModal = false"
+                    @media-modal-selection-change="onMediaSelectionChange"
+                >
+                                </sw-media-modal-v2>
+                {% endblock %}
+            </sw-card>
+            {% endblock %}
+
+            {% block miniwald_miniwald_detail_content_location_card %}
+            <sw-card
+                :title="$tc('miniwald-explorer.miniwald.detail.cardTitleLocation')"
+                :is-loading="entityIsLoading"
+            >
+                <sw-container
+                    columns="1fr 1fr 1fr"
+                    gap="0 30px"
+                >
+                    {% block miniwald_miniwald_detail_content_field_latitude %}
+                    <sw-number-field
+                        v-model:value="entity.latitude"
+                        :label="$tc('miniwald-explorer.miniwald.detail.labelLatitude')"
+                        :placeholder="$tc('miniwald-explorer.miniwald.detail.placeholderLatitude')"
+                        :error="entityLatitudeError"
+                        :digits="6"
+                        :step="0.000001"
+                        :min="-90"
+                        :max="90"
+                    >
+                                    </sw-number-field>
+                    {% endblock %}
+
+                    {% block miniwald_miniwald_detail_content_field_longitude %}
+                    <sw-number-field
+                        v-model:value="entity.longitude"
+                        :label="$tc('miniwald-explorer.miniwald.detail.labelLongitude')"
+                        :placeholder="$tc('miniwald-explorer.miniwald.detail.placeholderLongitude')"
+                        :error="entityLongitudeError"
+                        :digits="6"
+                        :step="0.000001"
+                        :min="-180"
+                        :max="180"
+                    >
+                                    </sw-number-field>
+                    {% endblock %}
+
+                    {% block miniwald_miniwald_detail_content_field_radius %}
+                    <sw-number-field
+                        v-model:value="entity.radiusMeters"
+                        :label="$tc('miniwald-explorer.miniwald.detail.labelRadiusMeters')"
+                        :placeholder="$tc('miniwald-explorer.miniwald.detail.placeholderRadiusMeters')"
+                        :error="entityRadiusMetersError"
+                        :min="50"
+                        :max="5000"
+                        :step="50"
+                    >
+                                    </sw-number-field>
+                    {% endblock %}
+                </sw-container>
+                {% block miniwald_miniwald_detail_content_location_help %}
+                <sw-alert
+                    variant="info"
+                    class="sw-field--miniwald-location-help"
+                >
+                    {{ $tc('miniwald-explorer.miniwald.detail.locationHelpText') }}
+                </sw-alert>
+                {% endblock %}
+            </sw-card>
+            {% endblock %}
+        </sw-card-view>
+        <sw-loader v-else></sw-loader>
+    </template>
+    {% endblock %}
+</sw-page>
+{% endblock %}

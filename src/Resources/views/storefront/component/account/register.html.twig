@@ -1,0 +1,157 @@
+{% sw_extends '@Storefront/storefront/component/account/register.html.twig' %}
+
+{% block component_account_register %}
+    {% block component_account_register_header %}
+        <div class="miniwald-auth-card__header">
+            <h1 class="miniwald-auth-card__title">
+                <a class="miniwald-auth-card__back" href="{{ path('frontend.home.page') }}">{{ source('@MiniwaldExplorer/storefront/icons/arrow.svg', ignore_missing=true)|raw }} {{ 'miniwaldExplorer.account.registerTitle'|trans|sw_sanitize }}</a>
+            </h1>
+            <p class="miniwald-auth-card__subtitle miniwald-auth-card__subtitle--mobile-only">
+                {{ 'miniwaldExplorer.account.alreadyHaveAccount'|trans }}
+                <a href="{{ path('frontend.account.login.page') }}">{{ 'miniwaldExplorer.account.loginHere'|trans }}</a>
+            </p>
+        </div>
+    {% endblock %}
+
+    {% block component_account_register_form %}
+        <form action="{{ path('frontend.account.register.save') }}"
+              class="miniwald-auth-form"
+              method="post"
+              data-form-handler="true">
+            {% block component_account_register_redirect %}
+                <input type="hidden" name="redirectTo" value="{{ redirectTo }}">
+                <input type="hidden" name="redirectParameters"
+                       value="{{ redirectParameters is iterable ? redirectParameters|json_encode : redirectParameters }}">
+            {% endblock %}
+
+            {% block component_account_register_create_account %}
+                <input type="hidden" name="createCustomerAccount" value="1">
+            {% endblock %}
+
+            {% block component_account_register_form_action %}
+                <input type="hidden" name="errorRoute"
+                       value="frontend.account.register.page">
+                <input type="hidden" name="errorParameters" value="">
+            {% endblock %}
+
+            {% block component_account_register_personal %}
+                {% block component_account_register_personal_legend %}{% endblock %}
+
+                {% block component_account_register_personal_fields %}
+                    {% block component_account_register_personal_fieldsX %}
+                        {% set firstNameViolations = formViolations ? formViolations.getViolations('/billingAddress/firstName') : [] %}
+                        <div class="miniwald-auth-form__group">
+                            <label class="miniwald-auth-form__label" for="billingAddress-personalFirstName">
+                                {{ 'miniwaldExplorer.account.name'|trans|sw_sanitize }}
+                            </label>
+                            <input
+                                    class="miniwald-auth-form__input form-control{% if firstNameViolations is not empty %} is-invalid{% endif %}"
+                                    type="text"
+                                    id="billingAddress-personalFirstName"
+                                    name="billingAddress[firstName]"
+                                    value="{{ data.get('billingAddress') ? data.get('billingAddress').get('firstName') : data.get('firstName') }}"
+                                    aria-describedby="billingAddress-personalFirstName-feedback"
+                                    autocomplete="section-personal given-name"
+                                    placeholder="{{ 'miniwaldExplorer.account.name'|trans|sw_sanitize }}"
+                                    data-validation="required"
+                                    aria-required="true"
+                                    required
+                            >
+                            <input id="billingAddress-personalLastName" name="billingAddress[lastName]" value="-" type="hidden">
+                            {% if firstNameViolations is not empty %}
+                                <div id="billingAddress-personalFirstName-feedback" class="form-field-feedback">
+                                    {% sw_include '@Storefront/storefront/utilities/form-violation.html.twig' with { violationPath: '/billingAddress/firstName' } %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endblock %}
+
+                    {% block component_account_register_personal_mail %}
+                        {% set emailViolations = formViolations ? formViolations.getViolations('/email') : [] %}
+                        <div class="miniwald-auth-form__group">
+                            <label class="miniwald-auth-form__label" for="personalMail">
+                                {{ 'account.personalMailLabel'|trans|sw_sanitize }}
+                            </label>
+                            <input class="miniwald-auth-form__input form-control{% if emailViolations is not empty %} is-invalid{% endif %}"
+                                   type="email"
+                                   id="personalMail"
+                                   name="email"
+                                   value="{{ data.get('email') }}"
+                                   autocomplete="section-personal email"
+                                   placeholder="{{ 'account.personalMailLabel'|trans|sw_sanitize }}"
+                                   data-validation-rules="required,email"
+                                   required>
+                            {% if emailViolations is not empty %}
+                                <div id="personalMail-feedback" class="form-field-feedback">
+                                    {% sw_include '@Storefront/storefront/utilities/form-violation.html.twig' with { violationPath: '/email' } %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endblock %}
+
+                    {% block component_account_register_personal_password %}
+                        {% set passwordViolations = formViolations ? formViolations.getViolations('/password') : [] %}
+                        <div class="miniwald-auth-form__group">
+                            <label class="miniwald-auth-form__label" for="personalPassword">
+                                {{ 'account.personalPasswordLabel'|trans|sw_sanitize }}
+                            </label>
+                            <div class="miniwald-auth-form__password-wrapper">
+                                <input class="miniwald-auth-form__input form-control js-form-field-toggle-guest-mode{% if passwordViolations is not empty %} is-invalid{% endif %}"
+                                       type="password"
+                                       id="personalPassword"
+                                       name="password"
+                                       autocomplete="new-password"
+                                       placeholder="{{ 'account.personalPasswordLabel'|trans|sw_sanitize }}"
+                                       data-validation-rules="required,minLength"
+                                       minlength="{{ config('core.loginRegistration.passwordMinLength') }}"
+                                       required>
+                                <button type="button"
+                                        class="miniwald-auth-form__password-toggle"
+                                        data-password-toggle
+                                        data-password-toggle-target="#personalPassword"
+                                        data-password-toggle-show-label="{{ 'miniwaldExplorer.account.showPassword'|trans|sw_sanitize }}"
+                                        data-password-toggle-hide-label="{{ 'miniwaldExplorer.account.hidePassword'|trans|sw_sanitize }}"
+                                        aria-label="{{ 'miniwaldExplorer.account.showPassword'|trans|sw_sanitize }}"
+                                        aria-pressed="false">
+                                    {{ source('@MiniwaldExplorer/storefront/icons/eye-closed.svg', ignore_missing=true)|raw }}
+                                    {{ source('@MiniwaldExplorer/storefront/icons/eye-open.svg', ignore_missing=true)|raw }}
+                                </button>
+                            </div>
+                            {% if passwordViolations is not empty %}
+                                <div id="personalPassword-feedback" class="form-field-feedback">
+                                    {% sw_include '@Storefront/storefront/utilities/form-violation.html.twig' with { violationPath: '/password' } %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endblock %}
+                {% endblock %}
+            {% endblock %}
+
+            {% block component_account_register_address %}
+                {# MiniwaldExplorer: Address fields are completely hidden #}
+                {# RegistrationValidationSubscriber removes validation requirements #}
+                {# RegistrationSubscriber auto-fills all address data server-side #}
+            {% endblock %}
+
+            {% block component_account_register_data_consent %}
+                {# MiniwaldExplorer: Data usage consent for photos and observation data #}
+            {% endblock %}
+
+            {% block component_account_register_captcha %}
+                {% sw_include '@Storefront/storefront/component/captcha/base.html.twig' %}
+            {% endblock %}
+
+            {% block component_account_register_privacy %}
+                {% sw_include '@Storefront/storefront/component/privacy-notice.html.twig' %}
+            {% endblock %}
+
+            {% block component_account_register_required_fields %}{% endblock %}
+
+            {% block component_account_register_submit %}
+                <button type="submit" class="miniwald-auth-form__submit btn">
+                    {{ 'account.registerSubmit'|trans|sw_sanitize }}
+                </button>
+            {% endblock %}
+        </form>
+    {% endblock %}
+{% endblock %}

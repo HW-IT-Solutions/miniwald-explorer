@@ -1,0 +1,1042 @@
+// ============================================================
+// MiniwaldExplorer – Collection Viewset
+// ============================================================
+
+// ── Shared back-link ────────────────────────────────────────
+
+.collection-back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    --color: var(--miniwald-dark-blue);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+
+    svg {
+        width: 1.25rem;
+        height: 1.25rem;
+        rotate: 180deg;
+        flex-shrink: 0;
+    }
+}
+
+// ── Shared card grid ────────────────────────────────────────
+
+.container-size-anchor {
+    container-type: inline-size;
+}
+.collection-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); // default: 2 cols
+    gap: 2rem;
+    @container (min-width: 780px) {
+        grid-template-columns: repeat(
+            3,
+            1fr
+        ); // 3 cols when container is wide enough
+    }
+
+    &__card {
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        align-items: center;
+        --text-decoration: none;
+        --color: var(--miniwald-black);
+        --button-background-color: transparent;
+    }
+
+    &__img-wrap {
+        width: 100%;
+    }
+    &__img {
+        border-radius: 1rem;
+        aspect-ratio: 3 / 2;
+        overflow: hidden;
+        width: 100%;
+        max-width: 100%;
+        object-fit: cover;
+    }
+
+    &__label {
+        font-weight: 500;
+        line-height: 1rem;
+        margin-top: 0.5rem;
+        text-align: center;
+    }
+
+    &__body {
+        padding: 0.75rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        flex: 1;
+    }
+
+    &__name {
+        font-weight: 600;
+        font-size: 0.95rem;
+        line-height: 1.3;
+    }
+
+    &__scientific {
+        font-size: 0.8rem;
+        font-style: italic;
+        opacity: 0.65;
+    }
+
+    &__meta {
+        font-size: 0.8rem;
+        opacity: 0.6;
+        margin-top: auto;
+        padding-top: 0.25rem;
+    }
+}
+// ── Shared observation row ───────────────────────────────────
+
+.collection-obs-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    border-radius: 1rem;
+    overflow: hidden;
+    padding: 1rem 2rem;
+
+    @media (max-width: 27rem) {
+        padding: 1rem;
+    }
+
+    &__empty {
+        padding: 1rem;
+        text-align: center;
+        opacity: 0.5;
+    }
+
+    &__all-link {
+        text-transform: uppercase;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 1rem;
+        font-weight: 500;
+        margin-top: 2rem;
+    }
+}
+
+.collection-obs-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 0;
+    text-decoration: none;
+    line-height: 1.25rem;
+    --color: var(--miniwald-black);
+
+    &:not(:first-of-type) {
+        border-top: 1px solid
+            color-mix(in srgb, var(--miniwald-grey), black 30%);
+    }
+
+    &__icon {
+        width: 2.5rem;
+        min-width: 2.5rem;
+        height: 2.5rem;
+        border-radius: 999rem;
+        overflow: hidden;
+        background: var(--miniwald-green);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    &__img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    &__icon-placeholder {
+        svg {
+            width: 1.5rem;
+            height: 1.5rem;
+        }
+    }
+
+    &__info {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        overflow: hidden;
+    }
+
+    &__name {
+        font-weight: 600;
+        font-size: 0.95rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    &__location,
+    &__date {
+        font-size: 0.875rem;
+        color: var(--miniwald-dark-blue);
+        white-space: nowrap;
+    }
+
+    &__count {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+    &__meta {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+    }
+}
+
+.collection-obs-btn-start {
+    padding: 0.5rem 1rem;
+    width: 100%;
+    max-width: 20rem;
+    min-height: 3.5rem;
+    text-align: center;
+    margin: 0 1rem;
+
+    .overview-button-description {
+        font-size: 0.875rem;
+        font-weight: 400;
+        text-transform: none;
+        line-height: 1rem;
+    }
+
+    @media (min-width: 460px) {
+        margin: 0 auto;
+        padding: 0.5rem 2rem;
+    }
+}
+
+// ── Shared section title ─────────────────────────────────────
+
+.collection-section-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+    color: var(--miniwald-black);
+}
+
+// ── Shared sidebar layout ────────────────────────────────────
+
+.collection-detail-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+
+    @media (min-width: 900px) {
+        grid-template-columns: 1fr 320px;
+    }
+}
+
+// ── Pagination ───────────────────────────────────────────────
+
+.collection-pagination {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 1.25rem;
+    justify-content: flex-end;
+    align-items: center;
+
+    &__btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 2.25rem;
+        height: 2.25rem;
+        // 2px oben: gleicht die Asymmetrie der Roboto-Metrik aus, sonst sitzen
+        // die Ziffern rund 1px zu hoch im Kreis (Ober-/Unterlaenge des Fonts).
+        padding: 2px 0.5rem 0;
+        border-radius: 999px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: background 0.15s ease;
+        background: var(--miniwald-white);
+        color: var(--miniwald-black);
+
+        &:hover,
+        &:active,
+        &:focus {
+            --button-background-color: var(--miniwald-white);
+            --color: var(--miniwald-black);
+        }
+
+        &--active {
+            background: var(--miniwald-dark-blue);
+            color: var(--miniwald-white);
+
+            &:hover,
+            &:active,
+            &:focus {
+                --button-background-color: var(--miniwald-dark-blue);
+                --color: var(--miniwald-white);
+            }
+        }
+
+        &--prev,
+        &--next {
+            // Icons statt Text -> keine Metrik-Korrektur noetig
+            padding: 0 0.5rem;
+            background: transparent;
+            &:hover,
+            &:active,
+            &:focus {
+                --button-background-color: transparent;
+                --color: var(--miniwald-black);
+            }
+        }
+        &--prev {
+            rotate: 270deg;
+        }
+        &--next {
+            rotate: 90deg;
+        }
+    }
+
+    &__ellipsis {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 1rem;
+        height: 2.25rem;
+        // gleiche Korrektur wie bei den Ziffern, damit die Grundlinie passt
+        padding-top: 2px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: var(--miniwald-black);
+    }
+}
+
+// ============================================================
+// Collection Index (3-column main page)
+// ============================================================
+
+.collection-page {
+    margin-bottom: 4rem;
+    container-type: inline-size;
+
+    &__title {
+        text-align: center;
+        font-size: 2rem;
+        font-weight: 600;
+        margin-bottom: 2rem;
+        color: var(--miniwald-black);
+    }
+    &__columns {
+        display: flex;
+        gap: 4rem;
+
+        @container (max-width: 1360px) {
+            gap: 2rem;
+        }
+        @container (max-width: 1280px) {
+            flex-direction: column;
+            padding: 0 2rem;
+        }
+        @media (max-width: 31rem) {
+            padding: 0;
+        }
+    }
+
+    &__column {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+
+        &--forests,
+        &--species {
+            flex: 1 1 0;
+        }
+    }
+
+    &__column__title {
+        text-align: center;
+        font-size: 1.75rem;
+        font-weight: 600;
+        margin-bottom: 0;
+        color: var(--miniwald-black);
+    }
+}
+
+// ============================================================
+// All Observations (paginated list + filter)
+// ============================================================
+
+.collection-observations-page {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+
+    &__title {
+        font-size: 2rem;
+        font-weight: 600;
+        margin-bottom: 0;
+        text-align: center;
+    }
+
+    &__body {
+        display: flex;
+        gap: 4rem;
+        @media (max-width: 1050px) {
+            gap: 1rem;
+        }
+        @media (max-width: 990px) {
+            flex-direction: column-reverse;
+        }
+    }
+
+    &__list-col {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    &__list-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        padding: 0.5rem 0 1rem;
+    }
+
+    &__count {
+        font-size: 1.5rem;
+        font-weight: 500;
+    }
+
+    &__sort {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    // break header in two lines
+    // justify sort to right
+    @media (max-width: 480px) {
+        &__list-header {
+            flex-direction: column;
+        }
+        &__sort {
+            width: 100%;
+            justify-content: flex-end;
+        }
+    }
+
+    &__sort-link {
+        font-weight: 600;
+        padding-top: 1px;
+        &-asc svg {
+            rotate: 270deg;
+        }
+        &-desc svg {
+            rotate: 90deg;
+        }
+    }
+
+    &__filter-col {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        max-width: 424px;
+        @media (max-width: 990px) {
+            flex-grow: 1;
+            max-width: unset;
+        }
+    }
+
+    &__filter-container {
+        background-color: var(--miniwald-blue-35);
+        padding: 1rem 2rem;
+        border-radius: 1rem;
+
+        &[open] > summary::after {
+            rotate: 180deg;
+        }
+
+        @media (min-width: 991px) {
+            display: block !important;
+            padding: 2rem;
+
+            summary {
+                pointer-events: none;
+                cursor: default;
+            }
+            summary::after {
+                display: none;
+            }
+        }
+        @media (max-width: 480px) {
+            padding: 1rem;
+        }
+    }
+
+    &__filter-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+
+        list-style: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        cursor: pointer;
+        user-select: none;
+        @media (max-width: 990px) {
+            font-size: 1rem;
+            justify-content: left;
+        }
+
+        &::-webkit-details-marker {
+            display: none;
+        }
+
+        &::after {
+            content: '';
+            display: inline-block;
+            width: .55rem;
+            height: .55rem;
+            border-right: 2px solid currentColor;
+            border-bottom: 2px solid currentColor;
+            transform: rotate(45deg);
+            transition: rotate 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        ~ form {
+            margin-top: 1rem;
+        }
+
+        // Hide chevron on desktop (pointer-events already disabled)
+        @media (min-width: 991px) {
+            cursor: default;
+        }
+    }
+}
+
+.collection-filter-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+
+    &__field {
+        display: flex;
+        flex-direction: column;
+        gap: 0.3rem;
+        min-width: 0;
+    }
+
+    &__date-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    &__label {
+        color: var(--miniwald-dark-blue);
+    }
+
+    &__select,
+    &__input {
+        padding: 0.6rem 0.9rem;
+        border-radius: 999px;
+        border: 2px solid var(--miniwald-dark-blue);
+        font-size: 0.9rem;
+        background: transparent;
+        color: var(--miniwald-black);
+        font-family: inherit;
+        width: 100%;
+        appearance: none; // fix for iOS and MacOS
+
+        &:focus {
+            outline: none;
+            border-color: var(--miniwald-blue);
+        }
+    }
+
+    &__actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-top: 1rem;
+
+        .btn {
+            padding: 0.5rem 0;
+            border: 2px solid transparent;
+            text-align: center;
+
+            &.collection-filter-form__reset {
+                border-color: var(--miniwald-dark-blue);
+                --color: var(--miniwald-dark-blue);
+                border-radius: 999px;
+            }
+        }
+    }
+
+    &__export {
+        margin: 1.5rem;
+        padding: 0.25rem 3rem;
+        @media (max-width: 450px) {
+            padding: 0.25rem 1rem;
+        }
+    }
+}
+
+// ============================================================
+// Observation Detail
+// ============================================================
+
+.collection-obs-detail-page {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+
+    &__title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        margin: 0 auto;
+        max-width: 934px;
+    }
+
+    &__body {
+        display: flex;
+        flex-direction: column;
+        gap: 3rem;
+        max-width: 934px;
+        width: 100%;
+        margin: 0 auto;
+    }
+
+    &__main {
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+    }
+
+    &__section-title {
+        font-size: 1.75rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+    &__section-title-photos,
+    &__section-title-remarks {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    &__photos {
+        background-color: transparent;
+        padding: 1rem;
+    }
+
+    &__details {
+        border-radius: 1rem;
+        padding: 1rem 1.25rem;
+        background-color: var(--miniwald-blue-35);
+
+        table {
+            tr:not(:first-of-type) {
+                font-weight: 600;
+                a {
+                    --color: var(--miniwald-black);
+                    --text-decoration: uppercase;
+                }
+            }
+        }
+    }
+
+    &__remarks {
+        padding: 1rem 3rem;
+    }
+
+    &__remarks-text {
+        line-height: 1.5rem;
+        white-space: pre-wrap;
+    }
+
+    &__photo-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+        gap: 1rem;
+    }
+
+    &__photo-thumb {
+        display: block;
+        border-radius: 0.5rem;
+        overflow: hidden;
+        aspect-ratio: 3 / 2;
+        background: var(--miniwald-grey);
+        max-width: 100%;
+    }
+}
+
+// ── Observation detail table ─────────────────────────────────
+
+.collection-obs-detail-table {
+    width: 100%;
+
+    tr:last-child th,
+    tr:last-child td {
+        border-bottom: none;
+    }
+
+    @media (max-width: 950px) {
+        display: block;
+
+        thead,
+        tbody,
+        tr {
+            display: block;
+        }
+
+        // Hide the header row — labels come from data-label attributes
+        tr:first-of-type {
+            display: none;
+        }
+
+        // Each value cell becomes a label + value row
+        tr td {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 1rem;
+            padding: 0.4rem 0;
+
+            &::before {
+                content: attr(data-label);
+                font-weight: 400;
+                flex-shrink: 0;
+            }
+        }
+    }
+}
+
+// ============================================================
+// Miniforest Detail – Inline Map
+// ============================================================
+
+.miniforest-detail-map {
+    width: 100%;
+    height: 280px;
+    border-radius: 1rem;
+    overflow: hidden;
+
+    .maplibregl-marker {
+        top: 9px;
+    }
+
+    .maplibregl-ctrl-group {
+        background: transparent;
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+        box-shadow: none !important;
+
+        button {
+            display: block;
+            padding: 0;
+            border: 0;
+            background-color: var(--miniwald-green);
+            cursor: pointer;
+            outline: none;
+            border-radius: 999px !important;
+            width: 2.25rem;
+            height: 2.25rem;
+
+            &:hover {
+                background-color: color-mix(
+                    in srgb,
+                    var(--miniwald-green),
+                    black 20%
+                ) !important;
+            }
+
+            &.maplibregl-ctrl-compass {
+                display: none;
+            }
+        }
+    }
+}
+
+// ============================================================
+// Mini Forest Detail
+// ============================================================
+@mixin collection-entity-detail {
+    &__container {
+        display: flex;
+        margin-top: 0.5rem;
+        gap: 4rem;
+
+        @media (max-width: 940px) {
+            flex-direction: column;
+        }
+    }
+
+    &__column {
+        display: flex;
+        gap: 2rem;
+        flex-direction: column;
+
+        &-main {
+            max-width: 934px;
+            flex-grow: 1;
+        }
+        &-aside {
+            max-width: 434px;
+            flex-grow: 1;
+            gap: 3rem;
+            @media (max-width: 940px) {
+                max-width: none;
+            }
+        }
+    }
+
+    &__title,
+    &__section-title {
+        text-align: center;
+        margin: 0;
+        line-height: 2.5rem;
+    }
+    &__scientific-name {
+        text-align: center;
+        opacity: 0.8;
+        margin: 0;
+    }
+    &__address {
+        text-align: center;
+    }
+
+    &__photo-wrap {
+        text-align: center;
+
+        .detail__photo {
+            border-radius: 1rem;
+            max-width: 100%;
+            max-height: 25rem;
+        }
+    }
+    &__photo-caption {
+        color: var(--miniwald-dark-grey);
+        font-size: 0.875rem;
+    }
+
+    &__description {
+        padding: 0 2rem;
+    }
+
+    &__map-section,
+    &__obs-section {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+    }
+
+    &__identification {
+        background: var(--miniwald-blue-35);
+        padding: 2rem;
+        border-radius: 2rem;
+        h2 {
+            margin: 0 0 1rem;
+            text-align: left;
+        }
+        p {
+            margin: 0;
+        }
+    }
+}
+
+.collection-mini-forest-detail {
+    @include collection-entity-detail;
+}
+.collection-category-detail {
+    @include collection-entity-detail;
+}
+.collection-species-detail {
+    @include collection-entity-detail;
+}
+
+// ============================================================
+// Photo trigger button (replaces the old <a> link)
+// ============================================================
+
+.collection-obs-detail-page__photo-btn {
+    display: block;
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: zoom-in;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    width: 100%;
+
+    &:focus-visible {
+        outline: 3px solid var(--miniwald-blue);
+        outline-offset: 2px;
+    }
+
+    img {
+        display: block;
+        width: 100%;
+        aspect-ratio: 3 / 2;
+        object-fit: cover;
+        object-position: center;
+        transition: transform 0.2s ease;
+    }
+
+    &:hover img,
+    &:focus-visible img {
+        transform: scale(1.03);
+    }
+}
+
+// ============================================================
+// Lightbox overlay
+// ============================================================
+
+.miniwald-lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 9000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &[hidden] {
+        display: none;
+    }
+
+    // ── Backdrop ──────────────────────────────────────────────
+    &__backdrop {
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.92);
+        cursor: pointer;
+    }
+
+    // ── Stage (sits above backdrop) ───────────────────────────
+    &__stage {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 100%;
+        pointer-events: none; // let backdrop clicks fall through by default
+    }
+
+    // ── Image ─────────────────────────────────────────────────
+    &__image {
+        pointer-events: auto;
+        max-width: 95vw;
+        max-height: 90vh;
+        object-fit: contain;
+        border-radius: 0.5rem;
+        box-shadow: 0 8px 40px rgba(0, 0, 0, 0.6);
+        transition: opacity 0.15s ease;
+        display: block;
+
+        &.is-loading {
+            opacity: 0.3;
+        }
+    }
+
+    // ── Shared button base ────────────────────────────────────
+    &__btn {
+        pointer-events: auto;
+        position: absolute;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 44px;
+        min-height: 44px;
+        border: none;
+        background: rgba(255, 255, 255, 0.15);
+        color: #fff;
+        border-radius: 999px;
+        cursor: pointer;
+        font-size: 1.5rem;
+        line-height: 1;
+        transition: background 0.15s ease;
+        backdrop-filter: blur(4px);
+
+        &:hover,
+        &:focus-visible {
+            background: rgba(255, 255, 255, 0.3);
+            outline: none;
+        }
+
+        &:focus-visible {
+            outline: 2px solid var(--miniwald-blue);
+            outline-offset: 2px;
+        }
+
+        // ── Close (top-right) ─────────────────────────────────
+        &--close {
+            top: 1rem;
+            right: 1rem;
+            font-size: 1.25rem;
+            width: 2.75rem;
+            height: 2.75rem;
+        }
+
+        // ── Prev (left-center) ────────────────────────────────
+        &--prev {
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 2rem;
+            width: 3rem;
+            height: 3rem;
+
+            @media (max-width: 480px) {
+                left: 0.25rem;
+                width: 2.5rem;
+                height: 2.5rem;
+            }
+        }
+
+        // ── Next (right-center) ───────────────────────────────
+        &--next {
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 2rem;
+            width: 3rem;
+            height: 3rem;
+
+            @media (max-width: 480px) {
+                right: 0.25rem;
+                width: 2.5rem;
+                height: 2.5rem;
+            }
+        }
+    }
+
+    // ── Counter (bottom-center) ───────────────────────────────
+    &__counter {
+        pointer-events: none;
+        position: absolute;
+        bottom: 1.25rem;
+        left: 50%;
+        transform: translateX(-50%);
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.875rem;
+        font-weight: 500;
+        letter-spacing: 0.05em;
+        white-space: nowrap;
+    }
+}

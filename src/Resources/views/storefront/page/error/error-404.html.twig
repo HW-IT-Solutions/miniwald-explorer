@@ -1,0 +1,21 @@
+{% sw_extends '@Storefront/storefront/base.html.twig' %}
+
+{% block base_content %}
+    <div class="error-404">
+        <div class="error-404__card">
+            <img
+                src="{{ asset('bundles/miniwaldexplorer/assets/404-bird.jpg') }}"
+                alt=""
+                class="error-404__image"
+            >
+            <span class="error-404__code" aria-hidden="true">404</span>
+        </div>
+
+        <h1 class="error-404__title">{{ 'miniwaldExplorer.error.404.title'|trans }}</h1>
+        <p class="error-404__text">{{ 'miniwaldExplorer.error.404.text'|trans }}</p>
+
+        <a href="{{ path('frontend.home.page') }}" class="btn btn-blue error-404__btn">
+            {{ 'miniwaldExplorer.error.404.backButton'|trans }}
+        </a>
+    </div>
+{% endblock %}

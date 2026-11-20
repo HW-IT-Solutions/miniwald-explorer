@@ -1,0 +1,31 @@
+{# Override header to show only firstName (lastName is dummy "-") #}
+{% block sw_customer_detail_header %}
+<template
+    v-if="!isLoading && customer"
+    #smart-bar-header
+>
+    <h2>{{ customer.firstName }}</h2>
+    <sw-label
+        v-if="customer.createdById"
+        appearance="pill"
+        size="small"
+        class="sw-customer-detail__created-by-admin-label"
+    >
+        {{ $tc('sw-customer.detail.labelCreatedByAdmin') }}
+    </sw-label>
+</template>
+{% endblock %}
+{# Hide Addresses tab #}
+{% block sw_customer_detail_content_tab_addresses %}{% endblock %}
+{# Hide Orders tab #}
+{% block sw_customer_detail_content_tab_order %}{% endblock %}
+{# Add Observations tab #}
+{% block sw_customer_detail_content_tab_after %}
+<sw-tabs-item
+    class="sw-customer-detail__tab-observations"
+    :route="observationsRoute"
+    :title="$tc('miniwald-explorer.customer.tabObservations')"
+>
+    {{ $tc('miniwald-explorer.customer.tabObservations') }}
+</sw-tabs-item>
+{% endblock %}

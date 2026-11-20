@@ -1,0 +1,75 @@
+{% block sw_customer_detail_observations %}
+<div class="sw-customer-detail-observations">
+    {% block sw_customer_detail_observations_grid %}
+    <sw-entity-listing
+        v-if="observations"
+        :items="observations"
+        :repository="observationRepository"
+        :show-selection="false"
+        :columns="observationColumns"
+        :is-loading="isLoading"
+        :allow-inline-edit="false"
+        :allow-delete="false"
+        detail-route="miniwald.explorer.observation.detail"
+        @page-change="onPageChange"
+        @column-sort="onSortColumn"
+    >
+        {% block sw_customer_detail_observations_grid_columns %}
+        {% block sw_customer_detail_observations_grid_columns_observed_at %}
+        <template #column-observedAt="{ item }">
+            <router-link
+                :to="{ name: 'miniwald.explorer.observation.detail', params: { id: item.id } }"
+            >
+                {{ item.observedAt ? new Date(item.observedAt).toLocaleString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Berlin' }) : '–' }}
+            </router-link>
+        </template>
+        {% endblock %}
+
+        {% block sw_customer_detail_observations_grid_columns_type %}
+        <template #column-type="{ item }">
+            <sw-label
+                :variant="getObservationType(item) === 'animals' ? 'info' : (getObservationType(item) === 'plants' ? 'success' : 'warning')"
+                size="default"
+                appearance="pill"
+            >
+                {{ getObservationTypeLabel(item) }}
+            </sw-label>
+        </template>
+        {% endblock %}
+
+        {% block sw_customer_detail_observations_grid_columns_location %}
+        <template #column-miniwald.name="{ item }">
+            <template v-if="item.miniwald">
+                    {{ item.miniwald.name }}
+                </template>
+
+            <template v-else>
+                –
+            </template>
+        </template>
+        {% endblock %}
+
+        {% block sw_customer_detail_observations_grid_columns_status %}
+        <template #column-status="{ item }">
+            <sw-label
+                :variant="getStatusVariant(item.status)"
+                size="default"
+                appearance="pill"
+            >
+                {{ getStatusLabel(item.status) }}
+            </sw-label>
+        </template>
+        {% endblock %}
+        {% endblock %}
+    </sw-entity-listing>
+    {% endblock %}
+
+    {% block sw_customer_detail_observations_empty_state %}
+    <sw-empty-state
+        v-if="!isLoading && (!observations || observations.length === 0)"
+        :absolute="false"
+        :title="$tc('miniwald-explorer.customer.observationsEmpty')"
+    />
+    {% endblock %}
+</div>
+{% endblock %}

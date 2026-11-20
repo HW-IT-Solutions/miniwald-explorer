@@ -1,0 +1,45 @@
+{
+    "name": "in-re-na/miniwald-explorer",
+    "description": "in-re-na/miniwald-explorer",
+    "type": "shopware-platform-plugin",
+    "version": "1.0.2",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Helm & Walter IT-Solutions GmbH"
+        }
+    ],
+    "require": {
+        "shopware/core": "~6.7.0",
+        "shopware/storefront": "^6.7"
+    },
+    "extra": {
+        "shopware-plugin-class": "InReNa\\MiniwaldExplorer",
+        "label": {
+            "de-DE": "Miniwald Explorer Plugin zur Beobachtung der Natur",
+            "en-GB": "Miniwald Explorer plugin for nature Observation"
+        },
+        "description": {
+            "de-DE": "Miniwald Explorer ist ein Citizen-Science-Plugin für Shopware 6. Benutzer (Schulklassen und Bürger) können Tier- und Pflanzenbeobachtungen erfassen und verwalten.",
+            "en-GB": "Miniwald Explorer is a citizen science plugin for Shopware 6. User (School classes and citizens) can record, view and export animal and plant observations."
+        },
+        "manufacturerLink": {
+            "de-DE": "https://helmundwalter.de",
+            "en-GB": "https://helmundwalter.de"
+        },
+        "supportLink": {
+            "de-DE": "https://helmundwalter.de",
+            "en-GB": "https://helmundwalter.de"
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "InReNa\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "InReNa\\Tests\\": "tests/"
+        }
+    }
+}

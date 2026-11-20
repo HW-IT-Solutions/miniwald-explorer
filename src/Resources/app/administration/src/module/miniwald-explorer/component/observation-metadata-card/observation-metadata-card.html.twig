@@ -1,0 +1,129 @@
+{% block miniwald_observation_metadata_card %}
+<sw-card
+    :title="$tc('miniwald-explorer.observation.detail.cardTitleMetadata')"
+    :is-loading="!observation"
+>
+    <sw-container
+        columns="1fr 1fr"
+        gap="0 30px"
+    >
+        {% block miniwald_observation_metadata_observer %}
+        <sw-entity-single-select
+            v-model:value="observation.customerId"
+            entity="customer"
+            :label="$tc('miniwald-explorer.observation.detail.labelObserver')"
+            :placeholder="$tc('miniwald-explorer.observation.detail.placeholderObserver')"
+            label-property="firstName"
+        >
+            <template
+                #result-label-property="{ item, searchTerm, highlightSearchTerm }"
+            >
+                {{ item.firstName }}
+                <template v-if="item.company"> ({{ item.company }})</template>
+            </template>
+
+            <template #selection-label-property="{ item }">
+                {{ item.firstName }}
+                <template v-if="item.company"> ({{ item.company }})</template>
+            </template>
+        </sw-entity-single-select>
+        {% endblock %}
+
+        {% block miniwald_observation_metadata_miniwald %}
+        <sw-entity-single-select
+            v-model:value="observation.miniwaldId"
+            entity="miniwald_explorer_miniwald"
+            :label="$tc('miniwald-explorer.observation.detail.labelMiniwald')"
+            :placeholder="$tc('miniwald-explorer.observation.detail.placeholderMiniwald')"
+            label-property="name"
+        >
+                </sw-entity-single-select>
+        {% endblock %}
+    </sw-container>
+    <sw-container
+        columns="1fr 1fr"
+        gap="0 30px"
+    >
+        {% block miniwald_observation_metadata_observed_at %}
+        <sw-datepicker
+            v-model:value="observation.observedAt"
+            :label="$tc('miniwald-explorer.observation.detail.labelObservedAt')"
+            dateType="datetime"
+            timeZone="Europe/Berlin"
+            required
+        >
+                </sw-datepicker>
+        {% endblock %}
+
+        {% block miniwald_observation_metadata_status %}
+        <sw-single-select
+            v-model:value="observation.status"
+            :label="$tc('miniwald-explorer.observation.detail.labelStatus')"
+            :options="statusOptions"
+        >
+                </sw-single-select>
+        {% endblock %}
+    </sw-container>
+    <sw-container
+        columns="1fr 1fr"
+        gap="0 30px"
+    >
+        {% block miniwald_observation_metadata_latitude %}
+        <sw-number-field
+            v-model:value="observation.latitude"
+            :label="$tc('miniwald-explorer.observation.detail.labelLatitude')"
+            :placeholder="$tc('miniwald-explorer.observation.detail.placeholderLatitude')"
+            numberType="float"
+            :step="0.000001"
+            :digits="6"
+        >
+                </sw-number-field>
+        {% endblock %}
+
+        {% block miniwald_observation_metadata_longitude %}
+        <sw-number-field
+            v-model:value="observation.longitude"
+            :label="$tc('miniwald-explorer.observation.detail.labelLongitude')"
+            :placeholder="$tc('miniwald-explorer.observation.detail.placeholderLongitude')"
+            numberType="float"
+            :step="0.000001"
+            :digits="6"
+        >
+                </sw-number-field>
+        {% endblock %}
+    </sw-container>
+    <sw-container
+        columns="1fr 1fr"
+        gap="0 30px"
+    >
+        {% block miniwald_observation_metadata_weather %}
+        <sw-single-select
+            v-model:value="observation.weather"
+            :label="$tc('miniwald-explorer.observation.detail.labelWeather')"
+            :placeholder="$tc('miniwald-explorer.observation.detail.placeholderWeather')"
+            :options="weatherOptions"
+        >
+                </sw-single-select>
+        {% endblock %}
+
+        {% block miniwald_observation_metadata_wind %}
+        <sw-single-select
+            v-model:value="observation.wind"
+            :label="$tc('miniwald-explorer.observation.detail.labelWind')"
+            :placeholder="$tc('miniwald-explorer.observation.detail.placeholderWind')"
+            :options="windOptions"
+        >
+                </sw-single-select>
+        {% endblock %}
+    </sw-container>
+    {% block miniwald_observation_metadata_remarks %}
+    <mt-textarea
+        :model-value="observation.remarks"
+        :label="$tc('miniwald-explorer.observation.detail.labelRemarks')"
+        :placeholder="$tc('miniwald-explorer.observation.detail.placeholderRemarks')"
+        @update:model-value="observation.remarks = $event"
+    >
+            </mt-textarea>
+    {% endblock %}
+</sw-card>
+{% endblock %}

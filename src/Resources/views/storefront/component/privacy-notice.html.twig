@@ -1,0 +1,22 @@
+{% sw_extends '@Storefront/storefront/component/privacy-notice.html.twig' %}
+
+{% block component_privacy_notice %}
+    <fieldset class="form-text privacy-notice">
+        {% block component_privacy_title %}{% endblock %}
+
+        {% block component_privacy_dpi %}
+            {% set cmsPath = 'frontend.cms.page' %}
+            {% set privacyNoticeSnippet = 'miniwaldExplorer.account.privacyNoticeTextModal' %}
+            <div class="data-protection-information">
+                {% block component_privacy_label %}
+                    <div>
+                        {{ privacyNoticeSnippet|trans({
+                            '%privacyModalTagOpen%': '<a class="privacy-notice" aria-haspopup="dialog" data-ajax-modal="true" data-url="' ~ path(cmsPath, { id: config('core.basicInformation.privacyPage') }) ~ '">',
+                            '%privacyModalTagClose%': '</a>',
+                        })|raw }}
+                    </div>
+                {% endblock %}
+            </div>
+        {% endblock %}
+    </fieldset>
+{% endblock %}

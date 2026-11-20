@@ -1,0 +1,216 @@
+{#
+  Ground measurement panel — shown inside step 3 for "ground" observation type.
+  Replaced the wide table with 3 sequential sub-step panels (one per location).
+  JS (GroundHandler) controls which sub-panel is visible via [data-ground-sub].
+
+  Data attributes on inputs MUST stay:
+    data-ground-field="wood_center|wood_edge|street_curb"
+    data-field-name="airTemperature|humidity|groundTemperature|moisture|phValue|lightConditions"
+    data-field-type="radio"  (only on radio buttons)
+#}
+
+{# ── Reusable macro: a single labeled number input ── #}
+{% macro numberField(label, locationType, fieldName, placeholder, min, max) %}
+    <div class="miniwald-ground-field">
+        <label class="miniwald-ground-field__label">{{ label }}</label>
+        <input class="miniwald-ground-field__input"
+               type="number"
+               step="0.1"
+               {% if min is not null %}min="{{ min }}"{% endif %}
+               {% if max is not null %}max="{{ max }}"{% endif %}
+               inputmode="decimal"
+               placeholder="{{ placeholder }}"
+               data-ground-field="{{ locationType }}"
+               data-field-name="{{ fieldName }}"
+               aria-label="{{ label }}">
+    </div>
+{% endmacro %}
+
+{# ── Reusable macro: light conditions radio group ── #}
+{% macro lightField(locationType) %}
+    <fieldset class="miniwald-ground-field miniwald-ground-field--light">
+        <legend class="miniwald-ground-field__label">{{ 'miniwaldExplorer.observation.groundRowLight'|trans }}</legend>
+        <div class="miniwald-ground-field__radios">
+            <label class="miniwald-ground-field__radio-label">
+                <input type="radio"
+                       name="light_{{ locationType }}"
+                       value="sunny"
+                       data-ground-field="{{ locationType }}"
+                       data-field-name="lightConditions"
+                       data-field-type="radio">
+                {{ 'miniwaldExplorer.observation.groundLightSunny'|trans }}
+            </label>
+            <label class="miniwald-ground-field__radio-label">
+                <input type="radio"
+                       name="light_{{ locationType }}"
+                       value="shady"
+                       data-ground-field="{{ locationType }}"
+                       data-field-name="lightConditions"
+                       data-field-type="radio">
+                {{ 'miniwaldExplorer.observation.groundLightShady'|trans }}
+            </label>
+        </div>
+    </fieldset>
+{% endmacro %}
+
+<div class="miniwald-observation-step__content miniwald-ground-matrix" data-ground-matrix hidden>
+
+    {# ── Left column: header + sub-step panels ── #}
+    <div class="miniwald-ground__main">
+
+    <div class="miniwald-ground__header">
+        <h1 class="miniwald-observation-title">{{ 'miniwaldExplorer.observation.groundMatrixTitle'|trans }}</h1>
+        <p class="miniwald-observation-text miniwald-observation-text__slim">{{ 'miniwaldExplorer.observation.groundMatrixSubtitle'|trans }}</p>
+    </div>
+
+    {# ══════════════════════════════════════════════════════════════════════
+       Sub-step 0: a. Miniwald (wood_center) — all 6 fields
+    ══════════════════════════════════════════════════════════════════════ #}
+    <div class="miniwald-ground__sub-step" data-ground-sub="0">
+        <h2 class="miniwald-ground__sub-title">
+            {{ 'miniwaldExplorer.observation.groundColMiniwald'|trans }}
+            <span data-ground-progress-text class="miniwald-ground__progress" aria-live="polite">1 / 3</span>
+        </h2>
+
+        {{ _self.numberField(
+            'miniwaldExplorer.observation.groundRowAirTemp'|trans,
+            'wood_center', 'airTemperature', '°C', null, null
+        ) }}
+        {{ _self.numberField(
+            'miniwaldExplorer.observation.groundRowAirHumidity'|trans,
+            'wood_center', 'humidity', '%', 0, 100
+        ) }}
+
+        <div class="miniwald-ground__soil-group">
+            {{ _self.numberField(
+                'miniwaldExplorer.observation.groundRowSoilTemp'|trans,
+                'wood_center', 'groundTemperature', '°C', null, null
+            ) }}
+            {{ _self.numberField(
+                'miniwaldExplorer.observation.groundRowSoilMoisture'|trans,
+                'wood_center', 'moisture', '%', 0, 100
+            ) }}
+            {{ _self.numberField(
+                'miniwaldExplorer.observation.groundRowPhValue'|trans,
+                'wood_center', 'phValue', '1–14', 1, 14
+            ) }}
+        </div>
+
+        {{ _self.lightField('wood_center') }}
+    </div>
+
+    {# ══════════════════════════════════════════════════════════════════════
+       Sub-step 1: b. Wiese (wood_edge) — all 6 fields
+    ══════════════════════════════════════════════════════════════════════ #}
+    <div class="miniwald-ground__sub-step" data-ground-sub="1" hidden>
+        <h2 class="miniwald-ground__sub-title">
+            {{ 'miniwaldExplorer.observation.groundColWiese'|trans }}
+            <span data-ground-progress-text class="miniwald-ground__progress" aria-live="polite">2 / 3</span>
+        </h2>
+
+        {{ _self.numberField(
+            'miniwaldExplorer.observation.groundRowAirTemp'|trans,
+            'wood_edge', 'airTemperature', '°C', null, null
+        ) }}
+        {{ _self.numberField(
+            'miniwaldExplorer.observation.groundRowAirHumidity'|trans,
+            'wood_edge', 'humidity', '%', 0, 100
+        ) }}
+
+        <div class="miniwald-ground__soil-group">
+            {{ _self.numberField(
+                'miniwaldExplorer.observation.groundRowSoilTemp'|trans,
+                'wood_edge', 'groundTemperature', '°C', null, null
+            ) }}
+            {{ _self.numberField(
+                'miniwaldExplorer.observation.groundRowSoilMoisture'|trans,
+                'wood_edge', 'moisture', '%', 0, 100
+            ) }}
+            {{ _self.numberField(
+                'miniwaldExplorer.observation.groundRowPhValue'|trans,
+                'wood_edge', 'phValue', '1–14', 1, 14
+            ) }}
+        </div>
+
+        {{ _self.lightField('wood_edge') }}
+    </div>
+
+    {# ══════════════════════════════════════════════════════════════════════
+       Sub-step 2: c. Bürgersteig (street_curb) — air + light only (no soil)
+    ══════════════════════════════════════════════════════════════════════ #}
+    <div class="miniwald-ground__sub-step" data-ground-sub="2" hidden>
+        <h2 class="miniwald-ground__sub-title">
+            {{ 'miniwaldExplorer.observation.groundColBuergersteig'|trans }}
+            <span data-ground-progress-text class="miniwald-ground__progress" aria-live="polite">3 / 3</span>
+        </h2>
+
+        {{ _self.numberField(
+            'miniwaldExplorer.observation.groundRowAirTemp'|trans,
+            'street_curb', 'airTemperature', '°C', null, null
+        ) }}
+        {{ _self.numberField(
+            'miniwaldExplorer.observation.groundRowAirHumidity'|trans,
+            'street_curb', 'humidity', '%', 0, 100
+        ) }}
+
+        {{ _self.lightField('street_curb') }}
+    </div>
+
+    </div>{# end .miniwald-ground__main #}
+
+    {# ── Scale reference: collapsible on mobile, always open on desktop ── #}
+    <details class="miniwald-ground-scale" open>
+        <summary class="miniwald-ground-scale__summary">{{ 'miniwaldExplorer.observation.groundScaleTitle'|trans }}</summary>
+
+        <div class="miniwald-ground-scale__body">
+            <div class="miniwald-ground-scale__row">
+                <span class="miniwald-ground-scale__label">{{ 'miniwaldExplorer.observation.groundScaleSoilTemp'|trans }}</span>
+                <div class="miniwald-ground-scale__blocks">
+                    <span class="miniwald-ground-scale__block miniwald-ground-scale__block--temp-1">&lt;5°C</span>
+                    <span class="miniwald-ground-scale__block miniwald-ground-scale__block--temp-2">5–10°C</span>
+                    <span class="miniwald-ground-scale__block miniwald-ground-scale__block--temp-3">10–20°C</span>
+                    <span class="miniwald-ground-scale__block miniwald-ground-scale__block--temp-4">20–25°C</span>
+                    <span class="miniwald-ground-scale__block miniwald-ground-scale__block--temp-5">&gt;25°C</span>
+                </div>
+            </div>
+
+            <div class="miniwald-ground-scale__row">
+                <span class="miniwald-ground-scale__label">{{ 'miniwaldExplorer.observation.groundScaleSoilMoisture'|trans }}</span>
+                <div class="miniwald-ground-scale__blocks">
+                    <span class="miniwald-ground-scale__block miniwald-ground-scale__block--moist-1">&lt;25%</span>
+                    <span class="miniwald-ground-scale__block miniwald-ground-scale__block--moist-2">25–30%</span>
+                    <span class="miniwald-ground-scale__block miniwald-ground-scale__block--moist-3">30–60%</span>
+                    <span class="miniwald-ground-scale__block miniwald-ground-scale__block--moist-4">60–70%</span>
+                    <span class="miniwald-ground-scale__block miniwald-ground-scale__block--moist-5">&gt;70%</span>
+                </div>
+            </div>
+
+            <div class="miniwald-ground-scale__row">
+                <span class="miniwald-ground-scale__label">{{ 'miniwaldExplorer.observation.groundScalePhValue'|trans }}</span>
+                <div class="miniwald-ground-scale__blocks miniwald-ground-scale__blocks--ph">
+                    {% for i in 1..14 %}
+                        <span class="miniwald-ground-scale__block miniwald-ground-scale__block--ph miniwald-ground-scale__block--ph-{{ i }}">{{ i }}</span>
+                    {% endfor %}
+                </div>
+                <div class="miniwald-ground-scale__ph-labels">
+                    <span>{{ 'miniwaldExplorer.observation.groundScaleSauer'|trans }}</span>
+                    <span>{{ 'miniwaldExplorer.observation.groundScaleNeutral'|trans }}</span>
+                    <span>{{ 'miniwaldExplorer.observation.groundScaleAlkalisch'|trans }}</span>
+                </div>
+            </div>
+        </div>
+    </details>
+
+    {# ── Navigation buttons (Zurück / Weiter / Fertig) ── #}
+    <div class="miniwald-observation-step__actions">
+        <button class="btn btn-white btn-back" type="button" data-ground-prev>
+            {{ source('@MiniwaldExplorer/storefront/icons/arrow.svg', ignore_missing=true)|raw }}
+            {{ 'miniwaldExplorer.observation.back'|trans }}
+        </button>
+        <button class="btn btn-white btn-forward" type="button" data-ground-next>
+            {{ 'miniwaldExplorer.observation.next'|trans }}
+            {{ source('@MiniwaldExplorer/storefront/icons/arrow.svg', ignore_missing=true)|raw }}
+        </button>
+    </div>
+
+</div>

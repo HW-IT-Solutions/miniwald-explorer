@@ -1,0 +1,49 @@
+{% from '@MiniwaldExplorer/storefront/page/observation/_macros.html.twig' import speciesGrid %}
+
+{# ── Butterflies instruction modal ── #}
+<div class="miniwald-observation-modal miniwald-observation-modal--instruction" data-instruction-modal-butterflies hidden>
+    <div class="miniwald-instruction-modal__content">
+        <div class="miniwald-instruction-modal__body">
+            <h1 class="miniwald-observation-title">{{ 'miniwaldExplorer.observation.butterfliesInstructionTitle'|trans }}</h1>
+            <p class="miniwald-observation-text">
+                {{ 'miniwaldExplorer.observation.step2Text1Intro'|trans({
+                    '%boldStart%': '<strong>',
+                    '%boldEnd%': '</strong>',
+                    '%participateStart%': '<a class="link" href="/mitmachen">',
+                    '%participateEnd%': '</a>',
+                    '%mailStart%': '<a class="mail" ',
+                    '%mailEnd%': '</a>'
+                })|raw }}
+            </p>
+            <h2 class="miniwald-observation-sub-title">{{ 'miniwaldExplorer.observation.step2InstructionTitle'|trans }}</h2>
+            <div class="miniwald-observation-text">
+                <ul>
+                    <li>{{ 'miniwaldExplorer.observation.butterfliesInstructionPoint1'|trans }}</li>
+                    <li>{{ 'miniwaldExplorer.observation.butterfliesInstructionPoint2'|trans }}</li>
+                    <li>{{ 'miniwaldExplorer.observation.butterfliesInstructionPoint3'|trans({
+                            '%exampleStart%': '<span class="example">',
+                            '%exampleEnd%': '</span>',
+                        })|raw }}</li>
+                </ul>
+            </div>
+            <div class="miniwald-observation-instruction-tip-box">
+                <h2 class="miniwald-observation-sub-title">{{ 'miniwaldExplorer.observation.step2TipTitle'|trans }}</h2>
+                <p class="miniwald-observation-text">{{ 'miniwaldExplorer.observation.butterfliesInstructionTipText'|trans }}</p>
+            </div>
+            <h2 class="miniwald-observation-sub-title">{{ 'miniwaldExplorer.observation.butterfliesInstructionSpeciesTitle'|trans }}</h2>
+            {{ speciesGrid(categories, speciesByCategory, {countersHidden: true}) }}
+            <p class="miniwald-observation-text">{{ 'miniwaldExplorer.observation.step2SpeciesText2InfoPopupButterfly'|trans({'%boldStart%': '<strong>','%boldEnd%': '</strong>'})|raw }}</p>
+            <p class="miniwald-observation-text">{{ 'miniwaldExplorer.observation.step2SpeciesText3MoreButterfly'|trans }}</p>
+            {% if isLoggedIn %}
+            <div class="hide-instructions__container">
+                <input type="checkbox" id="hide-instructions__checkbox-butterflies" class="hide-instructions__checkbox">
+                <label class="hide-instructions__label" for="hide-instructions__checkbox-butterflies">{{ 'miniwaldExplorer.observation.step2HideInfoCheck'|trans }}</label>
+            </div>
+            {% endif %}
+            <h2 class="miniwald-observation-sub-title">{{ 'miniwaldExplorer.observation.step2Ready'|trans }}</h2>
+        </div>
+        <button class="btn btn-white miniwald-instruction-modal__close" type="button" data-close-instruction-modal-butterflies>
+            {{ 'miniwaldExplorer.observation.instructionModalClose'|trans }}
+        </button>
+    </div>
+</div>

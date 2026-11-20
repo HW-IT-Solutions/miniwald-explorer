@@ -1,0 +1,119 @@
+{% sw_extends '@Storefront/storefront/component/account/login.html.twig' %}
+
+{% block component_account_login %}
+    {% block component_account_login_header %}
+        <div class="miniwald-auth-card__header">
+            <h1 class="miniwald-auth-card__title">
+                <a class="miniwald-auth-card__back" href="{{ path('frontend.home.page') }}">{{ source('@MiniwaldExplorer/storefront/icons/arrow.svg', ignore_missing=true)|raw }} {{ 'miniwaldExplorer.account.loginTitle'|trans|sw_sanitize }}</a>
+            </h1>
+            <p class="miniwald-auth-card__subtitle miniwald-auth-card__subtitle--mobile-only">
+                {{ 'miniwaldExplorer.account.noAccountYet'|trans }}
+                <a href="{{ path('frontend.account.register.page') }}">{{ 'miniwaldExplorer.account.registerNow'|trans }}</a>
+            </p>
+            <p class="miniwald-auth-card__subtitle miniwald-auth-card__subtitle--desktop-only">
+                {{ 'miniwaldExplorer.account.alreadyHaveAccount'|trans }}
+                <strong class="bold">{{ 'miniwaldExplorer.account.loginHere'|trans }}</strong>
+            </p>
+        </div>
+    {% endblock %}
+
+    {% block component_account_login_form %}
+        {% set returnUrl = app.request.query.get('returnUrl') %}
+        <form class="miniwald-auth-form"
+              action="{{ path('frontend.account.login') }}"
+              method="post"
+              data-form-handler="true">
+            {% block component_account_login_form_redirect %}
+                <input type="hidden" name="redirectTo" value="{{ redirectTo }}">
+                <input type="hidden" name="redirectParameters"
+                       value="{{ redirectParameters is iterable ? redirectParameters|json_encode : redirectParameters }}">
+                {% if returnUrl and returnUrl starts with '/' and '//' not in returnUrl and not (returnUrl starts with '/account') %}
+                    <input type="hidden" name="returnUrl" value="{{ returnUrl|escape('html_attr') }}">
+                {% endif %}
+            {% endblock %}
+
+            {% block component_account_login_form_error %}
+                {% if loginError %}
+                    {% if errorSnippet != null %}
+                        {% sw_include '@Storefront/storefront/utilities/alert.html.twig' with {
+                            type: 'danger',
+                            content: errorSnippet|trans|sw_sanitize({}, true),
+                            announceOnLoad: true,
+                            ariaLive: 'assertive'
+                        } %}
+                    {% elseif waitTime != null %}
+                        {% sw_include '@Storefront/storefront/utilities/alert.html.twig' with {
+                            type: 'info',
+                            content: 'account.loginThrottled'|trans({'%seconds%': waitTime|number_format})|sw_sanitize,
+                            announceOnLoad: true
+                        } %}
+                    {% else %}
+                        {% sw_include '@Storefront/storefront/utilities/alert.html.twig' with {
+                            type: 'danger',
+                            content: 'account.loginBadCredentials'|trans|sw_sanitize,
+                            announceOnLoad: true,
+                            ariaLive: 'assertive'
+                        } %}
+                    {% endif %}
+                {% endif %}
+            {% endblock %}
+
+            {% block component_account_login_form_fields %}
+                <div class="miniwald-auth-form__group">
+                    <label class="miniwald-auth-form__label" for="loginMail">
+                        {{ 'miniwaldExplorer.account.email'|trans|sw_sanitize }}
+                    </label>
+                    <input class="miniwald-auth-form__input form-control{% if loginError %} is-invalid{% endif %}"
+                           type="email"
+                           id="loginMail"
+                           name="username"
+                           autocomplete="username webauthn"
+                           placeholder="{{ 'miniwaldExplorer.account.email'|trans|sw_sanitize }}"
+                           data-validation-rules="required,email"
+                           required>
+                </div>
+
+                <div class="miniwald-auth-form__group">
+                    <label class="miniwald-auth-form__label" for="loginPassword">
+                        {{ 'miniwaldExplorer.account.password'|trans|sw_sanitize }}
+                    </label>
+                    <div class="miniwald-auth-form__password-wrapper">
+                        <input class="miniwald-auth-form__input form-control{% if loginError %} is-invalid{% endif %}"
+                               type="password"
+                               id="loginPassword"
+                               name="password"
+                               autocomplete="current-password"
+                               placeholder="{{ 'miniwaldExplorer.account.password'|trans|sw_sanitize }}"
+                               data-validation-rules="required"
+                               required>
+                        <button type="button"
+                                class="miniwald-auth-form__password-toggle"
+                                data-password-toggle
+                                data-password-toggle-target="#loginPassword"
+                                data-password-toggle-show-label="{{ 'miniwaldExplorer.account.showPassword'|trans|sw_sanitize }}"
+                                data-password-toggle-hide-label="{{ 'miniwaldExplorer.account.hidePassword'|trans|sw_sanitize }}"
+                                aria-label="{{ 'miniwaldExplorer.account.showPassword'|trans|sw_sanitize }}"
+                                aria-pressed="false">
+                            {{ source('@MiniwaldExplorer/storefront/icons/eye-closed.svg', ignore_missing=true)|raw }}
+                            {{ source('@MiniwaldExplorer/storefront/icons/eye-open.svg', ignore_missing=true)|raw }}
+                        </button>
+                    </div>
+                </div>
+            {% endblock %}
+
+            {% block component_account_login_password_recover %}
+                <div class="miniwald-auth-form__links">
+                    <a class="miniwald-auth-form__link" href="{{ seoUrl('frontend.account.recover.page') }}">
+                        {{ 'miniwaldExplorer.account.forgotPassword'|trans }}
+                    </a>
+                </div>
+            {% endblock %}
+
+            {% block component_account_login_submit %}
+                <button type="submit" class="miniwald-auth-form__submit btn">
+                    {{ 'miniwaldExplorer.account.loginTitle'|trans|sw_sanitize }}
+                </button>
+            {% endblock %}
+        </form>
+    {% endblock %}
+{% endblock %}

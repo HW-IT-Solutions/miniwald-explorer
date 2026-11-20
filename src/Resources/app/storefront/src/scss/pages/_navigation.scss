@@ -1,0 +1,337 @@
+// ── Header bar ──────────────────────────────────────────────────────────────
+body.observation-view .miniwald-back-menu {
+    display: flex;
+}
+
+.miniwald-header {
+    position: sticky;
+    top: 0;
+    z-index: 1001;
+}
+
+.miniwald-header__bar,
+.miniwald-back-menu {
+    display: flex;
+    padding: 1rem 4rem;
+    margin: 0 auto;
+    gap: 2rem;
+    justify-content: space-between;
+
+    @media (max-width: 600px) {
+        padding: 1rem;
+    }
+}
+
+.miniwald-back-menu {
+    max-width: 1560px;
+    display: none;
+}
+
+// ── Inline nav (desktop / wide screens) ─────────────────────────────────────
+
+.miniwald-header__nav {
+    // Hidden on very narrow screens — not a design breakpoint,
+    // just a guard for screens too small to show anything useful.
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 2rem;
+    min-width: 0;
+    container-type: inline-size;
+
+    @container (max-width: 63rem) {
+        .miniwald-header__auth {
+            display: none;
+        }
+    }
+
+    @container (max-width: 35rem) {
+        .miniwald-header__nav-link-participate {
+            display: none;
+        }
+    }
+
+    @container (max-width: 26rem) {
+        .miniwald-header__nav-link-overview {
+            display: none;
+        }
+    }
+
+    @container (max-width: 14rem) {
+        .miniwald-header__nav-link-collection {
+            display: none;
+        }
+    }
+}
+
+@media (max-width: 32rem) {
+    .miniwald-header__nav {
+        display: none;
+    }
+}
+
+.miniwald-header__nav-link {
+    flex-shrink: 0;
+    white-space: nowrap;
+    font-weight: var(--miniwald-font-weight-bold);
+    text-transform: uppercase;
+    padding: 0.4rem 0;
+    --color: var(--miniwald-text);
+    --text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+
+    svg {
+        width: 1.1rem;
+        height: 1.1rem;
+        flex-shrink: 0;
+    }
+
+    &--active {
+        --color: var(--miniwald-dark-blue);
+        border-bottom: 2px solid var(--miniwald-dark-blue);
+        padding-bottom: calc(0.4rem - 2px);
+    }
+
+    &:hover {
+        --color: var(--miniwald-dark-blue);
+        --text-decoration: none;
+    }
+}
+
+.miniwald-header__auth {
+    display: flex;
+    flex-direction: row;
+    gap: 2rem;
+    align-items: center;
+}
+
+// Vertical divider before ANMELDEN
+.miniwald-header__divider {
+    flex-shrink: 0;
+    width: 2px;
+    height: 1.75rem;
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+// ANMELDEN
+.miniwald-header__anmelden {
+    flex-shrink: 0;
+    padding: 0.6rem 1.25rem;
+}
+
+// user display
+.miniwald-header__user {
+    flex-shrink: 0;
+    width: 1px;
+    height: 1.75rem;
+    background-color: var(--miniwald-dark-grey);
+    margin: 0 0.5rem;
+}
+
+.miniwald-header__logo {
+    width: 12rem;
+    height: auto;
+}
+
+.miniwald-header__toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.8rem 1rem 0.7rem;
+    min-width: 6.5rem;
+    cursor: pointer;
+    color: var(--color);
+
+    &-slim {
+        min-width: 0;
+        padding: 0.8rem;
+    }
+
+    svg {
+        top: -1px;
+        position: relative;
+        width: 1.5rem;
+        height: 1.5rem;
+    }
+}
+
+// Icon swap: show menu icon when closed, close icon when open
+.miniwald-header__toggle-icon {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    &--close {
+        display: none;
+    }
+}
+
+.miniwald-header.is-open {
+    .miniwald-header__toggle-icon--open {
+        display: none;
+    }
+    .miniwald-header__toggle-icon--close {
+        display: inline-flex;
+    }
+}
+
+.miniwald-header__cancel .icon svg {
+    rotate: 180deg;
+}
+
+.miniwald-header__cancel,
+.miniwald-header__help {
+    --color: var(--miniwald-text);
+    font-weight: 600;
+    padding: 0.75rem 0;
+    gap: 1rem;
+    text-transform: none;
+}
+
+@media (max-width: 400px) {
+    .miniwald-header__help {
+        .instruction {
+            display: none;
+        }
+    }
+}
+
+// fix for icon fill color
+.miniwald-header__help {
+    .icon > svg path,
+    .icon > svg use {
+        fill: transparent;
+    }
+}
+
+// ── Full-screen nav overlay ──────────────────────────────────────────────────
+@keyframes miniwald-fade-in {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes miniwald-fade-out {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+
+.miniwald-nav-overlay {
+    display: none;
+    position: fixed;
+    top: var(--miniwald-header-height, 4.5rem);
+    right: 0;
+    bottom: 0;
+    width: 360px;
+    height: calc(100dvh - var(--miniwald-header-height, 4.5rem));
+    background: #fff;
+    z-index: 1000;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow-y: auto;
+    box-shadow: -15px 0 30px white;
+}
+
+.miniwald-header.is-open .miniwald-nav-overlay {
+    display: flex;
+    animation: miniwald-fade-in 250ms ease-out both;
+}
+
+.miniwald-header.is-closing .miniwald-nav-overlay {
+    display: flex;
+    animation: miniwald-fade-out 250ms ease-in both;
+}
+
+.miniwald-nav-overlay__sections {
+    flex: 1;
+    padding: 1.5rem 1.5rem 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.miniwald-nav-overlay__title {
+    font-size: 1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    --color: var(--miniwald-dark-green);
+    border-bottom: 2px solid var(--miniwald-dark-green);
+    width: max-content;
+    margin: 0 auto 0.75rem;
+    padding: 0 0 0.5rem 0;
+}
+
+.miniwald-nav-overlay__divider {
+    border: none;
+    border-top: 2px solid var(--miniwald-dark-grey);
+    margin: 0.5rem 0;
+}
+
+.miniwald-nav-overlay__link,
+.miniwald-nav-overlay__link-sub {
+    display: flex;
+    align-items: center;
+    justify-content: normal;
+    padding: 0.9rem 0;
+    font-size: 1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    --text-decoration: none;
+    &:not(.miniwald-header__nav-link--active) {
+        --color: var(--miniwald-text);
+    }
+}
+.miniwald-nav-overlay__link-sub {
+    font-weight: 400;
+    margin-left: 1rem;
+    text-transform: none;
+}
+
+// ── Auth footer ──────────────────────────────────────────────────────────────
+
+.miniwald-nav-overlay__footer {
+    padding: 0 1.5rem 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.miniwald-nav-overlay__user {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    padding: 1rem 2rem;
+
+    svg {
+        width: 1.4rem;
+        height: 1.4rem;
+    }
+}
+
+.miniwald-nav-overlay__auth-btn {
+    display: block;
+    width: 100%;
+    text-align: center;
+    padding: 1rem;
+    border-radius: 999px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    text-decoration: none;
+}

@@ -1,0 +1,15 @@
+{% sw_extends '@Storefront/storefront/base.html.twig' %}
+
+{% block base_body_classes %}{{ parent() }} collection-view{% endblock %}
+
+{% block base_content %}
+<div class="collection-page collection-species-overview-page">
+
+    <div hidden data-page-back-href="{{ path('frontend.miniwald.collection') }}" data-page-back-text="{{ 'miniwaldExplorer.collection.backLink'|trans }}"></div>
+
+    <h1 class="collection-species-overview-page__title">{{ 'miniwaldExplorer.collection.categoriesTitle'|trans }}</h1>
+
+    {% include '@MiniwaldExplorer/storefront/page/collection/_col-species.html.twig' with { categories: categories } %}
+
+</div>
+{% endblock %}

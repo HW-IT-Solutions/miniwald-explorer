@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/shopware/shopware/trunk/src/Core/System/SystemConfig/Schema/config.xsd">
+
+    <card>
+        <title>Benachrichtigungen</title>
+        <title lang="en-GB">Notifications</title>
+
+        <input-field type="text">
+            <name>adminNotificationEmail</name>
+            <label>Admin-E-Mail für neue Beobachtungen</label>
+            <label lang="en-GB">Admin email for new observations</label>
+            <helpText>E-Mail-Adresse, die bei jeder neuen Beobachtung benachrichtigt wird. Leer lassen, um keine Benachrichtigung zu senden.</helpText>
+            <helpText lang="en-GB">Email address to notify when a new observation is submitted. Leave empty to disable notifications.</helpText>
+        </input-field>
+    </card>
+
+    <card>
+        <title>Kartenansicht</title>
+        <title lang="en-GB">Map view</title>
+        <input-field type="text">
+            <name>mapStyleUrl</name>
+            <label>URL zum MapLibre-Kartenstil</label>
+            <label lang="en-GB">MapLibre style URL</label>
+        </input-field>
+    </card>
+</config>

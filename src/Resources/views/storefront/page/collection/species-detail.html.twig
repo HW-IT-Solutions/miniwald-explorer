@@ -1,0 +1,67 @@
+{% sw_extends '@Storefront/storefront/base.html.twig' %}
+
+{% block base_body_classes %}{{ parent() }} collection-view{% endblock %}
+
+{% block base_content %}
+<div class="collection-page collection-detail collection-detail--species">
+
+    <div hidden data-page-back-href="{{ path('frontend.miniwald.collection.category', { id: species.speciesCategory.id }) }}" data-page-back-text="{{ species.name }}"></div>
+
+    <div class="collection-species-detail__container">
+        {# left column - name, photo, description #}
+        <div class="collection-species-detail__column collection-species-detail__column-main">
+            <div class="title-container">
+                <h1 class="collection-species-detail__title">{{ species.name }}</h1>
+                {% if species.scientificName %}
+                    <p class="collection-species-detail__scientific-name"><em>{{ species.scientificName }}</em></p>
+                {% endif %}
+            </div>
+
+            {% if species.image %}
+                <div class="collection-species-detail__photo-wrap">
+                    {% if species.image %}
+                        {% sw_thumbnails 'species-image-thumbnails' with {
+                            media: species.image,
+                            attributes: {
+                                alt: species.name,
+                                title: species.name,
+                                class: 'detail__photo'
+                            },
+                            sizes: { default: '640px' }
+                        } %}
+                    {% endif %}
+                </div>
+            {% endif %}
+
+            {% if species.description %}
+                <div class="collection-species-detail__description">
+                    <p>{{ species.description }}</p>
+                </div>
+            {% endif %}
+
+            {% if species.identificationTips %}
+                <div class="collection-species-detail__identification">
+                    <h2 class="collection-species-detail__section-title">{{ 'miniwaldExplorer.observation.speciesModalIdentification'|trans }}</h2>
+                    <p>{{ species.identificationTips }}</p>
+                </div>
+            {% endif %}
+        </div>
+
+        {# right column - observations #}
+        <div class="collection-species-detail__column collection-species-detail__column-aside">
+            <div class="collection-species-detail__obs-section">
+                <h2 class="collection-species-detail__section-title">{{ 'miniwaldExplorer.collection.lastObservations'|trans }}</h2>
+                {% include '@MiniwaldExplorer/storefront/page/collection/_col-observations.html.twig'
+                    with {
+                        observations: observations,
+                        baseRoute: 'frontend.miniwald.collection.species.detail',
+                        baseRouteParams: { categoryId: species.speciesCategory.id, speciesId: species.id },
+                        showAllLink: true,
+                        showStart: true,
+                    }
+                    only %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

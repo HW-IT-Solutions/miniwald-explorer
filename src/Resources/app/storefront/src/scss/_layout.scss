@@ -1,0 +1,260 @@
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    min-height: 100vh;
+    min-width: 360px;
+    background-color: var(--miniwald-white);
+    color: var(--miniwald-black);
+    font-family: var(--miniwald-font-family);
+    font-size: var(--miniwald-font-size-base);
+    font-weight: var(--miniwald-font-weight-normal);
+    &.observation-view,
+    &.collection-view,
+    &.is-active-route-frontend-navigation-page {
+        background-image: url('/bundles/miniwaldexplorer/assets/backgrounds/big-green.svg');
+        background-position: top center;
+        background-repeat: no-repeat;
+        background-size: cover;
+    }
+    &.collection-view {
+        background-image: url('/bundles/miniwaldexplorer/assets/backgrounds/big-blue.svg');
+    }
+    &.is-active-route-frontend-navigation-page {
+        background-image: url('/bundles/miniwaldexplorer/assets/backgrounds/big-orange.svg');
+        background-size: contain;
+    }
+}
+
+.header-main {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 0.9) 85%,
+        transparent 100%
+    );
+
+    .container {
+        padding: 0;
+        max-width: none;
+    }
+}
+
+.nav-main {
+    display: none;
+}
+
+.content-main {
+    display: flex;
+    flex-direction: column;
+    max-width: 1560px;
+    padding: 0 4rem;
+    width: 100%;
+    min-width: 360px;
+    align-self: center;
+    @media (max-width: 600px) {
+        padding: 0 1rem;
+    }
+
+    .flashbags:not(:has(*)):not(:has(text)) {
+        flex-grow: 0;
+    }
+    .flashbags.container > div {
+        border-radius: 1rem;
+    }
+    .container {
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        max-width: none;
+
+        .container-main {
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+    }
+
+    .cms-breadcrumb {
+        display: none;
+    }
+    .cms-page {
+        padding: 0 1rem;
+    }
+}
+
+// ── Custom footer ──────────────────────────────────────────────────────────────
+
+.footer-main {
+    width: 100%;
+    min-width: 360px;
+    align-self: center;
+    background-color: var(--miniwald-dark-blue);
+    font-family: var(--miniwald-font-family);
+    color: var(--miniwald-white);
+}
+.miniwald-footer {
+    max-width: 960px;
+    margin: 0 auto;
+    background-color: inherit;
+    container-type: inline-size;
+    container-name: footer;
+
+    &__inner {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1.5rem;
+        padding: 2rem 1.5rem 2.5rem;
+        max-width: 480px;
+        margin: 0 auto;
+    }
+
+    &__left {
+        display: contents; // mobile: children flow into __inner as if unwrapped
+    }
+
+    &__right {
+        display: contents; // mobile: children flow into __inner as if unwrapped
+    }
+
+    &__logo-wrap {
+        align-self: flex-start;
+    }
+
+    &__logo {
+        width: 160px;
+        height: auto;
+    }
+
+    &__description {
+        font-size: 0.9375rem;
+        line-height: 1.6;
+        text-align: left;
+        margin: 0;
+        opacity: 0.9;
+    }
+
+    &__links {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+    }
+
+    &__link {
+        display: block;
+        --color: var(--miniwald-white);
+        --text-decoration: none;
+        font-weight: var(--miniwald-font-weight-bold);
+        text-transform: uppercase;
+        text-align: center;
+        padding: 0.75rem;
+    }
+
+    &__divider {
+        width: 100%;
+        border: none;
+        border-top: 2px solid var(--miniwald-dark-grey);
+        margin: 0;
+    }
+
+    &__download {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        --color: var(--miniwald-white);
+        --text-decoration: none;
+        font-size: 1rem;
+        font-weight: 500;
+
+        svg {
+            width: 1.5rem;
+            height: 1.5rem;
+            flex-shrink: 0;
+            fill: currentColor;
+        }
+
+        &:hover,
+        &:focus {
+            color: var(--miniwald-blue);
+            text-decoration: none;
+        }
+    }
+}
+
+// ── Footer desktop layout (container query) ───────────────────────────────────
+
+@container footer (min-width: 640px) {
+    .miniwald-footer__inner {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        max-width: 1100px;
+        align-items: start;
+        gap: 2rem 4rem;
+    }
+
+    .miniwald-footer__left {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        align-items: flex-start;
+    }
+
+    .miniwald-footer__right {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 0;
+    }
+
+    .miniwald-footer__links {
+        align-items: flex-end;
+        width: auto;
+    }
+
+    .miniwald-footer__link {
+        text-align: right;
+    }
+
+    .miniwald-footer__divider {
+        align-self: stretch;
+    }
+
+    .miniwald-footer__download {
+        align-self: flex-end;
+        margin-top: 1rem;
+    }
+}
+
+.sf-toolbar,
+.scroll-up-container {
+    display: none !important;
+}
+
+.miniwald-card {
+    border-top-left-radius: 1rem;
+    border-top-right-radius: 1rem;
+    --background-color: var(--miniwald-white);
+    background-color: var(--background-color);
+    padding: 1rem;
+
+    &-grey {
+        --background-color: var(--miniwald-grey);
+    }
+}
+
+h1,
+h2,
+h3 {
+    color: var(--miniwald-black);
+}
+
+.icon {
+    color: inherit;
+}

@@ -1,0 +1,158 @@
+{% block miniwald_export_json %}
+<sw-page class="miniwald-export-json">
+    {% block miniwald_export_json_smart_bar_header %}
+    <template #smart-bar-header>
+        <h2>
+            {{ $tc('miniwald-explorer.export.json.title') }}
+        </h2>
+    </template>
+    {% endblock %}
+
+    {% block miniwald_export_json_smart_bar_actions %}
+    <template #smart-bar-actions>
+        <sw-button
+            variant="ghost"
+            :isLoading="isPreviewing"
+            :disabled="isPreviewing || isExporting"
+            @click="onPreview"
+        >
+            <sw-icon
+                name="regular-eye"
+                small
+            ></sw-icon>
+            {{ $tc('miniwald-explorer.export.json.buttonPreview') }}
+        </sw-button>
+        <sw-button
+            variant="primary"
+            :isLoading="isExporting"
+            :disabled="isExporting || isPreviewing"
+            @click="onExportFile"
+        >
+            <sw-icon
+                name="regular-circle-download"
+                small
+            ></sw-icon>
+            {{ $tc('miniwald-explorer.export.json.buttonExport') }}
+        </sw-button>
+    </template>
+    {% endblock %}
+
+    {% block miniwald_export_json_content %}
+    <template #content>
+        <sw-card-view>
+            {% block miniwald_export_json_description %}
+            <sw-card
+                :title="$tc('miniwald-explorer.export.json.cardTitleDescription')"
+            >
+                <p>
+                    {{ $tc('miniwald-explorer.export.json.description') }}
+                </p>
+                <p class="miniwald-export-json__info">
+                    <sw-icon
+                        name="regular-info-circle"
+                        small
+                    ></sw-icon>                    {{ $tc('miniwald-explorer.export.json.photoTokenInfo') }}
+                </p>
+                <p class="miniwald-export-json__info">
+                    <sw-icon
+                        name="regular-info-circle"
+                        small
+                    ></sw-icon>                    {{ $tc('miniwald-explorer.export.json.hierarchyInfo') }}
+                </p>
+            </sw-card>
+            {% endblock %}
+
+            {% block miniwald_export_json_filters %}
+            <sw-card
+                :title="$tc('miniwald-explorer.export.filterTitle')"
+                :subtitle="activeFilterCount > 0 ? $tc('miniwald-explorer.export.activeFilters', { count: activeFilterCount }) : ''"
+            >
+                <div class="miniwald-export__filters">
+                    {% block miniwald_export_json_filter_date %}
+                    <div class="miniwald-export__filter-row">
+                        <sw-datepicker
+                            :label="$tc('miniwald-explorer.export.filterDateFrom')"
+                            v-model="filterDateFrom"
+                            dateType="date"
+                            size="medium"
+                        ></sw-datepicker>
+                        <sw-datepicker
+                            :label="$tc('miniwald-explorer.export.filterDateTo')"
+                            v-model="filterDateTo"
+                            dateType="date"
+                            size="medium"
+                        ></sw-datepicker>
+                    </div>
+                    {% endblock %}
+
+                    {% block miniwald_export_json_filter_type %}
+                    <div class="miniwald-export__filter-row">
+                        <sw-single-select
+                            :label="$tc('miniwald-explorer.export.filterType')"
+                            :options="typeOptions"
+                            v-model:value="filterType"
+                            :placeholder="$tc('miniwald-explorer.export.allTypes')"
+                            size="medium"
+                        ></sw-single-select>
+                    </div>
+                    {% endblock %}
+
+                    {% block miniwald_export_json_filter_entities %}
+                    <div class="miniwald-export__filter-row">
+                        <sw-entity-single-select
+                            :label="$tc('miniwald-explorer.export.filterObserver')"
+                            entity="customer"
+                            v-model:value="filterCustomerId"
+                            :placeholder="$tc('miniwald-explorer.export.allObservers')"
+                            labelProperty="firstName"
+                            :criteria="customerCriteria"
+                            size="medium"
+                        ></sw-entity-single-select>
+                        <sw-entity-single-select
+                            :label="$tc('miniwald-explorer.export.filterLocation')"
+                            entity="miniwald_explorer_miniwald"
+                            v-model:value="filterMiniwaldId"
+                            :placeholder="$tc('miniwald-explorer.export.allLocations')"
+                            labelProperty="name"
+                            :criteria="miniwaldCriteria"
+                            size="medium"
+                        ></sw-entity-single-select>
+                    </div>
+                    {% endblock %}
+
+                    {% block miniwald_export_json_filter_actions %}
+                    <div class="miniwald-export__filter-actions">
+                        <sw-button
+                            variant="ghost"
+                            size="small"
+                            :disabled="activeFilterCount === 0"
+                            @click="onResetFilters"
+                        >
+                            {{ $tc('miniwald-explorer.export.resetFilters') }}
+                        </sw-button>
+                    </div>
+                    {% endblock %}
+                </div>
+            </sw-card>
+            {% endblock %}
+
+            {% block miniwald_export_json_preview %}
+            <sw-card
+                v-if="previewData"
+                :title="$tc('miniwald-explorer.export.json.cardTitlePreview')"
+                :subtitle="$tc('miniwald-explorer.export.json.previewSubtitle', { total: previewData.meta ? previewData.meta.total : 0 })"
+            >
+                <sw-code-editor
+                    :value="formattedPreview"
+                    mode="json"
+                    :setFocus="false"
+                    :disabled="true"
+                    style="max-height: 500px;"
+                ></sw-code-editor>
+            </sw-card>
+            {% endblock %}
+        </sw-card-view>
+    </template>
+    {% endblock %}
+</sw-page>
+{% endblock %}

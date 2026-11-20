@@ -1,0 +1,134 @@
+a {
+    --color: var(--miniwald-dark-blue);
+    color: var(--color);
+    text-decoration: var(--text-decoration);
+
+    &:hover,
+    &:active,
+    &:focus {
+        background-color: var(--button-background-color) !important;
+        color: var(--color) !important;
+        text-decoration: var(--text-decoration) !important;
+    }
+}
+
+.btn {
+    --button-background-color: var(--miniwald-blue);
+    --color: var(--miniwald-black);
+
+    background-color: var(--button-background-color);
+    color: var(--color);
+
+    border: none;
+    border-radius: 999px;
+    padding: 1rem 2rem;
+    text-transform: uppercase;
+    font-size: var(--miniwald-font-size-base);
+    line-height: 1.5rem;
+    font-weight: var(--miniwald-font-weight-bold);
+    &:has(> svg) {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-evenly;
+        align-items: center;
+        gap: 1rem;
+
+        svg {
+            min-width: 1.5rem;
+            min-height: 1.5rem;
+            width: 1.5rem;
+            height: 1.5rem;
+        }
+    }
+    &:hover,
+    &:active,
+    &:focus {
+        background-color: var(--button-background-color) !important;
+        color: var(--color) !important;
+        text-decoration: var(--text-decoration) !important;
+        border-color: inherit;
+    }
+}
+
+.btn.btn-blue {
+    --button-background-color: var(--miniwald-blue);
+
+    &:hover,
+    &:focus,
+    &:active {
+        --button-background-color: color-mix(
+            in srgb,
+            var(--miniwald-blue),
+            black 20%
+        );
+    }
+}
+
+.btn.btn-dark-blue {
+    --button-background-color: var(--miniwald-dark-blue);
+    --color: var(--miniwald-white);
+}
+
+.btn.btn-green {
+    --button-background-color: var(--miniwald-green);
+
+    &:hover,
+    &:focus,
+    &:active {
+        --button-background-color: color-mix(
+            in srgb,
+            var(--miniwald-green),
+            black 20%
+        );
+    }
+}
+
+.btn.btn-orange {
+    --button-background-color: var(--miniwald-orange);
+
+    &:hover,
+    &:focus,
+    &:active {
+        --button-background-color: color-mix(
+            in srgb,
+            var(--miniwald-orange),
+            black 30%
+        );
+    }
+}
+
+.btn.btn-transparent {
+    --button-background-color: transparent;
+    border-radius: 0;
+}
+
+.btn.btn-white-blue {
+    --color: var(--miniwald-dark-blue);
+    --button-background-color: transparent;
+    border-radius: 0;
+}
+
+.btn.btn-white {
+    --button-background-color: white;
+}
+
+.btn.no-transform {
+    text-transform: none;
+}
+
+.btn-transparent-border {
+    border: 2px solid transparent;
+}
+
+.btn-transparent-dark-blue {
+    --color: var(--miniwald-dark-blue);
+    --button-background-color: transparent;
+    border: 2px solid var(--miniwald-dark-blue);
+}
+
+.btn-multiline {
+    white-space: pre-wrap;
+    line-height: 1.25rem;
+    padding: 0.25rem 2rem;
+    gap: 1rem;
+}

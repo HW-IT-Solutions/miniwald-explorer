@@ -1,0 +1,122 @@
+{% block miniwald_observation_plant_card %}
+<sw-card :title="$tc('miniwald-explorer.observation.detail.plant.cardTitle')">
+    {% block miniwald_observation_plant_list %}
+    <template v-if="measurements.length === 0">
+        <p class="miniwald-observation-plant-card__empty-state">
+            {{ $tc('miniwald-explorer.observation.detail.plant.emptyState') }}
+        </p>
+    </template>
+
+    <template
+        v-for="(measurement, index) in measurements"
+        :key="measurement.id"
+    >
+        {% block miniwald_observation_plant_item %}
+        <sw-card-section divider="bottom">
+            <sw-container
+                columns="1fr auto"
+                gap="0 16px"
+                align="flex-start"
+            >
+                <div>
+                    {% block miniwald_observation_plant_select %}
+                    <sw-entity-single-select
+                        v-model:value="measurement.plantId"
+                        entity="miniwald_explorer_plant"
+                        :label="$tc('miniwald-explorer.observation.detail.plant.labelPlant')"
+                        :placeholder="$tc('miniwald-explorer.observation.detail.plant.placeholderPlant')"
+                        :criteria="plantCriteria"
+                        label-property="name"
+                        :class="{ 'has--error': isDuplicate(measurement) }"
+                        @change="onPlantChange(measurement, $event)"
+                    >
+                                    </sw-entity-single-select>
+
+                    <p
+                        v-if="isDuplicate(measurement)"
+                        class="sw-field__error"
+                    >
+                        {{ $tc('miniwald-explorer.observation.detail.plant.duplicateWarning') }}
+                    </p>
+                    {% endblock %}
+
+                    {% block miniwald_observation_plant_custom_name %}
+                    <div v-if="!measurement.plantId">
+                        <sw-text-field
+                            v-model:value="measurement.customPlantName"
+                            :label="$tc('miniwald-explorer.observation.detail.plant.labelCustomPlant')"
+                            :placeholder="$tc('miniwald-explorer.observation.detail.plant.placeholderCustomPlant')"
+                        >
+                                        </sw-text-field>
+                    </div>
+                    {% endblock %}
+                    <sw-container
+                        columns="1fr 1fr 1fr"
+                        gap="0 30px"
+                    >
+                        {% block miniwald_observation_plant_height %}
+                        <sw-number-field
+                            v-model:value="measurement.heightCm"
+                            :label="$tc('miniwald-explorer.observation.detail.plant.labelHeight')"
+                            :placeholder="$tc('miniwald-explorer.observation.detail.plant.placeholderHeight')"
+                            numberType="int"
+                            :min="0"
+                        >
+                                        </sw-number-field>
+                        {% endblock %}
+
+                        {% block miniwald_observation_plant_trunk %}
+                        <sw-number-field
+                            v-model:value="measurement.trunkCircumferenceCm"
+                            :label="$tc('miniwald-explorer.observation.detail.plant.labelTrunkCircumference')"
+                            :placeholder="$tc('miniwald-explorer.observation.detail.plant.placeholderTrunkCircumference')"
+                            numberType="float"
+                            :step="0.1"
+                            :digits="1"
+                            :min="0"
+                        >
+                                        </sw-number-field>
+                        {% endblock %}
+
+                        {% block miniwald_observation_plant_crown %}
+                        <sw-number-field
+                            v-model:value="measurement.crownDiameterCm"
+                            :label="$tc('miniwald-explorer.observation.detail.plant.labelCrownDiameter')"
+                            :placeholder="$tc('miniwald-explorer.observation.detail.plant.placeholderCrownDiameter')"
+                            numberType="int"
+                            :min="0"
+                        >
+                                        </sw-number-field>
+                        {% endblock %}
+                    </sw-container>
+                </div>
+                {% block miniwald_observation_plant_remove %}
+                <sw-button
+                    variant="danger"
+                    size="small"
+                    :title="$tc('miniwald-explorer.observation.detail.plant.buttonRemoveItem')"
+                    @click="onRemoveMeasurement(measurement)"
+                >
+                    <sw-icon
+                        name="regular-times"
+                        small
+                    ></sw-icon>
+                </sw-button>
+                {% endblock %}
+            </sw-container>
+        </sw-card-section>
+        {% endblock %}
+    </template>
+    {% endblock %}
+
+    {% block miniwald_observation_plant_add %}
+    <sw-button
+        variant="ghost"
+        size="small"
+        @click="onAddMeasurement()"
+    >
+        {{ $tc('miniwald-explorer.observation.detail.plant.buttonAddItem') }}
+    </sw-button>
+    {% endblock %}
+</sw-card>
+{% endblock %}

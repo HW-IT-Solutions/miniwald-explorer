@@ -1,0 +1,121 @@
+<div class="miniwald-overview-page">
+    <div class="miniwald-overview-cards">
+
+        <div class="miniwald-overview-card miniwald-overview-card__collection">
+            <div class="miniwald-overview-card__image-container">
+                <img src="/bundles/miniwaldexplorer/assets/collections-overview.jpg"
+                     alt=""
+                     class="miniwald-overview-card__image miniwald-overview-card__image-collection">
+            </div>
+            <a class="btn btn-blue miniwald-overview-card__btn miniwald-overview-card__btn-collection" href="{{ path('frontend.miniwald.collection') }}">
+                <div class="overview-button-header">{{ 'miniwaldExplorer.overview.discoverButtonTitle'|trans }}</div>
+                <div class="overview-button-description">{{ 'miniwaldExplorer.overview.discoverButtonDescription'|trans }}</div>
+            </a>
+        </div>
+
+        <div class="miniwald-overview-card miniwald-overview-card__observation">
+            <div class="miniwald-overview-card__image-container">
+                <img src="/bundles/miniwaldexplorer/assets/observation-overview.jpg"
+                     alt=""
+                     class="miniwald-overview-card__image miniwald-overview-card__image-observation">
+            </div>
+            <a class="btn btn-green miniwald-overview-card__btn miniwald-overview-card__btn-observation" href="{{ path('frontend.miniwald.observation') }}">
+                <div class="overview-button-header">{{ 'miniwaldExplorer.overview.observationButtonTitle'|trans }}</div>
+                <div class="overview-button-description">{{ 'miniwaldExplorer.overview.observationButtonDescription'|trans }}</div>
+            </a>
+        </div>
+
+    </div>
+
+    {# ── Warum dieses Projekt? ── #}
+    <section class="overview-section overview-section--why">
+        <h2 class="overview-section__title">{{ 'miniwaldExplorer.overview.whyTitle'|trans }}</h2>
+
+        <div class="overview-section__image-wrap">
+            <img src="/bundles/miniwaldexplorer/assets/miniwald_overview.png"
+                 alt=""
+                 class="overview-section__image">
+        </div>
+
+        <div class="overview-section__text">
+            <p>{{ 'miniwaldExplorer.overview.whyText1'|trans }}</p>
+            <p>{{ 'miniwaldExplorer.overview.whyText2'|trans }}</p>
+            <p>{{ 'miniwaldExplorer.overview.whyText3'|trans }}</p>
+            <p>{{ 'miniwaldExplorer.overview.whyText4'|trans }}</p>
+        </div>
+
+        <a class="overview-section__link overview-section__link-green" href="{{ path('frontend.miniwald.collection.mini-forests') }}">
+            {{ 'miniwaldExplorer.overview.whyLink'|trans }} {{ source('@MiniwaldExplorer/storefront/icons/arrow.svg', ignore_missing=true)|raw }}
+        </a>
+    </section>
+
+    {# ── Was wird gemacht? ── #}
+    <section class="overview-section overview-section--what">
+        <h2 class="overview-section__title">{{ 'miniwaldExplorer.overview.whatTitle'|trans }}</h2>
+
+        <div class="overview-section__image-wrap">
+            <img src="/bundles/miniwaldexplorer/assets/forscherbox.png"
+                 alt=""
+                 class="overview-section__image">
+        </div>
+
+        <div class="overview-section__text">
+            <p>{{ 'miniwaldExplorer.overview.whatText1'|trans }}</p>
+            <p>{{ 'miniwaldExplorer.overview.whatText2'|trans }}</p>
+        </div>
+
+        <a class="overview-section__link overview-section__link-blue" href="{{ path('frontend.miniwald.observation') }}">
+            {{ 'miniwaldExplorer.overview.whatLink'|trans }} {{ source('@MiniwaldExplorer/storefront/icons/arrow.svg', ignore_missing=true)|raw }}
+        </a>
+    </section>
+
+    {# ── Wer kann mitmachen? ── #}
+    <section class="overview-section overview-section--who">
+        <h2 class="overview-section__title">{{ 'miniwaldExplorer.overview.whoTitle'|trans }}</h2>
+
+        <p class="overview-section__text">{{ 'miniwaldExplorer.overview.whoText1'|trans }}</p>
+
+        <div class="overview-steps">
+            <h3 class="overview-steps__title">{{ 'miniwaldExplorer.overview.stepsTitle'|trans }}</h3>
+
+            <ol class="overview-steps__list">
+                <li class="overview-steps__item">
+                    <span class="overview-steps__number">1</span>
+                    <div class="overview-steps__content">
+                        <strong class="overview-steps__step-title">{{ 'miniwaldExplorer.overview.step1Title'|trans }}</strong>
+                        <span class="overview-steps__step-desc">{{ 'miniwaldExplorer.overview.step1Desc'|trans }}</span>
+                    </div>
+                </li>
+                <li class="overview-steps__item">
+                    <span class="overview-steps__number">2</span>
+                    <div class="overview-steps__content">
+                        <strong class="overview-steps__step-title">{{ 'miniwaldExplorer.overview.step2Title'|trans }}</strong>
+                        <span class="overview-steps__step-desc">{{ 'miniwaldExplorer.overview.step2Desc'|trans }}</span>
+                    </div>
+                </li>
+                <li class="overview-steps__item">
+                    <span class="overview-steps__number">3</span>
+                    <div class="overview-steps__content">
+                        <strong class="overview-steps__step-title">{{ 'miniwaldExplorer.overview.step3Title'|trans }}</strong>
+                        <span class="overview-steps__step-desc">{{ 'miniwaldExplorer.overview.step3Desc'|trans }}</span>
+                    </div>
+                </li>
+                <li class="overview-steps__item">
+                    <span class="overview-steps__number">4</span>
+                    <div class="overview-steps__content">
+                        <strong class="overview-steps__step-title">{{ 'miniwaldExplorer.overview.step4Title'|trans }}</strong>
+                        <span class="overview-steps__step-desc">{{ 'miniwaldExplorer.overview.step4Desc'|trans }}</span>
+                    </div>
+                </li>
+            </ol>
+
+            {% if not context.customer %}
+                <a class="btn btn-blue overview-steps__login-btn"
+                   href="{{ path('frontend.account.login.page') }}">
+                    {{ 'miniwaldExplorer.navigation.login'|trans }}
+                </a>
+            {% endif %}
+        </div>
+    </section>
+
+</div>

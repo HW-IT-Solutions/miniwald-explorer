@@ -1,0 +1,23 @@
+// page: über das projekt
+.cms-page.about .cms-section-default {
+    max-width: 960px;
+    margin: 0 auto;
+    // each block
+    .cms-block:nth-child(2n) {
+        .cms-block-container-row {
+            flex-direction: row-reverse;
+        }
+    }
+    .cms-block .cms-block-container-row {
+        align-items: center;
+        img {
+            border-radius: 1rem;
+            max-width: 22rem;
+            margin: 0 auto;
+        }
+    }
+}
+
+.cms-page h2 {
+    color: black;
+}

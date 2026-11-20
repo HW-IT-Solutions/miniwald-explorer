@@ -1,0 +1,47 @@
+// MiniwaldExplorer Design Tokens
+// ==============================
+
+:root {
+    // --- Palette ---
+    --miniwald-black: #000000;
+    --miniwald-dark-grey: #808080;
+    --miniwald-grey: #efeeeb;
+    --miniwald-white: #ffffff;
+
+    --miniwald-blue: #54c3e9;
+    --miniwald-blue-75: #91d3ee;
+    --miniwald-blue-35: #ceeaf7;
+    --miniwald-dark-blue: #1f3460;
+
+    --miniwald-green: #aecc53;
+    --miniwald-green-75: #c7da84;
+    --miniwald-green-35: #e7efca;
+    --miniwald-dark-green: #245c55;
+
+    --miniwald-orange: #f08300;
+    --miniwald-orange-75: #f6a451;
+    --miniwald-orange-35: #fdd6ad;
+
+    --miniwald-fitness: #e83363;
+
+    // --- Semantic colours ---
+    --miniwald-primary: var(--miniwald-blue);
+    --miniwald-primary-dark: var(--miniwald-dark-blue);
+    --miniwald-accent: var(--miniwald-green);
+    --miniwald-sand: var(--miniwald-orange);
+    --miniwald-text: var(--miniwald-black);
+    --miniwald-muted: var(--miniwald-dark-grey);
+
+    // --- Typography ---
+    --miniwald-font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+    --miniwald-font-size-base: 1rem;
+    --miniwald-line-height: 1;
+    --miniwald-font-weight-normal: 400;
+    --miniwald-font-weight-medium: 500;
+    --miniwald-font-weight-bold: 600;
+    --miniwald-font-weight-black: 700;
+
+    // --- Spacing & shape ---
+    --miniwald-radius: 1.5rem;
+    --miniwald-box-shadow: 0 -15px 30px white;
+}

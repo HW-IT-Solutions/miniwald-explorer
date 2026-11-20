@@ -1,0 +1,115 @@
+{% macro speciesGrid(categories, speciesByCategory, options) %}
+    {% import _self as m %}
+    <div class="miniwald-observation-species-grid" data-species-grid>
+        {% for category in categories %}
+            <div class="miniwald-observation-species-group{% if loop.first %} is-active{% endif %}"
+                 data-category-id="{{ category.id }}">
+                {% for species in speciesByCategory[category.id]|default([]) %}
+                    {{ m.speciesCard(category, species, options) }}
+                {% endfor %}
+            </div>
+        {% endfor %}
+    </div>
+{% endmacro %}
+
+{% macro speciesCard(category, species, options) %}
+    {% set countersDisabled = options.countersDisabled ?? false %}
+    {% set countersHidden = options.countersHidden ?? false %}
+    {% set zeroOpacity = options.zeroOpacity ?? false %}
+    {# previewMode: counters and add-photo are fully disabled (preview step before timer) #}
+    {% set previewMode = options.previewMode ?? false %}
+    <div class="miniwald-observation-species-card {{ countersHidden ? 'miniwald-observation-species-card__no-counters' : '' }} {{ previewMode ? 'miniwald-observation-species-card__preview' : '' }}"
+         data-species-id="{{ species.id }}"
+         data-species-name="{{ species.translated.name|e('html_attr') }}"
+         data-species-scientific="{{ species.scientificName|default('')|e('html_attr') }}"
+         data-species-description="{{ species.translated.description|default('')|e('html_attr') }}"
+         data-species-identification="{{ species.translated.identificationTips|default('')|e('html_attr') }}">
+        <div class="miniwald-observation-species-card__content">
+            <div class="miniwald-observation-species-card__image">
+                {% if species.image %}
+                    {% sw_thumbnails 'species-image-thumbnails' with {
+                        media: species.image,
+                        attributes: {
+                            alt: species.translated.name,
+                            title: species.translated.name,
+                        },
+                        sizes: { default: '400px' }
+                    } %}
+                    {% sw_thumbnails 'species-modal-thumb' with {
+                        media: species.image,
+                        attributes: {
+                            alt: species.translated.name,
+                            class: 'miniwald-species-card__modal-thumb',
+                            loading: 'lazy'
+                        },
+                        sizes: { default: '700px' }
+                    } %}
+                {% else %}
+                    {% set _categoryIcons = {'butterflies': 'butterfly', 'birds': 'canary', 'insects': 'insect', 'soil': 'spider'} %}
+                    {{ source('@MiniwaldExplorer/storefront/icons/' ~ (_categoryIcons[category.technicalName] ?? 'butterfly') ~ '.svg', ignore_missing=true)|raw }}
+                {% endif %}
+            </div>
+            <div class="miniwald-observation-species-card__column-info">
+                <div class="miniwald-observation-species-card__label">
+                    <span class="miniwald-observation-species-card__label-content">{{ species.translated.name }}</span>
+                    <button class="btn btn-transparent miniwald-observation-species-card__help-btn" type="button" aria-label="{{ 'miniwaldExplorer.observation.speciesModalOpen'|trans }}">{{ source('@MiniwaldExplorer/storefront/icons/help.svg', ignore_missing=true)|raw }}</button>
+                </div>
+
+                <div class="miniwald-observation-species-card__actions">
+                    <div class="miniwald-observation-counter {{ (countersDisabled or previewMode) ? 'miniwald-observation-counter__disabled' : '' }}">
+                        <button class="miniwald-observation-counter__btn" type="button" data-counter="minus"{{ previewMode ? ' disabled' : '' }}>
+                            {{ source('@MiniwaldExplorer/storefront/icons/decrease.svg', ignore_missing=true)|raw }}
+                        </button>
+                        <input type="number" min="0" inputmode="numeric"
+                               class="miniwald-observation-counter__value" data-counter-value
+                               value="0"{{ previewMode ? ' disabled' : '' }}>
+                        <button class="miniwald-observation-counter__btn" type="button" data-counter="plus"{{ previewMode ? ' disabled' : '' }}>
+                            {{ source('@MiniwaldExplorer/storefront/icons/increase.svg', ignore_missing=true)|raw }}
+                        </button>
+                    </div>
+                    <div class="miniwald-observation-species-card__add-photo{% if previewMode %} miniwald-observation-species-card__add-photo__disabled disabled{% endif %}">
+                        <button class="btn btn-green miniwald-observation-species-card__add-photo-btn"
+                                type="button"
+                                data-add-photo
+                                aria-label="{{ 'miniwaldExplorer.observation.addPhoto'|trans }}">
+                            {{ source('@MiniwaldExplorer/storefront/icons/plus.svg', ignore_missing=true)|raw }}
+                            <span class="miniwald-observation-species-card__photo-badge" data-photo-count hidden>0</span>
+                        </button>
+                        <div class="miniwald-observation-species-card__add-popup" data-add-popup hidden>
+                            <button class="btn btn-green" type="button" data-popup-add-camera>
+                                {{ source('@MiniwaldExplorer/storefront/icons/camera-outline.svg', ignore_missing=true)|raw }}
+                                {{ 'miniwaldExplorer.observation.addCamera'|trans }}
+                            </button>
+                            <button class="btn btn-green" type="button" data-popup-add-gallery>
+                                {{ source('@MiniwaldExplorer/storefront/icons/add-photo.svg', ignore_missing=true)|raw }}
+                                {{ 'miniwaldExplorer.observation.addGallery'|trans }}
+                            </button>
+                            <button class="btn btn-green" type="button" data-popup-add-remark>
+                                {{ source('@MiniwaldExplorer/storefront/icons/add-remark.svg', ignore_missing=true)|raw }}
+                                {{ 'miniwaldExplorer.observation.addRemark'|trans }}
+                            </button>
+                        </div>
+                        <input type="file" accept="image/*" capture="environment"
+                               class="miniwald-observation-species-card__photo-input"
+                               data-photo-input data-camera-input hidden>
+                        <input type="file" accept="image/*" multiple
+                               class="miniwald-observation-species-card__photo-input"
+                               data-photo-input data-gallery-input hidden>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="miniwald-observation-species-card__remark-photo-container">
+            <div class="miniwald-observation-species-card__photo-preview" data-photo-preview hidden></div>
+            <div class="miniwald-observation-species-card__remark-area" data-remark-area hidden>
+                <div class="miniwald-observation-species-card__remark-header">
+                    <label for="remark_{{ species.id }}" class="miniwald-observation-species-card__remark-label">{{ 'miniwaldExplorer.observation.remarkLabel'|trans }}</label>
+                    <button type="button" class="btn btn-transparent miniwald-observation-species-card__remark-remove" data-remark-remove aria-label="Anmerkung entfernen">
+                        {{ source('@MiniwaldExplorer/storefront/icons/close.svg', ignore_missing=true)|raw }}
+                    </button>
+                </div>
+                <textarea id="remark_{{ species.id }}" class="miniwald-observation-species-card__remark-input" data-remark-input rows="3"></textarea>
+            </div>
+        </div>
+    </div>
+{% endmacro %}

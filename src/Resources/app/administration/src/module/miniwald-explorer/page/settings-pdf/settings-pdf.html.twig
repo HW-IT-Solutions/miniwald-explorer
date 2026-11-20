@@ -1,0 +1,179 @@
+{% block miniwald_settings_pdf %}
+<sw-page class="miniwald-settings-pdf">
+    {% block miniwald_settings_pdf_smart_bar_header %}
+    <template #smart-bar-header>
+        <h2>
+            {{ $tc('miniwald-explorer.settingsPdf.title') }}
+        </h2>
+    </template>
+    {% endblock %}
+
+    {% block miniwald_settings_pdf_content %}
+    <template #content>
+        <sw-card-view>
+            {% block miniwald_settings_pdf_description %}
+            <sw-card
+                :title="$tc('miniwald-explorer.settingsPdf.cardTitleDescription')"
+            >
+                <p>
+                    {{ $tc('miniwald-explorer.settingsPdf.description') }}
+                </p>
+                <p class="miniwald-settings-pdf__info">
+                    <sw-icon
+                        name="regular-info-circle"
+                        small
+                    ></sw-icon>                    {{ $tc('miniwald-explorer.settingsPdf.downloadInfo') }}
+                </p>
+            </sw-card>
+            {% endblock %}
+
+            {% block miniwald_settings_pdf_table %}
+            <sw-card
+                :title="$tc('miniwald-explorer.settingsPdf.cardTitleSheets')"
+                :is-loading="isLoading"
+            >
+                <div class="miniwald-settings-pdf__sheet-list">
+                    {% block miniwald_settings_pdf_sheet_items %}
+                    <div
+                        v-for="slot in sheetSlots"
+                        :key="slot.key"
+                        class="miniwald-settings-pdf__sheet-item"
+                    >
+                        {% block miniwald_settings_pdf_sheet_item_header %}
+                        <div class="miniwald-settings-pdf__sheet-header">
+                            <div class="miniwald-settings-pdf__sheet-type">
+                                <strong>{{ slot.label }}</strong>
+                                <span
+                                    v-if="slot.type === 'animal'"
+                                    class="miniwald-settings-pdf__sheet-type-badge"
+                                >
+                                    {{ $tc('miniwald-explorer.settingsPdf.typeAnimal') }}
+                                </span>
+                                <span
+                                    v-else-if="slot.type === 'plant'"
+                                    class="miniwald-settings-pdf__sheet-type-badge miniwald-settings-pdf__sheet-type-badge--plant"
+                                >
+                                    {{ $tc('miniwald-explorer.settingsPdf.typePlant') }}
+                                </span>
+                                <span
+                                    v-else-if="slot.type === 'ground'"
+                                    class="miniwald-settings-pdf__sheet-type-badge miniwald-settings-pdf__sheet-type-badge--ground"
+                                >
+                                    {{ $tc('miniwald-explorer.settingsPdf.typeGround') }}
+                                </span>
+                            </div>
+                            <div class="miniwald-settings-pdf__sheet-status">
+                                <sw-icon
+                                    v-if="hasMediaForSlot(slot.key)"
+                                    name="regular-checkmark-xs"
+                                    small
+                                    :color="'#37d046'"
+                                ></sw-icon>
+                                <sw-icon
+                                    v-else
+                                    name="regular-times-s"
+                                    small
+                                    :color="'#de294c'"
+                                ></sw-icon>
+                            </div>
+                        </div>
+                        {% endblock %}
+
+                        {% block miniwald_settings_pdf_sheet_item_details %}
+                        <div class="miniwald-settings-pdf__sheet-details">
+                            <div class="miniwald-settings-pdf__sheet-file">
+                                <span
+                                    class="miniwald-settings-pdf__sheet-filename"
+                                >
+                                    {{ getMediaNameForSlot(slot.key) }}
+                                </span>
+                                <span class="miniwald-settings-pdf__sheet-date">
+                                    {{ getUploadDateForSlot(slot.key) }}
+                                </span>
+                            </div>
+                            <div class="miniwald-settings-pdf__sheet-actions">
+                                {% block miniwald_settings_pdf_sheet_item_preview %}
+                                <sw-button
+                                    v-if="hasMediaForSlot(slot.key)"
+                                    variant="ghost"
+                                    size="small"
+                                    @click="onPreviewPdf(slot.key)"
+                                >
+                                    <sw-icon
+                                        name="regular-eye"
+                                        small
+                                    ></sw-icon>
+                                    {{ $tc('miniwald-explorer.settingsPdf.buttonPreview') }}
+                                </sw-button>
+                                {% endblock %}
+
+                                {% block miniwald_settings_pdf_sheet_item_upload %}
+                                <sw-button
+                                    variant="ghost"
+                                    size="small"
+                                    @click="onOpenMediaModal(slot.key)"
+                                >
+                                    <sw-icon
+                                        name="regular-circle-upload"
+                                        small
+                                    ></sw-icon>
+                                    {{ hasMediaForSlot(slot.key)
+                                        ? $tc('miniwald-explorer.settingsPdf.buttonReplace')
+                                        : $tc('miniwald-explorer.settingsPdf.buttonUpload')
+                                    }}
+                                </sw-button>
+                                {% endblock %}
+
+                                {% block miniwald_settings_pdf_sheet_item_remove %}
+                                <sw-button
+                                    v-if="hasMediaForSlot(slot.key)"
+                                    variant="ghost-danger"
+                                    size="small"
+                                    @click="onRemovePdf(slot.key)"
+                                >
+                                    <sw-icon
+                                        name="regular-times-s"
+                                        small
+                                    ></sw-icon>
+                                    {{ $tc('miniwald-explorer.settingsPdf.buttonRemove') }}
+                                </sw-button>
+                                {% endblock %}
+                            </div>
+                        </div>
+                        {% endblock %}
+
+                        {% block miniwald_settings_pdf_sheet_item_download_url %}
+                        <div
+                            v-if="hasMediaForSlot(slot.key)"
+                            class="miniwald-settings-pdf__sheet-download-url"
+                        >
+                            <span class="miniwald-settings-pdf__sheet-url-label">
+                                {{ $tc('miniwald-explorer.settingsPdf.downloadUrl') }}
+                                :
+                            </span>
+                            <code class="miniwald-settings-pdf__sheet-url-value">
+                                {{ getDownloadUrl(slot) }}
+                            </code>
+                        </div>
+                        {% endblock %}
+                    </div>
+                    {% endblock %}
+                </div>
+            </sw-card>
+            {% endblock %}
+        </sw-card-view>
+        {% block miniwald_settings_pdf_media_modal %}
+        <sw-media-modal-v2
+            v-if="showMediaModal"
+            :allow-multi-select="false"
+            :file-accept="'application/pdf'"
+            :initial-folder-id="pdfMediaFolderId"
+            :upload-folder-id="pdfMediaFolderId"
+            @modal-close="showMediaModal = false"
+            @media-modal-selection-change="onMediaSelectionChange"
+        ></sw-media-modal-v2>
+        {% endblock %}
+    </template>
+    {% endblock %}
+</sw-page>
+{% endblock %}

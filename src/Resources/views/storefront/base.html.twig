@@ -1,0 +1,22 @@
+{% sw_extends '@Storefront/storefront/base.html.twig' %}
+
+{% block base_body_script %}
+    {{ parent() }}
+    <script>
+    (function(){
+        document.addEventListener('DOMContentLoaded', function(){
+            var dataEl = document.querySelector('[data-page-back-href]');
+            if (!dataEl) return;
+            var backMenu = document.querySelector('.miniwald-back-menu');
+            var cancelBtn = document.querySelector('[data-obs-cancel]');
+            var textEl = document.querySelector('.miniwald-header__cancel .text');
+            if (!cancelBtn || !backMenu) return;
+            cancelBtn.href = dataEl.dataset.pageBackHref;
+            if (textEl && dataEl.dataset.pageBackText) {
+                textEl.textContent = dataEl.dataset.pageBackText;
+            }
+            backMenu.style.display = 'flex';
+        });
+    })();
+    </script>
+{% endblock %}

@@ -1,0 +1,24 @@
+{# Partial: species categories + plants grid. Variables: categories #}
+<div class="collection-grid">
+    {% for cat in categories %}
+        <a href="{{ path('frontend.miniwald.collection.category', { id: cat.id }) }}"
+           class="collection-grid__card">
+            <div class="collection-grid__img-wrap">
+                {% if cat.image %}
+                    {% sw_thumbnails 'species-image-thumbnails' with {
+                        media: cat.image,
+                        attributes: {
+                            alt: "",
+                            title: cat.name,
+                            class: 'collection-grid__img'
+                        },
+                        sizes: { default: '200px' }
+                    } %}
+                {% else %}
+                    <img class="collection-grid__img" width="200px" src="{{ asset('bundles/miniwaldexplorer/assets/plant.png') }}" alt="">
+                {% endif %}
+            </div>
+            <span class="collection-grid__label">{{ cat.name }}</span>
+        </a>
+    {% endfor %}
+</div>

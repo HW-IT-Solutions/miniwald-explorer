@@ -1,0 +1,393 @@
+{% sw_extends '@Storefront/storefront/base.html.twig' %}
+
+{% block base_body_classes %}{{ parent() }} observation-view{% endblock %}
+
+{% from '@MiniwaldExplorer/storefront/page/observation/_macros.html.twig' import speciesGrid %}
+
+{% set defaultCategory = categories|first %}
+{% set defaultCategoryId = defaultCategory ? defaultCategory.id : '' %}
+
+{% macro buttonDownloadObservationSheets() %}
+    <a class="btn btn-orange download-observation-sheet">{{ 'miniwaldExplorer.observation.downloadObservationSheets'|trans }} {{ source('@MiniwaldExplorer/storefront/icons/download.svg', ignore_missing=true)|raw }}</a>
+{% endmacro %}
+
+{% block base_content %}
+    <div class="miniwald-observation-page" data-observation-wizard="true">
+
+        {# ── Icon sprites for JS-built cards (not visible) ── #}
+        <div hidden data-icon-sprites aria-hidden="true">
+            <span data-icon="decrease">{{ source('@MiniwaldExplorer/storefront/icons/decrease.svg', ignore_missing=true)|raw }}</span>
+            <span data-icon="increase">{{ source('@MiniwaldExplorer/storefront/icons/increase.svg', ignore_missing=true)|raw }}</span>
+            <span data-icon="close">{{ source('@MiniwaldExplorer/storefront/icons/close.svg', ignore_missing=true)|raw }}</span>
+            <span data-icon="add-photo">{{ source('@MiniwaldExplorer/storefront/icons/add-photo.svg', ignore_missing=true)|raw }}</span>
+            <span data-icon="plus">{{ source('@MiniwaldExplorer/storefront/icons/plus.svg', ignore_missing=true)|raw }}</span>
+            <span data-icon="add-remark">{{ source('@MiniwaldExplorer/storefront/icons/add-remark.svg', ignore_missing=true)|raw }}</span>
+            <span data-icon="species-butterflies">{{ source('@MiniwaldExplorer/storefront/icons/butterfly.svg', ignore_missing=true)|raw }}</span>
+            <span data-icon="species-birds">{{ source('@MiniwaldExplorer/storefront/icons/canary.svg', ignore_missing=true)|raw }}</span>
+            <span data-icon="species-insects">{{ source('@MiniwaldExplorer/storefront/icons/insect.svg', ignore_missing=true)|raw }}</span>
+            <span data-icon="species-soil">{{ source('@MiniwaldExplorer/storefront/icons/spider.svg', ignore_missing=true)|raw }}</span>
+            <span data-icon="species-plants">{{ source('@MiniwaldExplorer/storefront/icons/plant.svg', ignore_missing=true)|raw }}</span>
+        </div>
+
+        {# ── Subspecies dropdowns for JS-built custom species cards (cloned per category, not visible) ── #}
+        <div hidden data-subspecies-templates aria-hidden="true">
+            {% for category in categories %}
+                {% set speciesWithSubspecies = (speciesByCategory[category.id]|default([]))|filter(s => s.subspecies|length > 0) %}
+                {% if speciesWithSubspecies|length > 0 %}
+                    <div data-subspecies-template data-category-id="{{ category.id }}">
+                        <select class="miniwald-observation-species-card__subspecies-select" data-custom-subspecies>
+                            <option value="">{{ 'miniwaldExplorer.observation.chooseSubspecies'|trans }}</option>
+                            {% for species in speciesWithSubspecies %}
+                                <optgroup label="{{ species.translated.name }}">
+                                    {% for subspecies in species.subspecies %}
+                                        <option value="{{ subspecies.id }}">{{ subspecies.translated.name }}</option>
+                                    {% endfor %}
+                                </optgroup>
+                            {% endfor %}
+                        </select>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+
+        <div class="miniwald-observation-wizard"
+             data-current-step="1"
+             data-is-logged-in="{{ isLoggedIn ? '1' : '0' }}"
+             data-login-url="{{ path('frontend.account.login.page') }}"
+             data-hide-instruction-insects="{{ hideInstructionInsects ? '1' : '0' }}"
+             data-hide-instruction-birds="{{ hideInstructionBirds ? '1' : '0' }}"
+             data-hide-instruction-butterflies="{{ hideInstructionButterflies ? '1' : '0' }}"
+             data-hide-instruction-soil="{{ hideInstructionSoil ? '1' : '0' }}"
+             data-hide-instruction-ground="{{ hideInstructionGround ? '1' : '0' }}"
+             data-hide-instruction-plants="{{ hideInstructionPlants ? '1' : '0' }}"
+             data-str-next="{{ 'miniwaldExplorer.observation.next'|trans }}"
+             data-str-done="{{ 'miniwaldExplorer.observation.done'|trans }}"
+             data-str-observe-category="{{ 'miniwaldExplorer.observation.observeCategory'|trans }}"
+             data-str-add-photo="{{ 'miniwaldExplorer.observation.addPhoto'|trans }}"
+             data-str-add-camera="{{ 'miniwaldExplorer.observation.addCamera'|trans }}"
+             data-str-add-gallery="{{ 'miniwaldExplorer.observation.addGallery'|trans }}"
+             data-str-add-remark="{{ 'miniwaldExplorer.observation.addRemark'|trans }}"
+             data-str-remark-label="{{ 'miniwaldExplorer.observation.remarkLabel'|trans }}"
+             data-str-remark-remove="{{ 'miniwaldExplorer.observation.remarkRemove'|trans }}"
+             data-str-remove-photo="{{ 'miniwaldExplorer.observation.removePhoto'|trans }}"
+             data-str-plant-card-number="{{ 'miniwaldExplorer.observation.plantCardNumber'|trans }}"
+             data-str-plant-card-remove="{{ 'miniwaldExplorer.observation.plantCardRemove'|trans }}"
+             data-str-plant-card-species-name="{{ 'miniwaldExplorer.observation.plantCardSpeciesName'|trans }}"
+             data-str-plant-card-trunk="{{ 'miniwaldExplorer.observation.plantCardTrunk'|trans }}"
+             data-str-plant-card-height="{{ 'miniwaldExplorer.observation.plantCardHeight'|trans }}"
+             data-str-plant-card-crown="{{ 'miniwaldExplorer.observation.plantCardCrown'|trans }}"
+             data-str-plant-card-remark="{{ 'miniwaldExplorer.observation.plantCardRemark'|trans }}"
+             data-str-save-error-timeout="{{ 'miniwaldExplorer.observation.saveErrorTimeout'|trans }}"
+             data-str-save-error="{{ 'miniwaldExplorer.observation.saveError'|trans }}"
+             data-str-photo-upload-warning="{{ 'miniwaldExplorer.observation.photoUploadWarning'|trans }}"
+             data-str-photo-upload-progress="{{ 'miniwaldExplorer.observation.photoUploadProgress'|trans }}">
+
+            {# ── Step 1: Category selection ── #}
+            <section class="miniwald-observation-step is-active" data-step="1">
+                <div class="miniwald-observation-step__content">
+                    <h1 class="miniwald-observation-title">{{ 'miniwaldExplorer.observation.startPageTitle'|trans }}</h1>
+
+                    <div class="miniwald-observation-type-grid">
+                        {% for category in categories %}
+                            <a class="miniwald-observation-type-card"
+                               type="button"
+                               data-type="{{ category.technicalName }}"
+                               data-category-id="{{ category.id }}">
+                                <span class="miniwald-observation-type-card__image">
+                                    {% if category.image %}
+                                        {% sw_thumbnails 'species-category-image-thumbnails' with {
+                                            media: category.image,
+                                            attributes: {
+                                                alt: category.translated.name,
+                                                title: category.translated.name,
+                                            },
+                                            sizes: { default: '456px' }
+                                        } %}
+                                    {% endif %}
+                                </span>
+                                <span class="miniwald-observation-type-card__label">{{ category.translated.name }}</span>
+                            </a>
+                        {% endfor %}
+                        <a class="miniwald-observation-type-card" type="button" data-type="plants">
+                            <span class="miniwald-observation-type-card__image">
+                                <img
+                                    src="{{ asset('bundles/miniwaldexplorer/assets/plant-measurement_467.jpg') }}"
+                                    alt=""
+                                    title="{{ 'miniwaldExplorer.observation.observationTypePlantImgTitle'|trans }}"
+                                    loading="eager"
+                                />
+                            </span>
+                            <span class="miniwald-observation-type-card__label">{{ 'miniwaldExplorer.observation.observationTypePlant'|trans }}</span>
+                        </a>
+                        <a class="miniwald-observation-type-card" type="button" data-type="ground">
+                            <span class="miniwald-observation-type-card__image">
+                                <img
+                                    src="{{ asset('bundles/miniwaldexplorer/assets/ground-measurement_467.jpg') }}"
+                                    alt=""
+                                    title="{{ 'miniwaldExplorer.observation.observationTypeGroundImgTitle'|trans }}"
+                                    loading="eager"
+                                />
+                            </span>
+                            <span class="miniwald-observation-type-card__label">{{ 'miniwaldExplorer.observation.observationTypeGround'|trans }}</span>
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            {# ── Step 2: Species preview (animal/plant types only) — counters disabled, choose timer or skip ── #}
+            <section class="miniwald-observation-step" data-step="2">
+                <div class="miniwald-observation-step__content">
+                    <h1 class="miniwald-observation-title">{{ 'miniwaldExplorer.observation.step3Title'|trans }}</h1>
+                    {{ speciesGrid(categories, speciesByCategory, {previewMode: true}) }}
+                </div>
+                <div class="miniwald-observation-step__actions">
+                    <button class="btn btn-white btn-backward multiline" type="button" data-skip-to-review>
+                        <span>{{ 'miniwaldExplorer.observation.skipTimerButton'|trans }}</span>
+                    </button>
+                    <button class="btn btn-dark-blue btn-forward multiline" type="button" data-next-start>
+                        <span>{{ 'miniwaldExplorer.observation.start'|trans }}</span>
+                        {{ source('@MiniwaldExplorer/storefront/icons/report.svg', ignore_missing=true)|raw }}
+                    </button>
+                </div>
+            </section>
+
+            {# ── Step 3: Species counting + timer (animal/plant types) OR measurement matrix (ground type) ── #}
+            <section class="miniwald-observation-step" data-step="3">
+
+                {# ── Species counting panel (hidden for ground type via JS) ── #}
+                <div class="miniwald-observation-step__content" data-species-panel>
+                    <h1 class="miniwald-observation-title">{{ 'miniwaldExplorer.observation.step3Title'|trans }}</h1>
+                    {{ speciesGrid(categories, speciesByCategory, {}) }}
+                    <button class="btn btn-green miniwald-observation-add-custom-species" type="button" data-add-custom-species>
+                        {{ 'miniwaldExplorer.observation.addAnotherSpecies'|trans }}
+                    </button>
+                </div>
+
+                {# Timer bar: shown while timer is running (toggled via .is-timing on the section) #}
+                <div class="miniwald-observation-step__timer" data-timer>
+                    <div class="miniwald-observation-timer__bar-container">
+                        <div class="miniwald-observation-timer__bar" data-timer-bar></div>
+                        <div class="miniwald-observation-timer__info">
+                            <span data-timer-elapsed>00:00</span>
+                            <span>/</span>
+                            <span data-timer-total>15:00</span>
+                        </div>
+                        <button class="miniwald-observation-timer__stop" type="button" data-open-timer-modal>✕</button>
+                    </div>
+                </div>
+
+                {# ── Ground measurement matrix panel (shown only for ground type via JS) ── #}
+                {% sw_include '@MiniwaldExplorer/storefront/page/observation/_ground.html.twig' %}
+
+                {# ── Plant observation panel (shown only for plants type via JS) ── #}
+                {% sw_include '@MiniwaldExplorer/storefront/page/observation/_plant.html.twig' %}
+            </section>
+
+            {# ── Step 4: Review (animal/plant types only) ── #}
+            <section class="miniwald-observation-step" data-step="4">
+                <div class="miniwald-observation-step__content">
+                    <h1 class="miniwald-observation-title">{{ 'miniwaldExplorer.observation.step4Title'|trans }}</h1>
+                    <p class="miniwald-observation-text">
+                        {{ 'miniwaldExplorer.observation.step4Text'|trans({'%boldStart%': '<strong>','%boldEnd%': '</strong>'})|raw }}
+                    </p>
+                    <h2 class="miniwald-observation-title">{{ 'miniwaldExplorer.observation.step4YourObservation'|trans }}</h2>
+                    {{ speciesGrid(categories, speciesByCategory, {}) }}
+                    <button class="btn btn-green miniwald-observation-add-custom-species" type="button" data-add-custom-species>
+                        {{ 'miniwaldExplorer.observation.addAnotherSpecies'|trans }}
+                    </button>
+                </div>
+                <div class="miniwald-observation-step__actions single-button">
+                    <button class="btn btn-white btn-forward" type="button" data-next-step>
+                        {{ 'miniwaldExplorer.observation.next'|trans }}
+                        {{ source('@MiniwaldExplorer/storefront/icons/arrow.svg', ignore_missing=true)|raw }}
+                    </button>
+                </div>
+            </section>
+
+            {# ── Step 5: Form + save ── #}
+            <section class="miniwald-observation-step" data-step="5">
+                <p class="miniwald-save-error" data-save-error hidden></p>
+                <div class="miniwald-observation-step__content">
+                    <h1 class="miniwald-observation-title">{{ 'miniwaldExplorer.observation.step5Title'|trans }}</h1>
+
+                    <div class="miniwald-observation-form">
+                        <label class="miniwald-observation-field">
+                            <span>{{ 'miniwaldExplorer.observation.fieldObserver'|trans }}</span>
+                            <input type="text"
+                                   value="{{ customerName }}"
+                                   readonly
+                                   data-observer-input>
+                        </label>
+                        <label class="miniwald-observation-field">
+                            <span>{{ 'miniwaldExplorer.observation.fieldLocation'|trans }}</span>
+                            <select data-miniwald-select>
+                                <option value="">{{ 'miniwaldExplorer.observation.fieldLocationPlaceholder'|trans }}</option>
+                                {% for mw in miniwaelder %}
+                                    <option value="{{ mw.id }}"
+                                            data-lat="{{ mw.latitude }}"
+                                            data-lng="{{ mw.longitude }}">{{ mw.name }}</option>
+                                {% endfor %}
+                                <option value="other">{{ 'miniwaldExplorer.observation.fieldLocationOther'|trans }}</option>
+                            </select>
+                        </label>
+                        <div class="miniwald-observation-field-row">
+                            <label class="miniwald-observation-field">
+                                <span>{{ 'miniwaldExplorer.observation.fieldDate'|trans }}</span>
+                                <input type="date" value="{{ "now"|date("Y-m-d") }}" data-date-input>
+                            </label>
+                            <label class="miniwald-observation-field">
+                                <span>{{ 'miniwaldExplorer.observation.fieldTime'|trans }}</span>
+                                <input type="time" value="{{ "now"|date("H:i") }}" data-time-input>
+                            </label>
+                        </div>
+                        <div class="miniwald-observation-field-row">
+                            <label class="miniwald-observation-field">
+                                <span>{{ 'miniwaldExplorer.observation.fieldWeather'|trans }}</span>
+                                <select data-weather-select>
+                                    <option value="sunny">{{ 'miniwaldExplorer.observation.weatherSunny'|trans }}</option>
+                                    <option value="partly_cloudy">{{ 'miniwaldExplorer.observation.weatherPartlyCloudy'|trans }}</option>
+                                    <option value="cloudy">{{ 'miniwaldExplorer.observation.weatherCloudy'|trans }}</option>
+                                    <option value="rainy">{{ 'miniwaldExplorer.observation.weatherRainy'|trans }}</option>
+                                </select>
+                            </label>
+                            <label class="miniwald-observation-field">
+                                <span>{{ 'miniwaldExplorer.observation.fieldWind'|trans }}</span>
+                                <select data-wind-select>
+                                    <option value="calm">{{ 'miniwaldExplorer.observation.windCalm'|trans }}</option>
+                                    <option value="light_wind">{{ 'miniwaldExplorer.observation.windLightWind'|trans }}</option>
+                                    <option value="moderate_wind">{{ 'miniwaldExplorer.observation.windModerateWind'|trans }}</option>
+                                    <option value="strong_wind">{{ 'miniwaldExplorer.observation.windStrongWind'|trans }}</option>
+                                </select>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="miniwald-observation-step__actions">
+                    <button class="btn btn-white btn-back" type="button" data-prev-step>
+                        {{ source('@MiniwaldExplorer/storefront/icons/arrow.svg', ignore_missing=true)|raw }}
+                        {{ 'miniwaldExplorer.observation.back'|trans }}
+                    </button>
+                    <button class="btn btn-white btn-forward save" type="button" data-save-observation disabled data-save-btn>
+                        <span class="btn-label">{{ 'miniwaldExplorer.observation.save'|trans }}</span>
+                        <span class="btn-spinner" aria-hidden="true"></span>
+                        {{ source('@MiniwaldExplorer/storefront/icons/finish.svg', ignore_missing=true)|raw }}
+                    </button>
+                </div>
+            </section>
+        </div>
+
+        {# ── Countdown modal (3 → 2 → 1, auto-dismiss) ── #}
+        <div class="miniwald-observation-modal miniwald-observation-modal--countdown" data-countdown-modal hidden>
+            <div class="miniwald-observation-countdown" data-countdown-screen="3">
+                <div class="miniwald-observation-countdown__blob miniwald-observation-countdown__blob--blue">3</div>
+            </div>
+            <div class="miniwald-observation-countdown" data-countdown-screen="2" hidden>
+                <div class="miniwald-observation-countdown__blob miniwald-observation-countdown__blob--orange">2</div>
+            </div>
+            <div class="miniwald-observation-countdown" data-countdown-screen="1" hidden>
+                <div class="miniwald-observation-countdown__blob miniwald-observation-countdown__blob--green">1</div>
+            </div>
+        </div>
+
+        {# ── Timer beenden modal (stop button) ── #}
+        <div class="miniwald-observation-modal" data-timer-modal hidden>
+            <div class="miniwald-observation-modal__content">
+                <h2>{{ 'miniwaldExplorer.observation.timerModalTitle'|trans }}</h2>
+                <p class="miniwald-observation-text__slim">{{ 'miniwaldExplorer.observation.timerModalText'|trans }}</p>
+                <button class="btn btn-transparent miniwald-observation-modal__btn-keep" type="button" data-close-timer-modal>{{ 'miniwaldExplorer.observation.timerModalKeepGoing'|trans }}</button>
+                <button class="btn btn-dark-blue miniwald-observation-modal__btn-finish" type="button" data-finish-timer>{{ 'miniwaldExplorer.observation.timerModalFinish'|trans }}</button>
+                <button class="btn btn-orange miniwald-observation-modal__btn-cancel" type="button" data-cancel-observation>{{ 'miniwaldExplorer.observation.timerModalCancel'|trans }}</button>
+            </div>
+        </div>
+
+        {# ── Beobachtung verlassen modal (backLink/cancel during a running observation) ── #}
+        <div class="miniwald-observation-modal" data-leave-modal hidden>
+            <div class="miniwald-observation-modal__content">
+                <h2>{{ 'miniwaldExplorer.observation.leaveModalTitle'|trans }}</h2>
+                <p class="miniwald-observation-text__slim">{{ 'miniwaldExplorer.observation.leaveModalText'|trans }}</p>
+                <button class="btn btn-transparent miniwald-observation-modal__btn-keep" type="button" data-close-leave-modal>{{ 'miniwaldExplorer.observation.leaveModalStay'|trans }}</button>
+                <button class="btn btn-orange miniwald-observation-modal__btn-cancel" type="button" data-confirm-leave>{{ 'miniwaldExplorer.observation.leaveModalLeave'|trans }}</button>
+            </div>
+        </div>
+
+        {# ── Fertig modal (timer expired) ── #}
+        <div class="miniwald-observation-modal" data-fertig-modal hidden>
+            <div class="miniwald-observation-modal__content">
+                <h2>{{ 'miniwaldExplorer.observation.fertigModalTitle'|trans }}</h2>
+                <p>{{ 'miniwaldExplorer.observation.fertigModalText'|trans }}</p>
+                <button class="btn btn-green btn-forward" type="button" data-fertig-weiter>
+                    {{ 'miniwaldExplorer.observation.fertigModalButton'|trans }}
+                    {{ source('@MiniwaldExplorer/storefront/icons/arrow.svg', ignore_missing=true)|raw }}
+                </button>
+            </div>
+        </div>
+
+        {# ── Save confirmation modal ── #}
+        <div class="miniwald-observation-modal" data-finish-modal hidden>
+            <div class="miniwald-observation-modal__content">
+                <div data-finish-success hidden>
+                    <h2>{{ 'miniwaldExplorer.observation.finishModalTitle'|trans }}</h2>
+                    <p data-finish-text-default>{{ 'miniwaldExplorer.observation.finishModalText'|trans }}</p>
+                    <p data-finish-text-ground hidden>{{ 'miniwaldExplorer.observation.finishModalTextGround'|trans }}</p>
+                </div>
+                <div data-photo-uploading hidden aria-live="polite">
+                    <h2>{{ 'miniwaldExplorer.observation.photoUploadTitle'|trans }}</h2>
+                    <p>{{ 'miniwaldExplorer.observation.photoUploadStay'|trans }}</p>
+                    <p data-photo-upload-progress></p>
+                    <progress data-photo-upload-bar value="0" max="1"></progress>
+                </div>
+                <p class="miniwald-photo-upload-warning" data-photo-upload-warning hidden>
+                    {{ 'miniwaldExplorer.observation.photoUploadWarning'|trans }}
+                </p>
+                <div class="miniwald-photo-upload-actions" data-photo-upload-actions hidden>
+                    <button class="btn btn-green" type="button" data-photo-retry hidden>{{ 'miniwaldExplorer.observation.photoUploadRetry'|trans }}</button>
+                    <button class="btn btn-transparent miniwald-observation-modal__btn-keep" type="button" data-photo-cancel>{{ 'miniwaldExplorer.observation.photoUploadCancel'|trans }}</button>
+                </div>
+                <p class="miniwald-photo-upload-warning" data-photo-cancelled hidden>{{ 'miniwaldExplorer.observation.photoUploadCancelled'|trans }}</p>
+                <button class="btn btn-green" type="button" data-finish-redirect hidden>
+                    {{ 'miniwaldExplorer.observation.finishModalButton'|trans }}
+                    {{ source('@MiniwaldExplorer/storefront/icons/arrow.svg', ignore_missing=true)|raw }}
+                </button>
+            </div>
+        </div>
+
+        {# Separate confirmation stays above the upload progress modal. #}
+        <div class="miniwald-observation-modal miniwald-observation-modal--upload-cancel" data-photo-cancel-confirmation role="dialog" aria-modal="true" aria-labelledby="photo-upload-cancel-title" hidden>
+            <div class="miniwald-observation-modal__content">
+                <h2 id="photo-upload-cancel-title">{{ 'miniwaldExplorer.observation.photoUploadCancelTitle'|trans }}</h2>
+                <p class="miniwald-photo-upload-warning">{{ 'miniwaldExplorer.observation.photoUploadCancelWarning'|trans }}</p>
+                <div class="miniwald-photo-cancel-actions">
+                    <button class="btn btn-green" type="button" data-photo-cancel-stay>{{ 'miniwaldExplorer.observation.photoUploadCancelStay'|trans }}</button>
+                    <button class="btn btn-orange" type="button" data-photo-cancel-confirm>{{ 'miniwaldExplorer.observation.photoUploadCancelConfirm'|trans }}</button>
+                </div>
+            </div>
+        </div>
+
+        {# ── Instruction modals (extracted to separate templates) ── #}
+        {% sw_include '@MiniwaldExplorer/storefront/page/observation/_instruction-ground.html.twig' %}
+        {% sw_include '@MiniwaldExplorer/storefront/page/observation/_instruction-insects.html.twig' %}
+        {% sw_include '@MiniwaldExplorer/storefront/page/observation/_instruction-birds.html.twig' %}
+        {% sw_include '@MiniwaldExplorer/storefront/page/observation/_instruction-butterflies.html.twig' %}
+        {% sw_include '@MiniwaldExplorer/storefront/page/observation/_instruction-soil.html.twig' %}
+        {% sw_include '@MiniwaldExplorer/storefront/page/observation/_instruction-plants.html.twig' %}
+
+        {# ── Species info modal ── #}
+        <div class="miniwald-observation-modal miniwald-observation-modal--species" data-species-modal hidden>
+            <div class="miniwald-species-modal__content">
+                <div class="miniwald-species-modal__body">
+                    <a class="btn btn-transparent miniwald-species-modal__close" data-close-species-modal>
+                        {{ source('@MiniwaldExplorer/storefront/icons/arrow.svg', ignore_missing=true)|raw }}
+                        <span data-species-modal-name></span>
+                    </a>
+                    <h2 class="miniwald-observation-sub-title" data-species-modal-name></h2>
+                    <div class="miniwald-species-modal__hero">
+                        <img class="miniwald-species-modal__image" data-species-modal-image src="" alt="" />
+                    </div>
+                    <p class="miniwald-species-modal__section-text" data-species-modal-description></p>
+                    <h2 class="miniwald-observation-sub-title">{{ 'miniwaldExplorer.observation.identificationTitle'|trans }}</h2>
+                    <p class="miniwald-species-modal__section-text" data-species-modal-tips></p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

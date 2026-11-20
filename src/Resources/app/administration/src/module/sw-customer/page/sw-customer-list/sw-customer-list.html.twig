@@ -1,0 +1,44 @@
+{% block sw_customer_list_grid_columns_name %}
+<template #column-firstName="{ item, compact, isInlineEdit }">
+    {% block sw_customer_list_grid_inline_edit_name %}
+    <template v-if="isInlineEdit">
+        {% block sw_customer_list_grid_inline_edit_first_name %}
+        <mt-text-field
+            v-model="item.firstName"
+            name="sw-field--item-firstName"
+            class="sw-customer-list__inline-edit-first-name"
+            :size="compact ? 'small' : 'default'"
+        />
+        {% endblock %}
+    </template>
+    {% endblock %}
+
+    {% block sw_customer_list_grid_columns_name_link %}
+    <router-link
+        v-else
+        :to="{ name: 'sw.customer.detail', params: { id: item.id }, query: { edit: false } }"
+    >
+        {{ item.firstName }}
+    </router-link>
+    {% endblock %}
+
+    {% block sw_customer_list_grid_columns_name_guest_label %}
+    <sw-label
+        v-if="!isInlineEdit && item.guest"
+        appearance="pill"
+        size="small"
+        class="sw-customer-list__metadata-customer-guest-label"
+    >
+        {{ $tc('sw-customer.list.columnNameGuestLabel') }}
+    </sw-label>
+    {% endblock %}
+    <sw-label
+        v-if="item.createdById"
+        appearance="pill"
+        size="small"
+        class="sw-customer-list__created-by-admin-label"
+    >
+        {{ $tc('sw-customer.list.labelCreatedByAdmin') }}
+    </sw-label>
+</template>
+{% endblock %}

@@ -1,0 +1,11 @@
+{% sw_extends '@Storefront/storefront/layout/meta.html.twig' %}
+
+{% block layout_head_title_inner %}
+    {%- if pageTitle is defined and pageTitle is not empty -%}
+        {{- pageTitle -}}
+    {%- elseif metaTitle is defined and metaTitle is not empty -%}
+        {{- metaTitle }} | {{ 'miniwaldExplorer.meta.appName'|trans -}}
+    {%- else -%}
+        {{- parent() -}}
+    {%- endif -%}
+{% endblock %}

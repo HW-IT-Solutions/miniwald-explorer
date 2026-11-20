@@ -1,0 +1,15 @@
+{% sw_extends '@Storefront/storefront/base.html.twig' %}
+
+{% block base_body_classes %}{{ parent() }} collection-view{% endblock %}
+
+{% block base_content %}
+<div class="collection-page collection-mini-forests-page">
+
+    <div hidden data-page-back-href="{{ path('frontend.miniwald.collection') }}" data-page-back-text="{{ 'miniwaldExplorer.collection.backLink'|trans }}"></div>
+
+    <h1 class="collection-mini-forests-page__title">{{ 'miniwaldExplorer.collection.allMiniForestsTitle'|trans }}</h1>
+
+    {% include '@MiniwaldExplorer/storefront/page/collection/_col-mini-forests.html.twig' with { miniwaelder: miniwaelder } %}
+
+</div>
+{% endblock %}

@@ -1,0 +1,66 @@
+{% sw_extends '@Storefront/storefront/base.html.twig' %}
+
+{% block base_body_classes %}{{ parent() }} collection-view{% endblock %}
+
+{% block base_content %}
+<div class="collection-page collection-category-detail collection-category-detail">
+
+    <div hidden data-page-back-href="{{ path('frontend.miniwald.collection') }}" data-page-back-text="{{ category.name }}"></div>
+
+    <div class="collection-category-detail__container">
+        {# left column - species grid #}
+        <div class="collection-category-detail__column collection-category-detail__column-main">
+
+            <h1 class="collection-category-detail__title">
+                {{ 'miniwaldExplorer.collection.typicalSpecies'|trans({ '%name%': category.name }) }}
+            </h1>
+
+            {# ── Left: Species grid ── #}
+            <div class="collection-category-detail__main container-size-anchor">
+                <div class="collection-grid collection-grid--species">
+                    {% for sp in species %}
+                        <a href="{{ path('frontend.miniwald.collection.species.detail', { categoryId: category.id, speciesId: sp.id }) }}"
+                           class="collection-grid__card">
+                            <div class="collection-grid__img-wrap">
+                                {% if sp.image %}
+                                    {% sw_thumbnails 'species-image-thumbnails' with {
+                                        media: sp.image,
+                                        attributes: {
+                                            alt: "",
+                                            title: sp.name,
+                                            class: 'collection-grid__img collection-grid__img-species'
+                                        },
+                                        sizes: { default: '290px' }
+                                    } %}
+                                {% else %}
+                                    <img class="miniwald-hero__logo" width="290px" src="{{ asset('bundles/miniwaldexplorer/assets/plant.png') }}" alt="">
+                                {% endif %}
+                            </div>
+                            <span class="collection-grid__label">{{ sp.name }}</span>
+                        </a>
+                    {% else %}
+                        <p>–</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        {# right column - observations #}
+        <div class="collection-category-detail__column collection-category-detail__column-aside">
+            <div class="collection-category-detail__obs-section">
+                <h2 class="collection-category-detail__section-title">{{ 'miniwaldExplorer.collection.lastObservations'|trans }}</h2>
+                {% include '@MiniwaldExplorer/storefront/page/collection/_col-observations.html.twig'
+                    with {
+                        observations: observations,
+                        baseRoute: 'frontend.miniwald.collection.category',
+                        baseRouteParams: { id: category.id },
+                        showAllLink: true,
+                        showStart: true,
+                        allObsUrl: path('frontend.miniwald.collection.observations', { category: category.id })
+                    }
+                    only %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

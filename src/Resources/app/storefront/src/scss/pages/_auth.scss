@@ -1,0 +1,359 @@
+.miniwald-auth-page {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    height: calc(100vh - 5rem);
+    --color: var(--miniwald-black);
+    --text-decoration: none;
+}
+
+.miniwald-auth-image-container {
+    height: 80vh;
+}
+.miniwald-auth-image {
+    max-width: 100%;
+}
+.miniwald-auth-container__title {
+    display: none;
+}
+
+.miniwald-auth-card {
+    // Mobile: only the active card is visible
+    display: none;
+    flex-direction: column;
+    flex-grow: 1;
+    justify-content: end;
+
+    // for mobile suitable, for desktop not good.
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+
+    &.is-active {
+        display: flex;
+    }
+
+    &__content {
+        background: var(--miniwald-grey);
+        border-top-right-radius: var(--miniwald-radius);
+        border-top-left-radius: var(--miniwald-radius);
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    &__header {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    &__back {
+        align-self: flex-start;
+        font-weight: 600;
+        text-decoration: none;
+        --color: var(--miniwald-black);
+
+        svg {
+            rotate: 180deg;
+            position: relative;
+            top: -2px;
+        }
+    }
+
+    &__title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        margin: 0;
+        --color: var(--miniwald-black);
+    }
+
+    &__subtitle {
+        font-size: 1rem;
+        line-height: 1.5rem;
+        margin: 0;
+        text-align: center;
+
+        a {
+            --color: var(--miniwald-dark-green);
+            --text-decoration: none;
+            font-weight: 600;
+        }
+    }
+
+    &__subtitle--desktop-only {
+        display: none;
+        margin-bottom: 0.875rem;
+    }
+}
+
+.miniwald-auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    &__group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+        font-size: 0.875rem;
+    }
+
+    &__label {
+        --color: var(--miniwald-dark-green);
+        color: var(--color);
+    }
+
+    &__input {
+        border: 1px solid var(--miniwald-black);
+        border-radius: var(--miniwald-radius);
+        padding: 0.75rem 1rem;
+        background: transparent;
+        font-size: 0.875rem;
+
+        &:focus,
+        &:active {
+            outline: none;
+            border-color: var(--miniwald-primary);
+            background: transparent;
+        }
+    }
+
+    &__password-wrapper {
+        position: relative;
+        display: flex;
+
+        .miniwald-auth-form__input {
+            width: 100%;
+            padding-right: 2.75rem;
+
+            &::-ms-reveal,
+            &::-ms-clear {
+                display: none;
+            }
+        }
+    }
+
+    &__password-toggle {
+        position: absolute;
+        top: 50%;
+        right: 0.75rem;
+        transform: translateY(-50%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+        border: none;
+        background: transparent;
+        color: var(--miniwald-black);
+        cursor: pointer;
+
+        svg {
+            width: 1.25rem;
+            height: 1.25rem;
+        }
+
+        svg:last-child {
+            display: none;
+        }
+
+        &.is-visible {
+            svg:first-child {
+                display: none;
+            }
+
+            svg:last-child {
+                display: block;
+            }
+        }
+    }
+
+    &__links {
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    &__link {
+        font-weight: 600;
+        --color: var(--miniwald-dark-green);
+        --text-decoration: underline;
+    }
+
+    &__checkbox {
+        display: flex;
+        gap: 0.75rem;
+        align-items: flex-start;
+    }
+
+    &__checkbox-input {
+        margin-top: 0.35rem;
+        flex-shrink: 0;
+    }
+
+    &__checkbox-label {
+        font-size: 0.95rem;
+    }
+
+    .data-protection-information {
+        font-size: 0.875rem;
+        a {
+            --color: var(--miniwald-dark-blue);
+            --text-decoration: underline;
+        }
+    }
+
+    &__submit {
+        --button-background-color: var(--miniwald-green);
+        &:hover,
+        &:focus,
+        &:active {
+            --button-background-color: var(--miniwald-dark-green);
+        }
+    }
+
+    .alert {
+        width: 100%;
+        margin-bottom: 0;
+        border-radius: 1rem;
+
+        .icon {
+            display: none;
+        }
+    }
+}
+
+.privacy-notice {
+    display: none;
+}
+
+// register form color overrides
+.miniwald-auth-card-register {
+    .miniwald-auth-card__subtitle a {
+        --color: var(--miniwald-dark-blue);
+    }
+    .miniwald-auth-form__label {
+        --color: var(--miniwald-dark-blue);
+    }
+
+    .miniwald-auth-form__submit {
+        --button-background-color: var(--miniwald-blue);
+        &:hover,
+        &:focus,
+        &:active {
+            --button-background-color: var(--miniwald-dark-blue);
+        }
+    }
+}
+
+@media (min-width: 900px) {
+    .miniwald-auth-page {
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr;
+        align-items: center;
+        flex-grow: 0;
+        position: relative;
+    }
+
+    .miniwald-auth-image-container {
+        grid-column: 1;
+        grid-row: 1;
+        width: 100%;
+        height: auto;
+        justify-self: start;
+    }
+
+    .miniwald-auth-container {
+        grid-column: 1;
+        grid-row: 1;
+        justify-self: end;
+
+        display: flex;
+        flex-direction: column;
+        padding: 1rem 4rem;
+        background: var(--miniwald-grey);
+        border-radius: 2rem;
+        min-width: 50%;
+
+        /* if screen is too flat */
+        margin-top: 2rem;
+        margin-bottom: 2rem;
+        max-height: calc(100% - 4rem);
+        overflow-y: auto; /* if form higher than image */
+
+        &__title {
+            font-size: 1.75rem;
+            margin: 0.5rem 0 1rem;
+            a {
+                --color: inherit;
+                svg {
+                    rotate: 180deg;
+                }
+            }
+        }
+        &__content {
+            display: grid;
+            grid-template-columns: 1fr 1px 1fr;
+            align-items: flex-start;
+            gap: 2rem;
+        }
+    }
+
+    .miniwald-auth-card {
+        display: flex;
+        position: relative;
+
+        &__title {
+            font-size: 1.5rem;
+            svg {
+                display: none;
+            }
+        }
+        &__subtitle--mobile-only {
+            display: none;
+        }
+        &__subtitle--desktop-only {
+            display: unset;
+            strong {
+                color: var(--miniwald-dark-green);
+            }
+        }
+
+        .miniwald-auth-form {
+            &__input {
+                padding: 0.5rem 1rem;
+            }
+            &__password-wrapper &__input {
+                padding-right: 2.75rem;
+            }
+            .alert {
+                width: 311px;
+            }
+        }
+
+        &__content {
+            padding: 0;
+
+            .btn {
+                padding: 0.5rem 2rem;
+            }
+        }
+        &__divider {
+            border-right: 1px solid var(--miniwald-dark-grey);
+            height: 100%;
+        }
+    }
+}
+
+@media (min-width: 1000px) {
+    .miniwald-auth-image-container {
+        width: 80%;
+    }
+}
+@media (min-width: 1200px) {
+    .miniwald-auth-image-container {
+        width: 65%;
+    }
+}

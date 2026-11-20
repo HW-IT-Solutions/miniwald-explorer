@@ -1,0 +1,26 @@
+{% sw_extends '@Storefront/storefront/page/content/index.html.twig' %}
+
+{% set _cmsSlug = ((app.request.attributes.get('sw-original-request-uri') ?? app.request.requestUri)|split('?')|first)|trim('/')|replace({'/': '-'})|lower %}
+{% block base_body_classes %}{{ parent() }}{% if _cmsSlug %} cms-page--{{ _cmsSlug }}{% endif %}{% endblock %}
+
+{% block base_main_inner %}
+    {% if activeRoute == 'frontend.home.page' %}
+
+        <section class="miniwald-hero" data-miniwald-hero>
+            <div class="miniwald-hero__content">
+                <h1 class="miniwald-hero__headline">{{ 'miniwaldExplorer.home.headline'|trans }}</h1>
+                <p class="miniwald-hero__subline">{{ 'miniwaldExplorer.home.subline'|trans }}</p>
+                <img class="miniwald-hero__logo" src="{{ asset('bundles/miniwaldexplorer/assets/Logo_Miniwald-Explorer.svg') }}" alt="">
+
+            </div>
+            <p class="miniwald-hero__project-line">
+                {{ 'miniwaldExplorer.home.projectLine'|trans }}
+                <img class="miniwald-hero__project-logo" src="{{ asset('bundles/miniwaldexplorer/assets/Logo_InReNa_Wave_Color.png') }}" alt="">
+            </p>
+        </section>
+
+        {% sw_include '@MiniwaldExplorer/storefront/page/overview/_cards.html.twig' %}
+    {% else %}
+        {{ parent() }}
+    {% endif %}
+{% endblock %}

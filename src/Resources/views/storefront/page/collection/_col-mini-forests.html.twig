@@ -1,0 +1,42 @@
+{# Partial: mini forests grid.
+   Variables:
+     miniwaelder      - MiniwaldEntity[]
+     linkRoute        - optional route name (default: frontend.miniwald.collection.miniforest)
+     linkRouteParams  - optional extra route params merged with { id: mw.id } (default: {})
+                        set linkRouteParams to e.g. {} and linkRoute to 'frontend.miniwald.collection.plants'
+                        to generate /collection/plants?miniwald={id} style links
+     linkQueryParam   - optional: if set, the mw.id is passed as this query param instead of 'id' route param
+                        e.g. linkQueryParam='miniwald' → path(linkRoute) ~ '?miniwald=' ~ mw.id
+#}
+{% set _route       = linkRoute      ?? 'frontend.miniwald.collection.miniforest' %}
+{% set _extraParams = linkRouteParams ?? {} %}
+<div class="collection-grid">
+    {% for mw in miniwaelder %}
+        {% if linkQueryParam is defined %}
+            {% set _href = path(_route, _extraParams) ~ '?' ~ linkQueryParam ~ '=' ~ mw.id %}
+        {% else %}
+            {% set _href = path(_route, _extraParams|merge({ id: mw.id })) %}
+        {% endif %}
+        <a href="{{ _href }}"
+           class="collection-grid__card">
+            <div class="collection-grid__img-wrap">
+                {% if mw.image %}
+                    {% sw_thumbnails 'miniwald-image-thumbnails' with {
+                        media: mw.image,
+                        attributes: {
+                            alt: "",
+                            title: mw.name,
+                            class: 'collection-grid__img'
+                        },
+                        sizes: { default: '290px' }
+                    } %}
+                {% else %}
+                    <img class="collection-grid__img" width="290px" src="{{ asset('bundles/miniwaldexplorer/assets/plant.png') }}" alt="">
+                {% endif %}
+            </div>
+            <span class="collection-grid__label">{{ mw.name }}</span>
+        </a>
+    {% else %}
+        <p class="collection-grid__empty">{{ 'miniwaldExplorer.collection.noMiniForestsYet'|trans }}</p>
+    {% endfor %}
+</div>

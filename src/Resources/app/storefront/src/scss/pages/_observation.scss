@@ -1,0 +1,1764 @@
+// ============================================================
+// MiniwaldExplorer – Observation Wizard
+// ============================================================
+
+body.observation-view .miniwald-back-menu.invisible {
+    display: block;
+}
+
+.miniwald-observation-page {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    padding: 0;
+    overflow: hidden;
+
+    h1 {
+        color: var(--miniwald-black);
+        margin-bottom: 2rem;
+    }
+}
+
+.miniwald-observation-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+
+    &__cancel {
+        padding: 0.75rem 1.5rem;
+        display: inline-flex;
+        gap: 0.5rem;
+        align-items: center;
+    }
+
+    &__menu {
+        width: 3rem;
+        height: 3rem;
+        border-radius: 999px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 0.3rem;
+        align-items: center;
+        background: var(--miniwald-blue);
+    }
+
+    &__menu-dot {
+        width: 0.35rem;
+        height: 0.35rem;
+        border-radius: 999px;
+        background: var(--miniwald-white);
+    }
+}
+
+.miniwald-observation-wizard {
+    flex: 1;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+body.wizard-in-progress .miniwald-observation-step__content {
+    padding-bottom: 6rem; // clearance for fixed actions bar
+}
+
+.miniwald-observation-step {
+    display: none;
+    flex-direction: column;
+    flex-grow: 1;
+    gap: 1.5rem;
+    height: 100%;
+    animation: miniwald-step-fade 0.3s ease;
+    @media (min-width: 650px) {
+        margin-bottom: 2rem;
+    }
+
+    &.is-active {
+        display: flex;
+    }
+
+    &__content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        padding: 0 0 3rem 0;
+    }
+
+    &__actions,
+    &__timer {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 100;
+        display: flex;
+        justify-content: space-between; // check species popup
+        gap: 1rem;
+        align-items: center;
+        background-color: var(--miniwald-blue);
+        padding: 1rem;
+        border-top-left-radius: 2rem;
+        border-top-right-radius: 2rem;
+        max-width: 928px;
+
+        .btn-forward {
+            margin-left: auto; // move to right end, if only button space-between alone will not work
+        }
+
+        @media (min-width: 650px) {
+            border-radius: 3rem;
+            bottom: 1rem;
+            margin: 0 1rem;
+            box-shadow: var(--miniwald-box-shadow);
+        }
+        @media (min-width: 60rem) {
+            margin: 0 auto;
+        }
+    }
+
+    &__actions button {
+        --button-background-color: white;
+        width: 50%;
+        max-width: 232px;
+        padding: 1rem 1rem 1rem 2rem;
+
+        &.btn-back {
+            padding: 1rem 2rem 1rem 1rem;
+            svg {
+                rotate: 180deg;
+            }
+        }
+        &.save {
+            --button-background-color: var(--miniwald-dark-blue);
+            --color: white;
+            padding: 1rem;
+
+            &[disabled] {
+                color: var(--color);
+                background-color: var(--button-background-color);
+                opacity: 0.4;
+            }
+        }
+        &.multiline {
+            padding: 0.25rem 1rem;
+            line-height: 1.25rem;
+            span {
+                white-space: pre-wrap;
+            }
+            @media (min-width: 400px) {
+                padding: 0.75rem 1rem;
+            }
+        }
+
+        // ── Save button: loading state ────────────────────────────────────────────────
+        // Default: spinner hidden, label visible
+        .btn-spinner {
+            display: none;
+        }
+        &.is-saving {
+            pointer-events: none;
+            opacity: 0.75;
+            // Override flex layout to center the spinner
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+
+            .btn-label {
+                display: none !important;
+            }
+
+            svg {
+                display: none !important;
+            }
+
+            .btn-spinner {
+                display: inline-block !important;
+                width: 1.25rem;
+                height: 1.25rem;
+                border: 2px solid currentColor;
+                border-top-color: transparent;
+                border-radius: 50%;
+                animation: miniwald-spin 0.7s linear infinite;
+                flex-shrink: 0;
+            }
+        }
+    }
+
+    // ── Save error message ────────────────────────────────────────────────────────
+    .miniwald-save-error {
+        margin: 0.5rem 0 0;
+        padding: 0.6rem 0.9rem;
+        border-radius: 0.5rem;
+        background: #ffdcdc;
+        color: #500000;
+        font-size: 0.875rem;
+        line-height: 1.4;
+        text-align: center;
+        width: 100%;
+        z-index: 100;
+        border: 1px solid #500000;
+    }
+}
+
+.miniwald-observation-title {
+    font-size: 2rem;
+    font-weight: 500;
+    text-align: center;
+}
+
+.miniwald-observation-text {
+    font-size: 1rem;
+    line-height: 1.5;
+    &__slim {
+        margin-bottom: 0.5rem;
+    }
+    strong {
+        color: var(--miniwald-dark-green);
+    }
+    a.mail,
+    a.link {
+        --color: var(-miniwald-dark-blue);
+        --text-decoration: underline;
+        font-weight: 600;
+    }
+    .example {
+        text-decoration: underline;
+    }
+    li {
+        margin-left: 0.5rem;
+    }
+}
+.miniwald-observation-illustration {
+    margin-bottom: 1rem;
+}
+
+.miniwald-observation-type-grid,
+.miniwald-observation-category-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+
+    @media (min-width: 780px) {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+.miniwald-observation-type-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    text-align: center;
+    cursor: pointer;
+    text-decoration: none;
+    color: var(--miniwald-black);
+    font-weight: 600;
+    font-size: 1rem;
+
+    &__image {
+        //max-width: 28.5rem;
+        //overflow: hidden;
+
+        img {
+            max-width: 456px;
+            width: 100%;
+            aspect-ratio: 3 / 2;
+            object-fit: cover;
+            object-position: center;
+            border-radius: 0.75rem;
+        }
+    }
+}
+
+.miniwald-observation-species-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    @media (min-width: 800px) {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+    @media (min-width: 1100px) {
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+}
+
+.miniwald-observation-species-group {
+    display: none;
+
+    &.is-active {
+        display: contents;
+    }
+}
+
+.miniwald-observation-species-card {
+    border-radius: 1rem;
+    background: var(--miniwald-grey);
+    padding: 0.5rem;
+    text-align: center;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    @media (min-width: 800px) {
+        padding: 1rem;
+    }
+
+    &__content {
+        display: grid;
+        gap: 1rem;
+        grid-template-columns: 5fr 6fr;
+        @media (min-width: 800px) {
+            grid-template-columns: none;
+            grid-template-rows: auto 1fr;
+
+            .miniwald-observation-species-card {
+                &__label {
+                    justify-content: center;
+                }
+                &__help-btn {
+                    position: absolute;
+                    right: 1rem;
+                }
+            }
+
+            // photo and remark button
+        }
+    }
+
+    &__image {
+        display: inline-block;
+        img,
+        svg {
+            width: 100%;
+            height: 100%;
+            aspect-ratio: 3 / 2;
+            object-fit: cover;
+            border-radius: 0.75rem;
+            color: color-mix(in srgb, var(--miniwald-green), black 20%);
+        }
+    }
+
+    &__column-info {
+        justify-content: center;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    &__actions {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    &__add-photo {
+        position: relative;
+        &__disabled {
+            opacity: 0.5;
+            button.btn.btn-green {
+                cursor: default;
+                &:hover,
+                &:active,
+                &:focus {
+                    --button-background-color: var(--miniwald-green);
+                }
+            }
+        }
+    }
+
+    &__label {
+        font-size: 1rem;
+        font-weight: 500;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between; // space around for popup
+        align-items: center;
+        opacity: 1;
+        &-content {
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+    }
+
+    &__photo-preview {
+        display: flex;
+        flex-direction: row-reverse;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 1rem;
+        padding-right: 0.5rem;
+
+        &[hidden] {
+            display: none;
+        }
+    }
+
+    &__photo-thumb {
+        position: relative;
+        aspect-ratio: 3 / 2;
+        width: 8rem;
+        background: var(--miniwald-grey, #eee);
+        flex-shrink: 0;
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            border-radius: 0.75rem;
+        }
+    }
+
+    @mixin remove-btn {
+        position: absolute;
+        top: -0.5rem;
+        right: -0.5rem;
+        background: var(--miniwald-fitness);
+        color: var(--miniwald-black);
+        border-radius: 999px !important;
+        width: 2rem;
+        height: 2rem;
+        padding: 0;
+        border: none;
+
+        &:has(> svg) {
+            display: block;
+        }
+
+        svg {
+            width: 1.5rem;
+            height: 1.5rem;
+        }
+
+        &:hover,
+        &:focus,
+        &:active {
+            --button-background-color: color-mix(
+                in srgb,
+                var(--miniwald-fitness),
+                black 20%
+            );
+        }
+    }
+    &__photo-thumb-remove {
+        @include remove-btn;
+    }
+    &__remark-remove {
+        @include remove-btn;
+    }
+
+    &__remark-area {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        padding: 0 0.25rem;
+        margin-top: 1rem;
+
+        &[hidden] {
+            display: none;
+        }
+    }
+
+    &__remark-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        position: relative;
+        margin-right: 0.3rem;
+    }
+
+    &__remark-label {
+        font-size: 0.85rem;
+        text-align: left;
+        color: var(--miniwald-dark-blue);
+    }
+
+    &__remark-input {
+        width: 100%;
+        border-radius: 0.75rem;
+        border: 2px solid var(--miniwald-dark-blue);
+        padding: 0.6rem 0.75rem;
+        font-size: 0.95rem;
+        line-height: 1.4;
+        resize: vertical;
+        background: var(--miniwald-white);
+        color: var(--miniwald-black);
+        font-family: inherit;
+
+        &:focus {
+            outline: none;
+            border-color: var(--miniwald-dark-blue);
+        }
+    }
+
+    &__custom-name {
+        width: 100%;
+        background: transparent;
+        border: none;
+        border-bottom: 1px solid currentColor;
+        font-size: 1rem;
+        font-weight: 500;
+        padding: 0.1rem 0;
+        outline: none;
+
+        &::placeholder {
+            opacity: 0.4;
+        }
+
+        &:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+    }
+
+    &__subspecies-select {
+        width: 100%;
+        margin-top: 0.4rem;
+        border-radius: 0.75rem;
+        border: 2px solid var(--miniwald-dark-blue);
+        padding: 0.35rem 0.5rem;
+        font-size: 0.9rem;
+        font-family: inherit;
+        background: var(--miniwald-white);
+        color: var(--miniwald-black);
+
+        &:focus {
+            outline: none;
+            border-color: var(--miniwald-dark-blue);
+        }
+    }
+
+    &__remove-btn {
+        @include remove-btn;
+        top: 0.25rem;
+        right: 0.25rem;
+    }
+
+    .miniwald-observation-counter {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: var(--miniwald-blue);
+        border-radius: 999px;
+        padding: 0;
+        margin: 0 auto;
+
+        &__btn {
+            background: transparent;
+            height: 2.5rem;
+            width: 2.5rem;
+            border-radius: 999px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            opacity: 1;
+        }
+
+        &__value {
+            font-weight: 400;
+            width: 100%;
+            min-width: 2rem;
+            text-align: center;
+            // Strip input chrome so it looks identical to the old <span>
+            background: transparent;
+            border: none;
+            outline: none;
+            color: inherit;
+            font-family: inherit;
+            font-size: inherit;
+            line-height: inherit;
+            padding: 0;
+            -moz-appearance: textfield;
+
+            &::-webkit-inner-spin-button,
+            &::-webkit-outer-spin-button {
+                -webkit-appearance: none;
+                margin: 0;
+            }
+        }
+
+        button[disabled] {
+            color: var(--miniwald-black);
+        }
+        &__disabled {
+            .miniwald-observation-counter__btn,
+            .miniwald-observation-counter__value {
+                opacity: 0.5;
+            }
+        }
+    }
+
+    &__help-btn,
+    &__add-photo-btn {
+        --color: var(--miniwald-black);
+        padding: 0.25rem;
+        border-radius: 999px;
+        position: relative;
+
+        svg {
+            width: 1.25rem;
+            height: 1.25rem;
+        }
+    }
+
+    &__add-photo-btn {
+        overflow: visible;
+        padding: 0.4rem;
+    }
+
+    // introduction display
+    &__no-counters {
+        .miniwald-observation-counter,
+        .miniwald-observation-species-card__add-photo {
+            display: none;
+        }
+    }
+
+    // ── Add popup (Foto / Anmerkung) ─────────────────────────────────────
+    &__add-popup {
+        position: absolute;
+        bottom: calc(100% + 0.5rem);
+        right: 0;
+        z-index: 50;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        background: var(--miniwald-green-35);
+        padding: 0.5rem;
+        border-radius: 1rem;
+        min-width: 14rem;
+        box-shadow: 0 0 15px
+            color-mix(in srgb, var(--miniwald-green), black 50%);
+
+        &[hidden] {
+            display: none;
+        }
+
+        .btn {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.75rem 1.25rem;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            white-space: nowrap;
+            justify-content: flex-start;
+
+            svg {
+                width: 1.25rem;
+                height: 1.25rem;
+                flex-shrink: 0;
+            }
+        }
+    }
+
+    @media (min-width: 850px) {
+        // desktop card design (photo top, photo and remark buttons visible
+        // layout change starts with 2 column grid
+        &__column {
+            grid-template-columns: none;
+            grid-template-rows: 3fr 1fr;
+        }
+        &__label {
+            justify-content: center;
+        }
+        &__help-btn {
+            position: absolute;
+            right: 1rem;
+        }
+        &__actions {
+            margin: 0 auto;
+        }
+        .miniwald-observation-counter {
+            padding: 0.25rem;
+            width: 9rem;
+            margin: 0;
+        }
+
+        &__add-photo-btn {
+            display: none !important;
+        }
+        &__add-popup {
+            display: flex !important;
+            flex-direction: row;
+            position: relative;
+            bottom: auto;
+            right: auto;
+            min-width: auto;
+            box-shadow: none;
+            background: transparent;
+            padding: 0;
+            border-radius: 0;
+
+            .btn {
+                font-size: 0; // hide text content
+                gap: 0;
+                padding: 0.75rem;
+            }
+        }
+    }
+}
+
+.miniwald-observation-add-custom-species {
+    margin-top: 1rem;
+}
+
+// ── Preview mode card (step 2: species preview before timer) ─────────────────
+.miniwald-observation-species-card__preview {
+    .miniwald-observation-counter {
+        opacity: 0.4;
+        pointer-events: none;
+    }
+}
+
+// ── Per-step counter opacity rules (no stacking) ────────────────────────────
+// opacity for GUI
+[data-step='3'].is-timing {
+    .miniwald-observation-species-card.is-zero {
+        .miniwald-observation-counter__btn[data-counter='minus'] {
+            opacity: 0.4;
+        }
+    }
+}
+[data-step='4'] {
+    .miniwald-observation-species-card.is-zero {
+        .miniwald-observation-counter__btn[data-counter='minus'] {
+            opacity: 0.4;
+        }
+        &:not(.miniwald-observation-species-card--custom)
+            .miniwald-observation-species-card__label {
+            opacity: 0.4;
+            transition: opacity 0.2s ease;
+        }
+    }
+}
+
+// ── Step 3: actions ↔ timer toggle ──────────────────────────────────────────
+// Default: show actions, hide timer bar
+.miniwald-observation-step__timer {
+    display: none;
+}
+
+// When timer is running (.is-timing added by JS)
+.miniwald-observation-step.is-timing {
+    .miniwald-observation-step__actions {
+        display: none;
+    }
+
+    .miniwald-observation-step__timer {
+        display: flex;
+        color: var(--miniwald-white);
+    }
+}
+
+.miniwald-observation-timer {
+    &__bar-container {
+        background: var(--miniwald-dark-blue);
+        width: 100%;
+        display: flex;
+        border-radius: 999px;
+        padding: 0.25rem 1rem;
+        align-items: center;
+    }
+    &__bar {
+        flex: 1;
+        height: 0.4rem;
+        background: rgba(255, 255, 255, 0.25);
+        border-radius: 999px;
+        position: relative;
+        overflow: hidden;
+
+        &::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: var(--miniwald-blue);
+            width: var(--timer-progress, 0%);
+            transition: width 0.2s ease;
+        }
+    }
+
+    &__info {
+        text-align: center;
+        padding: 0 1rem;
+    }
+
+    &__stop {
+        border: none;
+        background: transparent;
+        color: var(--miniwald-white);
+        font-size: 1.2rem;
+        cursor: pointer;
+    }
+}
+
+.miniwald-observation-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    @media (min-width: 450px) {
+        margin: 0 auto;
+        background: var(--miniwald-grey);
+        padding: 1rem;
+        border-radius: 1rem;
+        max-width: 30rem;
+    }
+}
+
+.miniwald-observation-field {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    gap: 0.5rem;
+
+    label {
+        color: var(--miniwald-dark-blue);
+    }
+
+    input,
+    select {
+        padding: 0.75rem 1rem;
+        border-radius: 999px;
+        border: 2px solid var(--miniwald-dark-blue);
+        font-size: 1rem;
+        background-color: transparent;
+    }
+}
+
+.miniwald-observation-field-row {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+
+    .miniwald-observation-field {
+        max-width: calc(50% - 0.5rem);
+    }
+}
+
+.miniwald-observation-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    z-index: 200;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+
+    &[hidden] {
+        display: none;
+    }
+
+    &__content {
+        background: color-mix(in srgb, var(--miniwald-green), white 50%);
+        border-radius: 1.5rem;
+        padding: 1rem;
+        width: 100%;
+        max-width: 320px;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        text-align: left;
+
+        * {
+            margin-bottom: 0;
+        }
+
+        h2 {
+            color: var(--miniwald-black);
+        }
+        button {
+            padding: 0.5rem;
+            margin: 0;
+            border: 2px solid transparent;
+            box-sizing: border-box;
+            white-space: normal;
+
+            &.miniwald-observation-modal__btn-keep {
+                border: 2px solid var(--miniwald-dark-blue);
+                --color: var(--miniwald-dark-blue);
+                border-radius: 999px;
+            }
+        }
+
+        // ── Photo upload warning (inside finish modal) ────────────────────────────────
+        .miniwald-photo-upload-warning {
+            margin: 0;
+            padding: 0.875rem 1rem;
+            border-radius: 0.75rem;
+            background: var(--miniwald-orange-35);
+            color: var(--miniwald-black);
+            font-size: 0.875rem;
+            line-height: 1.4;
+            text-align: left;
+            border: 2px solid var(--miniwald-orange);
+        }
+    }
+
+    // scssphp (theme:compile) cannot parse attribute selectors inside :has(),
+    // so the finish modal content is targeted via its wrapper attribute instead
+    &[data-finish-modal] &__content {
+        position: relative;
+        padding: 1.5rem;
+
+        [hidden] { display: none !important; }
+
+        [data-finish-success] {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        [data-photo-uploading] {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        [data-photo-upload-progress] {
+            margin-top: 0.25rem;
+        }
+
+        [data-photo-upload-bar] {
+            width: 100%;
+            margin-top: -0.25rem;
+        }
+
+        .miniwald-photo-upload-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        [data-finish-redirect] {
+            gap: 1rem;
+            align-self: flex-end;
+            text-align: right;
+            padding: 0.5rem 1rem 0.5rem 2rem;
+        }
+    }
+
+    &--upload-cancel {
+        z-index: 210;
+        background: rgba(31, 52, 96, 0.35);
+
+        .miniwald-observation-modal__content {
+            padding: 1.5rem;
+            gap: 1.25rem;
+            box-shadow: 0 0.75rem 2rem rgba(31, 52, 96, 0.18);
+        }
+
+        .miniwald-photo-cancel-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            width: 100%;
+
+            button {
+                width: 100%;
+                min-height: 3rem;
+                line-height: 1.25;
+                overflow-wrap: anywhere;
+            }
+        }
+    }
+
+    // Photo preview sheet variant
+    &--photos {
+        align-items: flex-end;
+        padding: 0;
+        background: rgba(0, 0, 0, 0.55);
+        z-index: 300;
+        animation: miniwald-modal-backdrop-in 0.2s ease;
+    }
+
+    // Instruction modal variant (replaces old step 2)
+    @mixin modal-style {
+        padding: 1rem;
+        background: rgba(255, 255, 255, 0.55);
+        z-index: 10000;
+        animation: miniwald-modal-backdrop-in 0.2s ease;
+        @media (min-width: 700px) {
+            padding: 2rem;
+        }
+    }
+    &--instruction {
+        @include modal-style;
+    }
+    &--species {
+        @include modal-style;
+    }
+    &--species {
+        z-index: 10001;
+    }
+}
+
+// ── Instruction modal (replaces old step 2) ─────────────────────────────────
+
+.miniwald-instruction-modal,
+.miniwald-species-modal {
+    &__content {
+        border-radius: 2rem;
+        max-height: 100%;
+        background: color-mix(in srgb, var(--miniwald-green), white 50%);
+        width: 100%;
+        max-width: 936px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        animation: miniwald-modal-slide-up 0.3s cubic-bezier(0.34, 1.2, 0.64, 1);
+
+        * {
+            margin-bottom: 0;
+        }
+
+        .miniwald-observation-title {
+            margin-bottom: 1rem;
+        }
+        .miniwald-observation-sub-title {
+            font-size: 1.75rem;
+            font-weight: 500;
+            text-align: center;
+            color: var(--miniwald-black);
+            margin: 1.5rem 0 1rem 0;
+        }
+        .miniwald-observation-instruction-table,
+        .miniwald-observation-instruction-grid {
+            display: flex;
+            flex-direction: row;
+            gap: 1rem;
+        }
+        .miniwald-observation-instruction-table {
+            justify-content: space-between;
+            &-column {
+                padding-left: 0.5rem;
+            }
+        }
+        .miniwald-observation-instruction-grid {
+            @media (max-width: 700px) {
+                flex-direction: column;
+            }
+        }
+        ul {
+            padding-left: 1rem;
+        }
+        .miniwald-observation-instruction-equipment-box,
+        .miniwald-observation-instruction-tip-box {
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+            margin-top: 1rem;
+
+            .miniwald-observation-sub-title {
+                margin-top: 0;
+                text-align: left;
+            }
+        }
+        .miniwald-observation-instruction-equipment-box {
+            border: 2px solid var(--miniwald-black);
+        }
+        .miniwald-observation-instruction-tip-box {
+            background: white;
+        }
+        .miniwald-observation-species-grid {
+            margin: 1rem 0;
+        }
+        .hide-instructions {
+            &__container {
+                display: flex;
+                flex-direction: row;
+                gap: 1rem;
+                align-items: baseline;
+                margin-top: 1rem;
+            }
+            &__label {
+                color: var(--miniwald-dark-blue);
+                font-weight: 600;
+            }
+        }
+
+        // species grid view
+        .miniwald-observation-species-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            @media (min-width: 450px) {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+            }
+            @media (min-width: 700px) {
+                gap: 2rem;
+                grid-template-columns: 1fr 1fr 1fr;
+            }
+            @media (min-width: 950px) {
+                grid-template-columns: 1fr 1fr 1fr 1fr;
+            }
+
+            .miniwald-observation-species-card {
+                background: transparent;
+                padding: 0;
+                overflow: hidden;
+
+                &__content {
+                    display: flex;
+                    gap: 0;
+                    flex-direction: column-reverse;
+                }
+                &__column-info {
+                    gap: 0;
+                }
+                &__help-btn {
+                    position: relative;
+                    right: auto;
+                }
+            }
+        }
+    }
+
+    &__body {
+        flex: 1;
+        overflow-y: auto;
+        padding: 1.5rem 1.25rem 0.5rem;
+        -webkit-overflow-scrolling: touch;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+
+        @media (min-width: 700px) {
+            padding: 2.5rem 2.25rem 1.5rem;
+        }
+    }
+
+    &__close {
+        flex-shrink: 0;
+        margin: 1rem;
+        padding: 0.85rem 1.5rem;
+        align-self: end;
+    }
+}
+[data-ground-instruction-modal],
+[data-plants-instruction-modal] {
+    .miniwald-observation-instruction-tip-box {
+        margin-top: 2rem;
+    }
+}
+
+// ── Species info modal ───────────────────────────────────────────────────────
+
+.miniwald-species-modal {
+    &__hero {
+        margin-bottom: 1rem;
+        @media (min-width: 600px) {
+            margin: 0 3rem 1rem;
+        }
+        @media (min-width: 900px) {
+            margin: 0 5rem 1rem;
+        }
+    }
+
+    &__image {
+        display: block;
+        width: 100%;
+        aspect-ratio: 4 / 3;
+        object-fit: cover;
+        object-position: center;
+        border-radius: 1rem;
+    }
+
+    &__close {
+        margin: 0;
+        padding: 0;
+        text-transform: none;
+        gap: 1rem;
+        align-self: flex-start;
+        &:has(> svg) {
+            justify-content: flex-start;
+        }
+        svg {
+            rotate: 180deg;
+        }
+    }
+}
+
+// ── Hidden modal-thumb images (used only to pass src to JS) ──────────────────
+.miniwald-species-card__modal-thumb {
+    display: none !important;
+}
+
+@keyframes miniwald-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes miniwald-modal-backdrop-in {
+    from {
+        background: rgba(0, 0, 0, 0);
+    }
+    to {
+        background: rgba(0, 0, 0, 0.55);
+    }
+}
+
+@keyframes miniwald-modal-slide-up {
+    from {
+        transform: translateY(100%);
+        opacity: 0.6;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+// ── Countdown blob screens ───────────────────────────────────────────────────
+.miniwald-observation-countdown {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+
+    &[hidden] {
+        display: none;
+    }
+
+    &__blob {
+        width: 10rem;
+        height: 10rem;
+        border-radius: 60% 40% 55% 45% / 50% 60% 40% 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 4rem;
+        font-weight: 700;
+        color: var(--miniwald-black);
+        animation: miniwald-blob-pop 0.3s ease;
+
+        &--blue {
+            background: var(--miniwald-blue);
+        }
+        &--orange {
+            background: var(--miniwald-orange);
+        }
+        &--green {
+            background: var(--miniwald-light-green, #c8dba0);
+        }
+    }
+}
+
+@keyframes miniwald-blob-pop {
+    from {
+        transform: scale(0.7);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes miniwald-step-fade {
+    from {
+        opacity: 0;
+        transform: translateX(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@media (max-width: 480px) {
+    .miniwald-observation-field-row,
+    .miniwald-observation-type-grid,
+    .miniwald-observation-category-grid,
+    .miniwald-observation-species-grid {
+        //grid-template-columns: 1fr 1fr;
+    }
+}
+
+// Hide footer while the wizard is active (step 2+); restored when back on step 1
+body.wizard-in-progress .miniwald-footer {
+    display: none;
+}
+
+// ============================================================
+// Ground Measurement — Sub-step panels
+// ============================================================
+
+// Desktop: inputs left, scale right
+.miniwald-ground-matrix {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+
+    @media (min-width: 400px) {
+        margin: 0 auto;
+    }
+
+    @media (min-width: 800px) {
+        flex-direction: row;
+        align-items: flex-start;
+        gap: 2rem;
+
+        .miniwald-ground__main {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .miniwald-ground-scale {
+            flex: 0 0 280px;
+            position: sticky;
+            top: 1rem;
+        }
+    }
+
+    @media (min-width: 1000px) {
+        gap: 4rem;
+    }
+}
+
+// Left column wrapper (header + sub-steps)
+.miniwald-ground__main {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+// Progress indicator (e.g. "1 / 3")
+.miniwald-ground__progress {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--miniwald-dark-green);
+    text-align: center;
+    margin-bottom: 0.5rem;
+}
+
+// Each location panel (shown one at a time by JS)
+.miniwald-ground__sub-step {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    &[hidden] {
+        display: none;
+    }
+}
+
+// Location heading (a. Miniwald / b. Wiese / c. Bürgersteig)
+.miniwald-ground__sub-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--miniwald-dark-green);
+    margin: 0;
+    display: flex;
+    justify-content: space-between;
+}
+
+// Soil-only fields grouped with a subtle left accent
+.miniwald-ground__soil-group {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+// Individual field wrapper
+.miniwald-ground-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+
+    // Light conditions fieldset — remove default fieldset chrome
+    &--light {
+        border: none;
+        padding: 0;
+        margin: 0;
+    }
+}
+
+.miniwald-ground-field__label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--miniwald-black, #1a1a1a);
+}
+
+.miniwald-ground-field__input {
+    padding: 0.6rem 0.75rem;
+    border: 2px solid var(--miniwald-dark-blue, #1a3a5c);
+    border-radius: 999px;
+    font-size: 1rem;
+    background: var(--miniwald-white, #fff);
+    color: var(--miniwald-black, #1a1a1a);
+    -moz-appearance: textfield;
+
+    &::-webkit-inner-spin-button,
+    &::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    &:focus {
+        outline: none;
+        border-color: var(--miniwald-dark-green, #2d5a27);
+    }
+}
+
+// Radio button row for light conditions
+.miniwald-ground-field__radios {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.miniwald-ground-field__radio-label {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.9375rem;
+    cursor: pointer;
+
+    input[type='radio'] {
+        accent-color: var(--miniwald-dark-green, #2d5a27);
+        width: 1.1rem;
+        height: 1.1rem;
+        cursor: pointer;
+    }
+}
+
+// "Not applicable" note for Bürgersteig soil fields
+.miniwald-ground__na-note {
+    font-size: 0.875rem;
+    color: #888;
+    font-style: italic;
+    margin: 0;
+}
+
+// ============================================================
+// Ground Measurement Scale Reference (collapsible <details>)
+// ============================================================
+
+.miniwald-ground-scale {
+    border: 1px solid var(--miniwald-light-grey, #e0e0e0);
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.03);
+    margin-top: 1rem;
+
+    // <summary> acts as the clickable toggle
+    &__summary {
+        padding: 0.75rem 1rem;
+        font-size: 0.9375rem;
+        font-weight: 700;
+        color: var(--miniwald-dark-green, #2d5a27);
+        cursor: pointer;
+        list-style: none; // hide default triangle in some browsers
+
+        &::-webkit-details-marker {
+            display: none;
+        }
+
+        &::after {
+            content: ' ▾';
+            font-size: 0.75rem;
+        }
+    }
+
+    details[open] &__summary::after {
+        content: ' ▴';
+    }
+
+    // Body shown when <details> is open
+    &__body {
+        padding: 0 1rem 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    &__row {
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+    }
+
+    &__label {
+        font-size: 0.8125rem;
+        font-weight: 600;
+        color: var(--miniwald-black, #1a1a1a);
+    }
+
+    &__blocks {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 2px;
+
+        &--ph {
+            flex-wrap: nowrap;
+        }
+    }
+
+    &__block {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.25rem 0.4rem;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #fff;
+        white-space: nowrap;
+        min-width: 2rem;
+
+        // Soil temperature scale (blue → green → orange → red)
+        &--temp-1 {
+            background: #5b9bd5;
+        }
+        &--temp-2 {
+            background: #70ad47;
+        }
+        &--temp-3 {
+            background: #ffc000;
+            color: #333;
+        }
+        &--temp-4 {
+            background: #ed7d31;
+        }
+        &--temp-5 {
+            background: #c00000;
+        }
+
+        // Soil moisture scale (light → dark blue)
+        &--moist-1 {
+            background: #dce6f1;
+            color: #333;
+        }
+        &--moist-2 {
+            background: #9dc3e6;
+            color: #333;
+        }
+        &--moist-3 {
+            background: #2e75b6;
+        }
+        &--moist-4 {
+            background: #1f4e79;
+        }
+        &--moist-5 {
+            background: #0d2b4e;
+        }
+
+        // pH scale 1–14 (red → green → blue)
+        &--ph {
+            min-width: 6.5%;
+        }
+        &--ph-1 {
+            background: #c00000;
+        }
+        &--ph-2 {
+            background: #d9001b;
+        }
+        &--ph-3 {
+            background: #e84c00;
+        }
+        &--ph-4 {
+            background: #f07800;
+            color: #333;
+        }
+        &--ph-5 {
+            background: #f5b800;
+            color: #333;
+        }
+        &--ph-6 {
+            background: #c8d400;
+            color: #333;
+        }
+        &--ph-7 {
+            background: #70ad47;
+        }
+        &--ph-8 {
+            background: #00b050;
+        }
+        &--ph-9 {
+            background: #00a0a0;
+        }
+        &--ph-10 {
+            background: #0070c0;
+        }
+        &--ph-11 {
+            background: #0050a0;
+        }
+        &--ph-12 {
+            background: #003080;
+        }
+        &--ph-13 {
+            background: #001f60;
+        }
+        &--ph-14 {
+            background: #000d40;
+        }
+    }
+
+    &__ph-labels {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.7rem;
+        color: #666;
+        margin-top: 0.25rem;
+        padding: 0 0.1rem;
+    }
+}
+
+// ============================================================
+// Plant Observation Panel
+// ============================================================
+
+.miniwald-plant-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding-bottom: 6rem; // clearance for fixed actions bar
+
+    &[hidden] {
+        display: none;
+    }
+
+    &__form {
+        // inherits .miniwald-observation-form styles
+    }
+
+    &__add-custom {
+        align-self: flex-start;
+        margin-top: 1rem;
+    }
+}
+
+// Plant grid — responsive card layout
+.miniwald-plant-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    @media (min-width: 600px) {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+
+    @media (min-width: 1000px) {
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+}
+
+// Loading indicator
+.miniwald-plant__loading {
+    text-align: center;
+    color: var(--miniwald-dark-blue);
+    padding: 1rem;
+    font-size: 1.25rem;
+}
+
+// Individual plant measurement card
+.miniwald-plant-card {
+    background: var(--miniwald-grey);
+    border-radius: 1rem;
+    padding: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+
+    &__header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    &__number {
+        font-weight: 600;
+    }
+
+    &__remove {
+        --color: var(--miniwald-black);
+        padding: 0.25rem;
+        border-radius: 999px;
+        font-size: 1rem;
+        line-height: 1;
+        opacity: 0.6;
+
+        &:hover {
+            opacity: 1;
+        }
+
+        svg {
+            width: 1.25rem;
+            height: 1.25rem;
+        }
+    }
+
+    &__image {
+        img,
+        svg {
+            width: 100%;
+            height: 100%;
+            aspect-ratio: 3 / 2;
+            object-fit: cover;
+            border-radius: 0.75rem;
+            color: color-mix(in srgb, var(--miniwald-green), black 20%);
+        }
+    }
+
+    &__fields {
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+    }
+
+    // Labeled input field inside a card
+    &__field {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+
+        span {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--miniwald-dark-green);
+        }
+
+        input {
+            padding: 0.5rem 0.75rem;
+            border: 2px solid var(--miniwald-black);
+            border-radius: 999px;
+            background: var(--miniwald-white);
+            color: var(--miniwald-black);
+            -moz-appearance: textfield;
+
+            &:focus {
+                outline: none;
+            }
+        }
+    }
+
+    // Remark textarea
+    &__remark {
+        width: 100%;
+        border-radius: 0.75rem;
+        border: 2px solid var(--miniwald-black);
+        padding: 0.5rem 0.75rem;
+        line-height: 1.4;
+        resize: vertical;
+        background: var(--miniwald-white);
+        color: var(--miniwald-black);
+        font-family: inherit;
+
+        &:focus {
+            outline: none;
+        }
+    }
+}

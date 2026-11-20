@@ -1,0 +1,41 @@
+{% sw_extends '@Storefront/storefront/base.html.twig' %}
+
+{% block base_main_inner %}
+    <div class="miniwald-auth-page">
+        <div class="miniwald-auth-image-container">
+            <img src="/bundles/miniwaldexplorer/assets/miniwald_auth.png"
+                 alt=""
+                 class="miniwald-auth-image">
+        </div>
+        <div class="miniwald-auth-container">
+            <h2 class="miniwald-auth-container__title">
+                <a href="{{ path('frontend.miniwald.overview') }}">
+                    {{ source('@MiniwaldExplorer/storefront/icons/arrow.svg', ignore_missing=true)|raw }}
+                    {{ 'miniwaldExplorer.account.title'|trans }}
+                </a>
+            </h2>
+            <div class="miniwald-auth-container__content">
+                <div class="miniwald-auth-card miniwald-auth-card-register{% if activeRoute != 'frontend.account.login.page' %} is-active{% endif %}">
+                    <div class="miniwald-auth-card__content">
+                        {% sw_include '@Storefront/storefront/component/account/register.html.twig' with {
+                            redirectTo: redirectTo,
+                            redirectParameters: redirectParameters,
+                            errorRoute: errorRoute,
+                            errorParameters: errorParameters,
+                            data: data
+                        } %}
+                    </div>
+                </div>
+                <div class="miniwald-auth-card__divider"></div>
+                <div class="miniwald-auth-card miniwald-auth-card-login{% if activeRoute == 'frontend.account.login.page' %} is-active{% endif %}">
+                    <div class="miniwald-auth-card__content">
+                        {% sw_include '@Storefront/storefront/component/account/login.html.twig' with {
+                            redirectTo: redirectTo,
+                            redirectParameters: redirectParameters
+                        } %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,94 @@
+{% sw_extends '@Storefront/storefront/base.html.twig' %}
+
+{% block base_body_classes %}{{ parent() }} collection-view{% endblock %}
+
+{# MapLibre GL JS + CSS – self-hosted for DSGVO compliance (no CDN requests).
+   Loaded AFTER Shopware's compiled CSS so MapLibre styles are not overridden. #}
+{% block base_body_script %}
+    {% if config('MiniwaldExplorer.config.mapStyleUrl') %}
+    <link rel="stylesheet" href="{{ asset('bundles/miniwaldexplorer/assets/map/maplibre-gl.css') }}"/>
+    <script src="{{ asset('bundles/miniwaldexplorer/assets/map/maplibre-gl.js') }}"></script>
+    {% endif %}
+    {{ parent() }}
+{% endblock %}
+
+{% block base_content %}
+<div class="collection-page collection-detail collection-detail--miniforest">
+
+    <div hidden data-page-back-href="{{ path('frontend.miniwald.collection') }}" data-page-back-text="{{ miniwald.name }}"></div>
+
+    <div class="collection-mini-forest-detail__container">
+        {# left column - name, photo, description #}
+        <div class="collection-mini-forest-detail__column collection-mini-forest-detail__column-main">
+
+            <h1 class="collection-mini-forest-detail__title">{{ 'miniwaldExplorer.collection.miniForestTitle'|trans({'%name%': miniwald.name}) }}</h1>
+
+            <div class="collection-mini-forest-detail__photo-wrap">
+                {% if miniwald.image %}
+                    {% sw_thumbnails 'miniwald-image-thumbnails' with {
+                        media: miniwald.image,
+                        attributes: {
+                            alt: miniwald.name,
+                            title: miniwald.name,
+                            class: 'detail__photo'
+                        },
+                        sizes: { default: '640px' }
+                    } %}
+                {% else %}
+                    <img class="detail__photo" width="640px" src="{{ asset('bundles/miniwaldexplorer/assets/plant.png') }}" alt="">
+                {% endif %}
+                {% if miniwald.photoCaption %}
+                    <p class="collection-mini-forest-detail__photo-caption">{{ miniwald.photoCaption }}</p>
+                {% endif %}
+            </div>
+
+            {% if miniwald.description %}
+                <div class="collection-mini-forest-detail__description">
+                    {{ miniwald.description|raw }}
+                    <br />
+                    <br />
+                    {{ 'miniwaldExplorer.collection.miniForestMoreInfo'|trans({'%link%': '<a href="https://inrena2030.de/miniwaelder" target="_blank">https://inrena2030.de/miniwaelder</a>'})|raw }}
+                </div>
+            {% endif %}
+        </div>
+
+        {# right column - map, observations #}
+        <div class="collection-mini-forest-detail__column collection-mini-forest-detail__column-aside">
+            <div class="collection-mini-forest-detail__map-section">
+                <h2 class="collection-mini-forest-detail__section-title">{{ 'miniwaldExplorer.collection.miniForestLocation'|trans }}</h2>
+                {% set tileStyleUrl = config('MiniwaldExplorer.config.mapStyleUrl') %}
+                {% if tileStyleUrl and miniwald.latitude and miniwald.longitude %}
+                    <div class="miniforest-detail-map"
+                         data-miniwald-detail-map="true"
+                         data-lat="{{ miniwald.latitude }}"
+                         data-lng="{{ miniwald.longitude }}"
+                         data-tile-style-url="{{ tileStyleUrl }}">
+                    </div>
+                {% else %}
+                    <img class="map__photo" src="{{ asset('bundles/miniwaldexplorer/assets/mini-forests/eschweiler.png') }}" alt="{{ 'miniwaldExplorer.collection.mapImage'|trans }}">
+                {% endif %}
+                {% if miniwald.address %}
+                    <p class="collection-mini-forest-detail__address">
+                        <strong>{{ 'miniwaldExplorer.collection.miniForestAddress'|trans }}</strong>:
+                        {{ miniwald.address }}
+                    </p>
+                {% endif %}
+            </div>
+
+            <div class="collection-mini-forest-detail__obs-section">
+                <h2 class="collection-mini-forest-detail__section-title">{{ 'miniwaldExplorer.collection.miniForestObservations'|trans }}</h2>
+                {% include '@MiniwaldExplorer/storefront/page/collection/_col-observations.html.twig'
+                    with {
+                        observations: observations,
+                        baseRoute: 'frontend.miniwald.collection.miniforest',
+                        baseRouteParams: { id: miniwald.id },
+                        showAllLink: true,
+                        showStart: true,
+                        filters: filters
+                    }
+                    only %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

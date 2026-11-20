@@ -1,0 +1,79 @@
+{% sw_extends '@Storefront/storefront/base.html.twig' %}
+
+{% block base_content %}
+<div class="miniwald-download-page">
+
+    <header class="miniwald-download-header">
+        <h1 class="miniwald-download-header__title">
+            {{ 'miniwaldExplorer.download.title'|trans }}
+        </h1>
+        <p class="miniwald-download-header__subtitle">
+            {{ 'miniwaldExplorer.download.subtitle'|trans }}
+        </p>
+    </header>
+
+    {% if cards is empty %}
+        <p class="miniwald-download-empty">
+            {{ 'miniwaldExplorer.download.noSheets'|trans }}
+        </p>
+    {% else %}
+        <div class="miniwald-download-grid">
+            {% for card in cards %}
+                <div class="miniwald-download-card miniwald-download-card--{{ card.type }}">
+
+                    {# ── Image ── #}
+                    <div class="miniwald-download-card__image">
+                        {% if card.type == 'animal' and card.imageUrl %}
+                            <img src="{{ card.imageUrl }}"
+                                 alt=""
+                                 loading="lazy">
+                        {% elseif card.type == 'plant' %}
+                            <img src="{{ asset('bundles/miniwaldexplorer/assets/plant-measurement.jpg') }}"
+                                 alt=""
+                                 loading="lazy">
+                        {% elseif card.type == 'ground' %}
+                            <img src="{{ asset('bundles/miniwaldexplorer/assets/ground-measurement.jpg') }}"
+                                 alt=""
+                                 loading="lazy">
+                        {% else %}
+                            <div class="miniwald-download-card__image-placeholder"></div>
+                        {% endif %}
+                    </div>
+
+                    {# ── Body ── #}
+                    <div class="miniwald-download-card__body">
+                        <h2 class="miniwald-download-card__name">
+                            {% if card.type == 'animal' %}
+                                {{ card.name }}
+                            {% elseif card.type == 'plant' %}
+                                {{ 'miniwaldExplorer.download.typePlant'|trans }}
+                            {% elseif card.type == 'ground' %}
+                                {{ 'miniwaldExplorer.download.typeGround'|trans }}
+                            {% endif %}
+                        </h2>
+
+                        {# ── Download button ── #}
+                        {% if card.type == 'animal' %}
+                            <a class="btn btn-green miniwald-download-card__btn"
+                               href="{{ path('frontend.miniwald.pdf.download.animal', { categorySlug: card.slug }) }}"
+                               target="_blank" rel="noopener">
+                                {{ 'miniwaldExplorer.download.downloadButton'|trans }}
+                                {{ source('@MiniwaldExplorer/storefront/icons/download.svg', ignore_missing=true)|raw }}
+                            </a>
+                        {% else %}
+                            <a class="btn btn-green miniwald-download-card__btn"
+                               href="{{ path('frontend.miniwald.pdf.download', { type: card.type }) }}"
+                               target="_blank" rel="noopener">
+                                {{ 'miniwaldExplorer.download.downloadButton'|trans }}
+                                {{ source('@MiniwaldExplorer/storefront/icons/download.svg', ignore_missing=true)|raw }}
+                            </a>
+                        {% endif %}
+                    </div>
+
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}

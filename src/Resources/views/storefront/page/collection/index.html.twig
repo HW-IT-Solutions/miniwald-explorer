@@ -1,0 +1,33 @@
+{% sw_extends '@Storefront/storefront/base.html.twig' %}
+
+{% block base_body_classes %}{{ parent() }} collection-view{% endblock %}
+
+{% block base_content %}
+<div class="collection-page container-size-anchor">
+
+    <div hidden data-page-back-href="{{ path('frontend.miniwald.overview') }}" data-page-back-text="{{ 'miniwaldExplorer.collection.backLinkCollections'|trans }}"></div>
+
+    <h1 class="collection-page__title">{{ 'miniwaldExplorer.collection.title'|trans }}</h1>
+    <div class="collection-page__columns">
+
+        {# ── Column 1: Letzte Beobachtungen ── #}
+        <section class="collection-page__column collection-page__column--observations">
+            <h2 class="collection-page__column__title">{{ 'miniwaldExplorer.collection.lastObservationsTitle'|trans }}</h2>
+            {% include '@MiniwaldExplorer/storefront/page/collection/_col-observations.html.twig' with { observations: observations } %}
+        </section>
+
+        {# ── Column 2: Alle Miniwälder ── #}
+        <section class="collection-page__column collection-page__column--forests container-size-anchor">
+            <h2 class="collection-page__column__title">{{ 'miniwaldExplorer.collection.allMiniForestsTitle'|trans }}</h2>
+            {% include '@MiniwaldExplorer/storefront/page/collection/_col-mini-forests.html.twig' with { miniwaelder: miniwaelder } %}
+        </section>
+
+        {# ── Column 3: Pflanzen und Tiere ── #}
+        <section class="collection-page__column collection-page__column--species container-size-anchor">
+            <h2 class="collection-page__column__title">{{ 'miniwaldExplorer.collection.categoriesTitle'|trans }}</h2>
+            {% include '@MiniwaldExplorer/storefront/page/collection/_col-species.html.twig' with { categories: categories } %}
+        </section>
+
+    </div>{# /.collection-page__columns #}
+</div>{# /.collection-page #}
+{% endblock %}

@@ -1,0 +1,18 @@
+{% block sw_custsomer_card_metadata_customer_name_label %}
+<template v-if="!editMode && !isLoading && customer">
+    <div
+        v-if="customer"
+        class="sw-customer-card__metadata-customer-name"
+    >
+        {{ customer.firstName }}
+        <sw-label
+            v-if="customer.guest"
+            appearance="pill"
+            size="small"
+            class="sw-customer-card__metadata-customer-guest-label"
+        >
+            {{ $tc('sw-customer.card.labelGuest') }}
+        </sw-label>
+    </div>
+</template>
+{% endblock %}

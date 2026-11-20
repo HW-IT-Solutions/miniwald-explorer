@@ -1,0 +1,134 @@
+{% sw_extends '@Storefront/storefront/base.html.twig' %}
+
+{% block base_body_classes %}{{ parent() }} collection-view{% endblock %}
+
+{% block base_content %}
+<div class="collection-page collection-observations-page">
+
+    <div hidden data-page-back-href="{{ path('frontend.miniwald.collection') }}" data-page-back-text="{{ 'miniwaldExplorer.collection.backLinkObservations'|trans }}"></div>
+
+    <h1 class="collection-observations-page__title">{{ 'miniwaldExplorer.collection.allObservationsTitle'|trans }}</h1>
+
+    <div class="collection-observations-page__body">
+
+        {# ── Left: Observation list ── #}
+        <div class="collection-observations-page__list-col">
+            {% include '@MiniwaldExplorer/storefront/page/collection/_col-observations.html.twig'
+                with {
+                    observations: observations,
+                    baseRoute: 'frontend.miniwald.collection.observations',
+                    baseRouteParams: {},
+                    showAllLink: false,
+                    showStart: false,
+                    totalCount: total,
+                    filters: filters,
+                    page: page,
+                    totalPages: totalPages
+                }
+                only %}
+        </div>{# /.list-col #}
+
+        {# ── Right: Filter panel ── #}
+        <aside class="collection-observations-page__filter-col">
+            <details class="collection-observations-page__filter-container" open>
+                <summary class="collection-observations-page__filter-title">{{ 'miniwaldExplorer.collection.filterTitle'|trans }}</summary>
+
+                <form method="get" action="{{ path('frontend.miniwald.collection.observations') }}"
+                      class="collection-filter-form">
+
+                    <div class="collection-filter-form__field">
+                        <label class="collection-filter-form__label" for="filter-category">{{ 'miniwaldExplorer.collection.filterCategory'|trans }}</label>
+                        <select id="filter-category" name="category" class="collection-filter-form__select">
+                            <option value="">{{ 'miniwaldExplorer.collection.filterCategoryAll'|trans }}</option>
+                            {% for cat in categories %}
+                                <option value="{{ cat.id }}"{% if filters.category == cat.id %} selected{% endif %}>
+                                    {{ cat.name }}
+                                </option>
+                            {% endfor %}
+                            <option value="plants"{% if filters.category == 'plants' %} selected{% endif %}>
+                                {{ 'miniwaldExplorer.collection.filterCategoryPlants'|trans }}
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="collection-filter-form__field">
+                        <label class="collection-filter-form__label" for="filter-miniwald">{{ 'miniwaldExplorer.collection.filterMiniwald'|trans }}</label>
+                        <select id="filter-miniwald" name="miniwald" class="collection-filter-form__select">
+                            <option value="">{{ 'miniwaldExplorer.collection.filterMiniwaldAll'|trans }}</option>
+                            {% for mw in miniwaelder %}
+                                <option value="{{ mw.id }}"{% if filters.miniwald == mw.id %} selected{% endif %}>
+                                    {{ mw.name }}
+                                </option>
+                            {% endfor %}
+                            <option value="other"{% if filters.miniwald == 'other' %} selected{% endif %}>
+                                {{ 'miniwaldExplorer.observation.fieldLocationOther'|trans }}
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="collection-filter-form__date-row">
+                        <div class="collection-filter-form__field">
+                            <label class="collection-filter-form__label" for="filter-date-from">{{ 'miniwaldExplorer.collection.filterDateFrom'|trans }}</label>
+                            <input type="date" id="filter-date-from" name="dateFrom"
+                                   value="{{ filters.dateFrom ?: 'now -1 month'|date('Y-m-d') }}"
+                                   class="collection-filter-form__input">
+                        </div>
+
+                        <div class="collection-filter-form__field">
+                            <label class="collection-filter-form__label" for="filter-date-to">{{ 'miniwaldExplorer.collection.filterDateTo'|trans }}</label>
+                            <input type="date" id="filter-date-to" name="dateTo"
+                                   value="{{ filters.dateTo ?: 'now'|date('Y-m-d') }}"
+                                   class="collection-filter-form__input">
+                        </div>
+                    </div>
+
+                    {% if context.customer %}
+                    <div class="collection-filter-form__field collection-filter-form__field--checkbox">
+                        <label class="collection-filter-form__label collection-filter-form__label--checkbox" for="filter-only-own">
+                            <input type="checkbox" id="filter-only-own" name="onlyOwn" value="1"
+                                   class="collection-filter-form__checkbox"
+                                   {% if filters.onlyOwn %}checked{% endif %}>
+                            {{ 'miniwaldExplorer.collection.filterOnlyOwn'|trans }}
+                        </label>
+                    </div>
+                    {% endif %}
+
+                    <div class="collection-filter-form__actions">
+                        <button type="submit" class="btn btn-dark-blue collection-filter-form__submit">
+                            {{ 'miniwaldExplorer.collection.filterApply'|trans }}
+                        </button>
+
+                        <a href="{{ path('frontend.miniwald.collection.observations') }}"
+                           class="btn btn-transparent collection-filter-form__reset">
+                            {{ 'miniwaldExplorer.collection.filterReset'|trans }}
+                        </a>
+                    </div>
+
+                </form>
+            </details>
+
+            <a href="{{ path('frontend.miniwald.collection.observations.export.csv', {
+                    miniwald: filters.miniwald,
+                    dateFrom: filters.dateFrom,
+                    dateTo:   filters.dateTo
+                }) }}"
+               class="btn btn-transparent-dark-blue btn-multiline collection-filter-form__export"
+               download="{{ 'miniwaldExplorer.collection.downloadFileName'|trans }}-{{ 'now'|date('Y-m-d') }}.csv"
+            >{{ 'miniwaldExplorer.collection.exportCsv'|trans }}{{ source('@MiniwaldExplorer/storefront/icons/download.svg', ignore_missing=true)|raw }}</a>
+        </aside>
+
+    </div>{# /.body #}
+</div>
+
+<script>
+// open collapsed filters when screen is made wider, either UI is blocked
+(function () {
+    var details = document.querySelector('.collection-observations-page__filter-container');
+    if (!details) return;
+    var mq = window.matchMedia('(min-width: 991px)');
+    mq.addEventListener('change', function (e) {
+        if (e.matches) details.open = true;
+    });
+})();
+</script>
+{% endblock %}

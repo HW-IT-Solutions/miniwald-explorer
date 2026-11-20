@@ -1,0 +1,86 @@
+{% block sw_customer_create %}
+<sw-page class="sw-customer-create">
+    {% block sw_customer_create_header %}
+    <template #smart-bar-header>
+        <h2>
+            {{ $tc('sw-customer.general.newCustomer') }}
+        </h2>
+    </template>
+    {% endblock %}
+
+    {% block sw_customer_create_language_switch %}{% endblock %}
+
+    {% block sw_customer_create_actions %}
+    <template #smart-bar-actions>
+        <sw-button-process
+            class="sw-customer-create__save-action"
+            :is-loading="isLoading"
+            :disabled="isLoading"
+            :process-success="isSaveSuccessful"
+            variant="primary"
+            @update:process-success="saveFinish"
+            @click.prevent="onSave"
+        >
+            {{ $tc('sw-customer.detail.buttonSave') }}
+        </sw-button-process>
+    </template>
+    {% endblock %}
+
+    {% block sw_customer_create_content %}
+    <template #content>
+        <sw-card-view>
+            {% block sw_customer_create_base_form %}
+            <mt-card
+                :title="$tc('sw-customer.detailBase.labelAccountCard')"
+                position-identifier="sw-customer-create-base-form"
+            >
+                <sw-container
+                    columns="repeat(auto-fit, minmax(250px, 1fr))"
+                    gap="0px 32px"
+                >
+                    {% block sw_customer_create_first_name_field %}
+                    <mt-text-field
+                        v-if="customer"
+                        v-model="customer.firstName"
+                        name="sw-field--customer-firstName"
+                        required
+                        :label="$tc('sw-customer.baseForm.labelFirstName')"
+                        :placeholder="$tc('sw-customer.baseForm.placeholderFirstName')"
+                        :error="customerFirstNameError"
+                    />
+                    {% endblock %}
+
+                    {% block sw_customer_create_email_field %}
+                    <mt-email-field
+                        v-if="customer"
+                        v-model="customer.email"
+                        name="sw-field--customer-email"
+                        required
+                        :label="$tc('sw-customer.baseForm.labelEmail')"
+                        :placeholder="$tc('sw-customer.baseForm.placeholderEmail')"
+                        :error="customerEmailError"
+                    />
+                    {% endblock %}
+
+                    {% block sw_customer_create_password_field %}
+                    <mt-password-field
+                        v-if="customer"
+                        v-model="customer.password"
+                        name="sw-field--customer-password"
+                        autocomplete="new-password"
+                        required
+                        :label="$tc('sw-customer.baseForm.labelPassword')"
+                        :placeholder="$tc('sw-customer.baseForm.placeholderPassword')"
+                        :error="customerPasswordError"
+                    />
+                    {% endblock %}
+                </sw-container>
+            </mt-card>
+            {% endblock %}
+            {# Address card hidden - auto-filled server-side by RegistrationSubscriber #}
+            {% block sw_customer_create_adress_form %}{% endblock %}
+        </sw-card-view>
+    </template>
+    {% endblock %}
+</sw-page>
+{% endblock %}
